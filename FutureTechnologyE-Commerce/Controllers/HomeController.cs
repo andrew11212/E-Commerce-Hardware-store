@@ -2,84 +2,111 @@ using FutureTechnologyE_Commerce.Models;
 using FutureTechnologyE_Commerce.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 using System.Security.Claims;
 
 namespace FutureTechnologyE_Commerce.Controllers
 {
-	public class HomeController : Controller
-	{
-		private readonly ILogger<HomeController> _logger;
-		private readonly IUnitOfWork unitOfWork;
+    public class HomeController : Controller
+    {
+        private readonly ILogger<HomeController> _logger;
+        private readonly IUnitOfWork _unitOfWork;
 
-		public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork)
-		{
-			_logger = logger;
-			this.unitOfWork = unitOfWork;
-		}
+        public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork)
+        {
+            _logger = logger;
+            _unitOfWork = unitOfWork;
+        }
 
-		public IActionResult Index()
-		{
-			var productList = unitOfWork.ProductRepository.GetAll(default, "Category").ToList();
-			return View(productList);
-		}
-		public IActionResult Details(int id)
-		{
-			ShopingCart cart = new()
-			{
-				Product = unitOfWork.ProductRepository.Get(p => p.ProductID == id, "Category"),
-				Count = 1,
-				ProductId = id
+        public IActionResult Index()
+        {
+            var productList = _unitOfWork.ProductRepository
+                .GetAll(includeProperties: "Category,Brand,ProductType")
+                .ToList();
 
-			};
-			return View(cart);
-		}
-		//[Authorize]
-		[HttpPost]
-		public IActionResult Details([Bind("ProductId", "Count")] ShopingCart shopingCart)
-		{
-			if (!ModelState.IsValid)
-			{
-				// If model state is invalid, return the same view to show validation errors
-				return View(shopingCart);
-			}
+            return View(productList);
+        }
 
-			var claimsIdentity = User.Identity as ClaimsIdentity;
-			var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        public IActionResult Details(int id)
+        {
+            var product = _unitOfWork.ProductRepository.Get(
+         p => p.ProductID == id,
+             "Category",  // Separate navigation properties
+             "Brand",
+            "ProductType"
+            );
 
-			if (userId == null)
-			{
-				return Unauthorized();
-			}
+            if (product == null)
+            {
+                return NotFound();
+            }
 
-			shopingCart.ApplicationUserId = userId;
+            // Get related products
+            var relatedProducts = _unitOfWork.ProductRepository
+                .GetAll(p => p.CategoryID == product.CategoryID &&
+                             p.ProductID != product.ProductID,
+                        includeProperties: "Category")
+                .Take(4)
+                .ToList();
 
-			var cartFromdb = unitOfWork.CartRepositery
-				.Get(s => s.ApplicationUserId == userId && s.ProductId == shopingCart.ProductId);
+            ViewBag.RelatedProducts = relatedProducts;
 
-			if (cartFromdb != null)
-			{
-				cartFromdb.Count += shopingCart.Count;
-				unitOfWork.CartRepositery.Update(cartFromdb); // Update the existing entity, not shopingCart
-			}
-			else
-			{
-				unitOfWork.CartRepositery.Add(shopingCart);
-			}
+            return View(product);
+        }
 
-			unitOfWork.Save();
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddToCart(int productId, int quantity)
+        {
+            // Input validation
+            if (quantity <= 0)
+            {
+                TempData["error"] = "Quantity must be at least 1";
+                return RedirectToAction(nameof(Details), new { id = productId });
+            }
 
-			return RedirectToAction("Index");
-		}
+            var product = _unitOfWork.ProductRepository.Get(p => p.ProductID == productId);
+            if (product == null)
+            {
+                TempData["error"] = "Product not found";
+                return RedirectToAction(nameof(Index));
+            }
 
+            // Authentication check
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["error"] = "Please login to add items to cart";
+                return RedirectToAction("Login", "Account");
+            }
 
-		public IActionResult Privacy()
-		{
-			return View();
-		}
+            // Cart operations
+            var cartItem = _unitOfWork.CartRepositery
+                .Get(c => c.ApplicationUserId == userId && c.ProductId == productId);
 
-		
-	}
+            if (cartItem != null)
+            {
+                cartItem.Count += quantity;
+                _unitOfWork.CartRepositery.Update(cartItem);
+            }
+            else
+            {
+                var newCartItem = new ShopingCart
+                {
+                    ApplicationUserId = userId,
+                    ProductId = productId,
+                    Count = quantity
+                };
+                _unitOfWork.CartRepositery.Add(newCartItem);
+            }
 
+            _unitOfWork.Save();
+            TempData["success"] = "Item added to cart successfully";
+            return RedirectToAction(nameof(Details), new { id = productId });
+        }
 
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+    }
 }

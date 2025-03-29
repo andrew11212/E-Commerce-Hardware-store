@@ -20,3 +20,25 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.card {
+    transition: box-shadow 0.3s ease;
+}
+
+    .card:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+    }
+
+.text-truncate {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.transition-transform {
+    transition: transform 0.3s ease;
+}
+
+.hover\:scale-105:hover {
+    transform: scale(1.05);
+}

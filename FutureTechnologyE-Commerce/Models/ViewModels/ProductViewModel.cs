@@ -5,8 +5,16 @@ namespace FutureTechnologyE_Commerce.Models.ViewModels
 {
 	public class ProductViewModel
 	{
-		public Product product { get; set; }
+		public Product Product { get; set; }
 		[ValidateNever]
+
+
+		
 		public IEnumerable<SelectListItem> CategoryList { get; set; } = default!;
-	}
+        [ValidateNever]
+        public IEnumerable<SelectListItem> ProductTypeList { get; set; } = default!;
+        [ValidateNever]
+        public IEnumerable<SelectListItem> BrandList { get; set; } = default!;
+
+    }
 }

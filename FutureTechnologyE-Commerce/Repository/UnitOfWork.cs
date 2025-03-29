@@ -1,5 +1,6 @@
 ﻿using FutureTechnologyE_Commerce.Data;
 using FutureTechnologyE_Commerce.Models;
+using FutureTechnologyE_Commerce.Repository.IRepositery;
 using FutureTechnologyE_Commerce.Repository.IRepository;
 
 using System;
@@ -25,8 +26,10 @@ namespace FutureTechnologyE_Commerce.Repository
 		public IOrderHeaderRepository OrderHeader { get; private set; }
 		public IOrderDetailRepository OrderDetail { get; private set; }
 
+        public IProductTypeRepository ProductTypeRepository { get; private set; }
+        public IBrandRepository BrandRepository { get; private set; }
 
-		public UnitOfWork(ApplicationDbContext context)
+        public UnitOfWork(ApplicationDbContext context)
 		{
 			this.context = context;
 			CategoryRepository = new CategoryRepository(context);
@@ -38,7 +41,9 @@ namespace FutureTechnologyE_Commerce.Repository
 
 			OrderHeader = new OrderHeaderRepository(context);
 			OrderDetail = new OrderDetailRepository(context);
-		}
+            BrandRepository = new BrandRepository(context);
+            ProductTypeRepository = new ProductTypeRepository(context);
+        }
 		public void Save()
 		{
 			context.SaveChanges();
