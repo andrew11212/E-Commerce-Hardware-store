@@ -44,6 +44,28 @@ namespace FutureTechnologyE_Commerce.Data
 			modelBuilder.Entity<Review>()
 				.HasIndex(r => new { r.ProductID, r.UserID })
 				.IsUnique();
-		}
+
+            modelBuilder.Entity<Category>().HasData(
+               new Category { CategoryID = 1, Name = "Electronics" },
+               new Category { CategoryID = 2, Name = "Laptops", ParentCategoryID = 1 },
+               new Category { CategoryID = 3, Name = "Smartphones", ParentCategoryID = 1 }
+           );
+
+            modelBuilder.Entity<Brand>().HasData(
+                new Brand { BrandID = 1, Name = "Apple" },
+                new Brand { BrandID = 2, Name = "Samsung" }
+            );
+
+            modelBuilder.Entity<ProductType>().HasData(
+                new ProductType { ProductTypeID = 1, Name = "Mobile" },
+                new ProductType { ProductTypeID = 2, Name = "Laptop" }
+            );
+
+            modelBuilder.Entity<Product>().HasData(
+                new Product { ProductID = 1, Name = "iPhone 14", Description = "Latest Apple iPhone", Price = 999.99M, ImageUrl = "iphone14.jpg", CategoryID = 3, BrandID = 1, StockQuantity = 50, ProductTypeID = 1 },
+                new Product { ProductID = 2, Name = "Galaxy S22", Description = "Latest Samsung Smartphone", Price = 899.99M, ImageUrl = "galaxys22.jpg", CategoryID = 3, BrandID = 2, StockQuantity = 40, ProductTypeID = 1 },
+                new Product { ProductID = 3, Name = "MacBook Pro", Description = "Apple MacBook Pro 16-inch", Price = 2499.99M, ImageUrl = "macbookpro.jpg", CategoryID = 2, BrandID = 1, StockQuantity = 20, ProductTypeID = 2 }
+            );
+        }
 	}
 }
