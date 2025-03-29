@@ -13,9 +13,11 @@ namespace FutureTechnologyE_Commerce.Repository.IRepository
 		IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null,
 								  string? includeProperties = null);
 
-		T Get(Expression<Func<T, bool>> Filter, params string[] includes);
+		public T Get(Expression<Func<T, bool>> filter, params string[] includeProperties);
 
-		void Add(T entity);
+
+
+        void Add(T entity);
 
 		void Remove(T entity);
 
