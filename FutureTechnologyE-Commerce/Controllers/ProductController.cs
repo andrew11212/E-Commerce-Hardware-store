@@ -74,26 +74,21 @@ namespace FutureTechnologyE_Commerce.Controllers
 				if (file != null)
 				{
 					string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-					string productPath = Path.Combine(wwwRootPath, "Images", "Product");
+					string productPath = Path.Combine(wwwRootPath, "images", "product"); // Lowercase directory
 
-					if (!string.IsNullOrEmpty(productVM.product.ImageUrl))
+					// Create directory if not exists
+					if (!Directory.Exists(productPath))
 					{
-						var oldImagePath = Path.Combine(wwwRootPath, productVM.product.ImageUrl.TrimStart('/').Replace("/", "\\"));
-
-						if (System.IO.File.Exists(oldImagePath))
-						{
-							System.IO.File.Delete(oldImagePath);
-						}
-
+						Directory.CreateDirectory(productPath);
 					}
 
-					using (FileStream fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+					// Save the file
+					using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
 					{
 						file.CopyTo(fileStream);
 					}
 
-
-					productVM.product.ImageUrl = Path.Combine("/Images/Product/", fileName).Replace("\\", "/");
+					productVM.product.ImageUrl = $"/images/product/{fileName}";
 				}
 
 
@@ -119,10 +114,28 @@ namespace FutureTechnologyE_Commerce.Controllers
 		[HttpGet]
 		public IActionResult GetAll()
 		{
+			try
+			{
+				var products = unitOfWork.ProductRepository.GetAll(
+					includeProperties: "Category,Brand,ProductType"
+				).Select(p => new
+				{
+					productID = p.ProductID,
+					name = p.Name,
+					description = p.Description,
+					price = p.Price,
+					categoryName = p.Category?.Name ?? "N/A", // Handle nulls
+					brandName = p.Brand?.Name ?? "N/A",
+					productTypeName = p.ProductType?.Name ?? "N/A",
+					stockQuantity = p.StockQuantity
+				}).ToList();
 
-			var products = unitOfWork.ProductRepository.GetAll();
-			return Json(new { data = products });
-
+				return Json(new { data = products });
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { error = "An error occurred while retrieving data", details = ex.Message });
+			}
 		}
 		[HttpDelete]
 		public IActionResult Delete(int id)

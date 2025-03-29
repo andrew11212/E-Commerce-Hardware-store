@@ -10,7 +10,8 @@ namespace FutureTechnologyE_Commerce.Repository.IRepository
 {
 	public interface IRepository<T> where T : class
 	{
-		IEnumerable<T> GetAll(Expression<Func<T, bool>>? Filter = null, params string[] includes);
+		IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null,
+								  string? includeProperties = null);
 
 		T Get(Expression<Func<T, bool>> Filter, params string[] includes);
 

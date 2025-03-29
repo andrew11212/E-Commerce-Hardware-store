@@ -3,55 +3,64 @@
 });
 
 function loadDataTable() {
-    let table = $('#myTable').DataTable({
+    $('#myTable').DataTable({
         "ajax": {
-            "url": '/admin/product/getall', // Corrected the syntax
-            "type": "GET" // You can specify the request type, default is GET
+            "url": "/Product/GetAll",
+            "type": "GET",
+            "dataType": "json"
         },
         "columns": [
-            { data: 'name', "width": "15%" },
-            { data: 'description ', "width": "15%" },
-            { data: 'price', "width": "15%" },
+            { "data": "name" },
+            { "data": "description" },
             {
-                data: 'id',
-                "width": "15%",
+                "data": "price",
+                "render": function (data) {
+                    return '$' + data.toFixed(2);
+                }
+            },
+            { "data": "categoryName" },
+            { "data": "brandName" },
+            { "data": "productTypeName" },
+            { "data": "stockQuantity" },
+            {
+                "data": "productID",
                 "render": function (data) {
                     return `
-                        <div class="btn-group d-flex justify-content-end">
-                            <a href="/Product/Ubsert?id=${data}" class="btn btn-primary shadow-sm">
-                                <i class="bi bi-pencil-square"></i> Edit
+                        <div class="btn-group">
+                            <a href="/Product/Ubsert/${data}" class="btn btn-primary">
+                                <i class="bi bi-pencil-square"></i>
                             </a>
-                            <a onClick="Delete('/Product/Delete/${data}')" class="btn btn-danger shadow-sm">
-                                <i class="bi bi-trash-fill"></i> Delete
-                            </a>
+                            <button onclick="Delete(${data})" class="btn btn-danger">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
                         </div>
                     `;
                 }
-            },
-        ]
+            }
+        ],
+        "responsive": true,
+        "autoWidth": false
     });
 }
 
-function Delete(url) {
+function Delete(id) {
     Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
+        title: 'Confirm Delete?',
+        text: "This action cannot be undone!",
+        icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!"
+        confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: url,
-                type: "DELETE", // Correctly specify the method as a string
-                success: function (data) {
-                    toastr.success(data.message);
-                    $('#myTable').DataTable().ajax.reload(); // Reload the DataTable
+                url: `/Product/Delete/${id}`,
+                type: 'DELETE',
+                success: function (response) {
+                    toastr.success(response.message);
+                    $('#myTable').DataTable().ajax.reload();
                 },
-                error: function (xhr, status, error) {
-                    toastr.error("Error deleting the product: " + xhr.responseJSON.message); // Handle errors
+                error: function (xhr) {
+                    toastr.error(xhr.responseJSON.message);
                 }
             });
         }
