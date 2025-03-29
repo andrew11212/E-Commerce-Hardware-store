@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using NuGet.ContentModel;
 
 namespace FutureTechnologyE_Commerce.Repository
 {
@@ -23,18 +24,23 @@ namespace FutureTechnologyE_Commerce.Repository
 			//Categories = Dbset;
 		}
 
-		public IEnumerable<T> GetAll(Expression<Func<T, bool>>? Filter = null, params string[] includes)
+		public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null,
+								  string? includeProperties = null)
 		{
 			IQueryable<T> query = Set;
-			if (Filter != null)
+
+			if (filter != null)
+				query = query.Where(filter);
+
+			if (includeProperties != null)
 			{
-				query = query.Where(Filter);
+				foreach (var property in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
+				{
+					query = query.Include(property.Trim());
+				}
 			}
-			foreach (var include in includes)
-			{
-				query = query.Include(include);
-			}
-			return query;
+
+			return query.ToList();
 		}
 
 		public T Get(Expression<Func<T, bool>> Filter, params string[] includes)
