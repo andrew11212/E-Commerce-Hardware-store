@@ -10,9 +10,9 @@ namespace FutureTechnologyE_Commerce.Models
 
 		[Required]
 		[StringLength(255)]
-		public string Name { get; set; }
+		public string Name { get; set; } = string.Empty;
 
-		public string Description { get; set; }
+		public string? Description { get; set; }
 
 		[Required]
 		[Column(TypeName = "decimal(18,2)")]
@@ -30,9 +30,9 @@ namespace FutureTechnologyE_Commerce.Models
 		[ForeignKey("ProductType")]
 		public int ProductTypeID { get; set; }
 
-		public virtual Category Category { get; set; }
-		public virtual Brand Brand { get; set; }
-		public virtual ProductType ProductType { get; set; }
+		public virtual Category Category { get; set; } = default!;
+		public virtual Brand Brand { get; set; } = default!;
+		public virtual ProductType ProductType { get; set; } =default!;
 	}
 }
 

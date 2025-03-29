@@ -34,7 +34,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 			};
 			return View(cart);
 		}
-		[Authorize]
+		//[Authorize]
 		[HttpPost]
 		public IActionResult Details([Bind("ProductId", "Count")] ShopingCart shopingCart)
 		{

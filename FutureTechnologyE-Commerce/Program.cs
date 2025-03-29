@@ -49,7 +49,6 @@ namespace FutureTechnologyE_Commerce
 			});
 
 			builder.Services.AddRazorPages();
-			builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 			builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 			builder.Services.AddScoped<IEmailSender, EmailSender>();
 			builder.Services.AddDistributedMemoryCache();
