@@ -1,30 +1,87 @@
-﻿@model IEnumerable<Product>
+﻿@model Product
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Details";
+    // Formatting helper function for EGP currency
+    string FormatEGP(decimal amount) => $"{amount:N2} EGP";
 }
-<div class="row pb-3">
-    @foreach (var product in Model)
-    {
-        <div class="col-lg-3 col-sm-6 py-1">
-            <div class="row p-2">
-                <div class="col-12 p-1 mb-4">
-                    <div class="card border-0 p-3 shadow border-top border-5 rounded">
-                        <img src="@product.ImageUrl" class="card-img-top" alt="...">
-                        <div class="card-body pb-0">
-                            <div class="pl-1">
-                                <p class="card-title h5 text-dark opacity-75 text-uppercase text-center">: @product.Name</p>
-                                <p class="card-title text-warning text-center"><span class="sandstone text-uppercase">Author:</span> @product.Description</p>
-                            </div>
-                            <div class="pl-1">
-                                <p class="card-title text-opacity-75 text-center mb-0">List Price:<span class="text-decoration-line-through">@product.Price.ToString("EGP")</span></p>
-                            </div>
-                            <div class="text-center mt-3">
-                                <a asp-action="Details" asp-controller="Home" asp-route-id="@product.ProductID" class="btn btn-primary">Details</a>
-                            </div>
-                        </div>
-                    </div>
+
+<!-- Product Details Section -->
+<section class="container py-5">
+    <div class="row gx-5">
+        <!-- Product Images -->
+        <div class="col-md-6">
+            <div class="mb-4 rounded-3 overflow-hidden">
+                <img src="@Model.ImageUrl"
+                     class="img-fluid w-100"
+                     alt="@Model.Name"
+                     onerror="this.src='/images/placeholder.png'"
+                     style="aspect-ratio: 4/3; object-fit: contain;">
+            </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-md-6">
+            <div class="sticky-top pt-4">
+                <h1 class="display-6 fw-bold">@Model.Name</h1>
+
+                <div class="d-flex align-items-center mb-3">
+                    <p class="h4 text-primary mb-0 me-3">@FormatEGP(Model.Price)</p>
+                    <del class="text-muted">@FormatEGP(Model.Price * 1.2m)</del>
+                </div>
+
+                <div class="mb-4">
+                    <p class="text-muted small mb-2">Brand: <span class="fw-semibold">@Model.Brand?.Name</span></p>
+                    <p class="text-muted small mb-2">Category: <span class="fw-semibold">@Model.Category?.Name</span></p>
+                    <p class="text-muted small mb-2">Type: <span class="fw-semibold">@Model.ProductType?.Name</span></p>
+                    <p class="text-muted small mb-0">
+                        Stock:
+                        <span class="badge @(Model.StockQuantity > 0 ? "bg-success" : "bg-danger") rounded-pill">
+                            @(Model.StockQuantity > 0 ? $"{Model.StockQuantity} in stock" : "Out of stock")
+                        </span>
+                    </p>
+                </div>
+
+                <div class="d-grid gap-3">
+                    <button class="btn btn-lg btn-primary rounded-pill"
+                    @(Model.StockQuantity == 0 ? "disabled" : "")>
+                        Add to Cart <i class="bi bi-cart-plus ms-2"></i>
+                    </button>
+                    <a href="#" class="btn btn-outline-secondary rounded-pill">
+                        Wishlist <i class="bi bi-heart"></i>
+                    </a>
                 </div>
             </div>
         </div>
-    }
-</div>
+
+        <!-- Product Description -->
+        <div class="col-12 mt-5">
+            <h3 class="border-bottom pb-2 mb-4">Product Description</h3>
+            <div class="product-description">
+                @Html.Raw(Model.Description)
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Products -->
+<section class="container py-5">
+    <h3 class="mb-4">Related Products</h3>
+    <div class="row g-4">
+        <!-- Example related product cards -->
+        @foreach (var product in ViewBag.RelatedProducts)
+        {
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden">
+                    <img src="@product.ImageUrl"
+                         class="card-img-top img-fluid"
+                         alt="@product.Name"
+                         style="aspect-ratio: 1/1; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title text-dark fw-semibold text-truncate">@product.Name</h5>
+                        <p class="card-text text-primary fw-bold">@FormatEGP(product.Price)</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
