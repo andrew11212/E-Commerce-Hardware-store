@@ -7,4 +7,37 @@
     <RootNamespace>FutureTechnologyE_Commerce</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Include="Repository\ApplciationUserRepository.cs" />
+    <Content Include="Repository\CategoryRepository.cs" />
+    <Content Include="Repository\IRepositery\IApplciationUserRepository.cs" />
+    <Content Include="Repository\IRepositery\ICategoryRepository.cs" />
+    <Content Include="Repository\IRepositery\IOrderDetailRepository.cs" />
+    <Content Include="Repository\IRepositery\IOrderHeaderRepository.cs" />
+    <Content Include="Repository\IRepositery\IProductRepository.cs" />
+    <Content Include="Repository\IRepositery\IRepository.cs" />
+    <Content Include="Repository\IRepositery\IShopingCartRepository .cs" />
+    <Content Include="Repository\IRepositery\IUnitOfWork.cs" />
+    <Content Include="Repository\OrderDetailRepository.cs" />
+    <Content Include="Repository\OrderHeaderRepository.cs" />
+    <Content Include="Repository\ProductRepository.cs" />
+    <Content Include="Repository\Repositery.cs" />
+    <Content Include="Repository\ShopingCartRepository.cs" />
+    <Content Include="Repository\UnitOfWork.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.14" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.14">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+    <PackageReference Include="RestSharp" Version="112.1.0" />
+  </ItemGroup>
+
 </Project>
