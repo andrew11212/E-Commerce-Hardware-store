@@ -1,0 +1,41 @@
+﻿@model Product
+
+@{
+    ViewBag.Title = "Delete Product";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+
+
+            <!-- Card displaying the Category Title -->
+            <div class="card shadow border-0">
+                <div class="card-header bg-secondary text-center">
+                    <h4 class="card-title text-light"> @ViewBag.Title</h4>
+                </div>
+            </div>
+
+            <div class="form-control text-danger">
+                <h4>Are you sure you want to delete this product?</h4>
+
+                <!-- Form Floating Elements -->
+                <div class="form-floating mb-3">
+                    <input asp-for="Name" class="form-control" id="floatingTitleDisabled" readonly />
+                    <label for="floatingTitle"class="ms-2">Name</label>
+                </div>
+
+            </div>
+            <div class="row">
+
+                <form  asp-controller="Product" asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="ProductID" />
+                    <div class="form-control  mb-5 ">
+                        <button type="submit" class="btn btn-danger col-6 col-md-3 ">Delete</button>
+                        <a  asp-controller="Product" asp-action="Index" class="btn btn-secondary col-6 col-md-3 ms-3">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,116 @@
+﻿@model IEnumerable<Laptop>
+
+@{
+    ViewData["Title"] = "Laptops";
+}
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <ul class="navbar-nav mx-auto">
+            <li class="nav-item">
+                <a class="nav-link @Html.Raw(ViewBag.CurrentCategory == "Airpods" ? "active" : "")" href="@Url.Action("Index", "Laptop", new { category = "Airpods" })">AIRPODS</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @Html.Raw(ViewBag.CurrentCategory == "Laptop" ? "active" : "")" href="@Url.Action("Index", "Laptop", new { category = "Laptop" })">LAPTOP</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @Html.Raw(ViewBag.CurrentCategory == "Smartwatch" ? "active" : "")" href="@Url.Action("Index", "Laptop", new { category = "Smartwatch" })">SMARTWATCH</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @Html.Raw(ViewBag.CurrentCategory == "Headphones" ? "active" : "")" href="@Url.Action("Index", "Laptop", new { category = "Headphones" })">HEADPHONES</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @Html.Raw(ViewBag.CurrentCategory == "CasesCovers" ? "active" : "")" href="@Url.Action("Index", "Laptop", new { category = "CasesCovers" })">CASES & COVERS</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @Html.Raw(ViewBag.CurrentCategory == "Bags" ? "active" : "")" href="@Url.Action("Index", "Laptop", new { category = "Bags" })">BAGS</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @Html.Raw(ViewBag.CurrentCategory == "CablesConnectors" ? "active" : "")" href="@Url.Action("Index", "Laptop", new { category = "CablesConnectors" })">CABLES & CONNECTORS</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Main Content Section -->
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12 d-flex justify-content-between align-items-center mb-3">
+            <h1 class="text-dark">Laptop</h1>
+            <a href="@Url.Action("Index", "Laptop")" class="text-primary text-uppercase">VIEW ALL</a>
+        </div>
+    </div>
+
+    <!-- Product Carousel -->
+    <div class="swiper product-swiper">
+        <div class="swiper-wrapper">
+            @foreach (var laptop in Model)
+            {
+                <div class="swiper-slide">
+                    <div class="card product-card shadow-sm">
+                        <div class="card-body text-left">
+                            <img src="@($"images/{laptop.Name.Replace(" ", "").ToLower()}.jpg")" alt="@laptop.Name" class="img-fluid mb-3" style="max-height: 200px; object-fit: contain;">
+                            @if (laptop == Model.First())
+                            {
+                                <button class="btn btn-outline-primary btn-sm quick-view position-absolute" style="top: 10px; left: 10px;">
+                                    QUICK VIEW <svg class="bi bi-search" width="16" height="16" fill="currentColor">
+                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                                    </svg>
+                                </button>
+                            }
+                            <h5 class="card-title text-dark mt-2">@laptop.Name</h5>
+                            <p class="card-text text-muted">
+                                @laptop.Processor - @laptop.RAM - @laptop.Storage - @laptop.ScreenSize FHD
+                                @if (!string.IsNullOrEmpty(laptop.GraphicsCard))
+                                {
+                                    <span> - @laptop.GraphicsCard</span>
+                                }
+                            </p>
+                            <p class="card-text text-dark fw-bold">@laptop.Price.ToString("N2") EGP</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <!-- Swiper Navigation Buttons -->
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+</div>
+
+<!-- Contact Buttons -->
+<div class="position-fixed bottom-0 end-0 m-3 d-flex flex-column align-items-end">
+    <a href="tel:+1234567890" class="btn btn-success rounded-circle d-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+        <svg class="bi bi-telephone" width="24" height="24" fill="white">
+            <path d="M3.5 1a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-7zm1 3h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4.5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" />
+        </svg>
+    </a>
+    <a href="#" class="btn btn-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+        <svg class="bi bi-chat" width="24" height="24" fill="white">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+            <path d="M5.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 2.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 2.5a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3z" />
+        </svg>
+    </a>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const swiper = new Swiper('.product-swiper', {
+                slidesPerView: 5,
+                spaceBetween: 20,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                breakpoints: {
+                    320: { slidesPerView: 1 },
+                    768: { slidesPerView: 3 },
+                    1024: { slidesPerView: 5 },
+                },
+            });
+        });
+    </script>
+}
