@@ -1,107 +1,189 @@
 ﻿using FutureTechnologyE_Commerce.Models;
 using FutureTechnologyE_Commerce.Repository.IRepository;
 using FutureTechnologyE_Commerce.Utility;
-using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.Options;
-using RestSharp;
-using System.Security.Claims;
-using System.Text.RegularExpressions;
+using System;
+using System.Linq;
+using Microsoft.Extensions.Logging; // Added for logging
 
 namespace FutureTechnologyE_Commerce.Controllers
 {
-	[Area("Admin")]
-	[Authorize(Roles = SD.Role_Admin)]
+	//[Authorize(Roles = SD.Role_Admin)]
 	public class CategoryController : Controller
 	{
-		private readonly IUnitOfWork unitOfWork;
+		private readonly IUnitOfWork _unitOfWork;
+		private readonly ILogger<CategoryController> _logger; // Added logger
 
-		public CategoryController(IUnitOfWork unitOfWork)
+		public CategoryController(IUnitOfWork unitOfWork, ILogger<CategoryController> logger) // Added logger to constructor
 		{
-			this.unitOfWork = unitOfWork;
+			_unitOfWork = unitOfWork;
+			_logger = logger;
 		}
+
 		public IActionResult Index()
 		{
-			var category = unitOfWork.CategoryRepository.GetAll().ToList();
-			return View(category);
+			try
+			{
+				var categories = _unitOfWork.CategoryRepository.GetAll().ToList();
+				return View(categories);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error occurred while fetching categories in Index action.");
+				TempData["Error"] = "An error occurred while loading categories. Please try again."; // User-friendly error
+				return View(new List<Category>()); // Return an empty list or redirect to an error page.  Important to return a view.
+			}
 		}
+
 		[HttpGet]
 		public IActionResult Create()
 		{
 			return View();
 		}
+
 		[HttpPost]
+		[ValidateAntiForgeryToken] // Prevents cross-site request forgery
 		public IActionResult Create(Category category)
 		{
-			
-			if (ModelState.IsValid)
+			try
 			{
-				unitOfWork.CategoryRepository.Add(category);
-				unitOfWork.Save();
-				TempData["Success"] = "Category updated successfully";
-				return RedirectToAction(nameof(Index));  // Redirect back to the list after saving
-			}
-			return View(category); // Return view with model if validation fails
-		}
-		[HttpGet]
-		public IActionResult Edit(int id)
-		{
-
-			var category = unitOfWork.CategoryRepository.Get(e => e.CategoryID == id);
-			if (category == null)
-			{
-				return NotFound();
-			}
-
-			return View(category); // Return the view with the category data
-		}
-
-		[ValidateAntiForgeryToken]
-		[HttpPost]
-		public IActionResult Edit(Category category)
-		{
-			if (ModelState.IsValid)
-			{
-
-				var categoryIndb = unitOfWork.CategoryRepository.Get(c => c.CategoryID == category.CategoryID);
-				// or unitOfWork.Update(category); 
-				if (categoryIndb != null)
+				if (ModelState.IsValid)
 				{
-					categoryIndb.Name = category.Name;
-					unitOfWork.Save();
-					TempData["Success"] = "Category updated successfully";
+					_unitOfWork.CategoryRepository.Add(category);
+					_unitOfWork.Save();
+					TempData["Success"] = "Category created successfully"; // Consistent message
 					return RedirectToAction(nameof(Index));
 				}
+				return View(category); // Return view with model if validation fails
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error occurred while creating a category.");
+				TempData["Error"] = "An error occurred while creating the category. Please try again.";
+				return View(category); // Stay on the Create page and show the error
+			}
+		}
+
+		[HttpGet]
+		public IActionResult Edit(int? id) // Make id nullable
+		{
+			if (id == null || id <= 0)
+			{
+				_logger.LogWarning("Edit action called with invalid id: {Id}", id);
 				return NotFound();
 			}
-			return View(category);
-		}
 
-		public IActionResult Delete(int id)
-		{
-			var category = unitOfWork.CategoryRepository.Get(c => c.CategoryID == id);
-			if (category == null)
+			try
 			{
-				return NotFound(); // Return 404 if the category is not found
+				var category = _unitOfWork.CategoryRepository.Get(e => e.CategoryID == id);
+				if (category == null)
+				{
+					_logger.LogWarning("Category with id {Id} not found.", id);
+					return NotFound();
+				}
+				return View(category);
 			}
-
-			return View(category); // Return the confirmation view
-		}
-		[HttpPost, ActionName("Delete")]
-		[ValidateAntiForgeryToken]
-		public IActionResult DeleteConfirmed(int id)
-		{
-			var CategoryIndb = unitOfWork.CategoryRepository.Get(c => c.CategoryID == id);
-			if (CategoryIndb != null)
+			catch (Exception ex)
 			{
-				unitOfWork.CategoryRepository.Remove(CategoryIndb);
-				unitOfWork.Save();
-				TempData["Success"] = "Category Deleted successfully";
+				_logger.LogError(ex, "Error occurred while fetching category with id {Id} for editing.", id);
+				TempData["Error"] = "An error occurred while retrieving the category. Please try again.";
+				return RedirectToAction(nameof(Index)); // Redirect to index on error.
+			}
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public IActionResult Edit(Category category)
+		{
+			try
+			{
+				if (ModelState.IsValid)
+				{
+					var categoryIndb = _unitOfWork.CategoryRepository.Get(c => c.CategoryID == category.CategoryID);
+					if (categoryIndb != null)
+					{
+						categoryIndb.Name = category.Name;
+						_unitOfWork.Save();
+						TempData["Success"] = "Category updated successfully";
+						return RedirectToAction(nameof(Index));
+					}
+					else
+					{
+						_logger.LogWarning("Category with id {Id} not found for updating.", category.CategoryID);
+						return NotFound(); // Explicitly handle the case where the category doesn't exist
+					}
+				}
+				return View(category);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error occurred while updating category with id {Id}.", category.CategoryID);
+				TempData["Error"] = "An error occurred while updating the category. Please try again.";
+				return View(category);
+			}
+		}
+
+		[HttpGet]
+		public IActionResult Delete(int? id) // Make id nullable
+		{
+			if (id == null || id <= 0)
+			{
+				_logger.LogWarning("Delete action called with invalid id: {Id}", id);
+				return NotFound();
+			}
+			try
+			{
+				var category = _unitOfWork.CategoryRepository.Get(c => c.CategoryID == id);
+				if (category == null)
+				{
+					_logger.LogWarning("Category with id {Id} not found for deletion.", id);
+					return NotFound();
+				}
+				return View(category); // Return the confirmation view
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error occurred while fetching category with id {Id} for deletion.", id);
+				TempData["Error"] = "An error occurred while retrieving the category for deletion. Please try again.";
 				return RedirectToAction(nameof(Index));
 			}
-			return NotFound();
+
+		}
+
+		[HttpPost, ActionName("Delete")]
+		[ValidateAntiForgeryToken]
+		public IActionResult DeleteConfirmed(int? id) // Make id nullable
+		{
+			if (id == null || id <= 0)
+			{
+				_logger.LogWarning("DeleteConfirmed action called with invalid id: {Id}", id);
+				return NotFound();
+			}
+
+			try
+			{
+				var categoryIndb = _unitOfWork.CategoryRepository.Get(c => c.CategoryID == id);
+				if (categoryIndb != null)
+				{
+					_unitOfWork.CategoryRepository.Remove(categoryIndb);
+					_unitOfWork.Save();
+					TempData["Success"] = "Category deleted successfully";
+					return RedirectToAction(nameof(Index));
+				}
+				else
+				{
+					_logger.LogWarning("Category with id {Id} not found for confirmed deletion.", id);
+					return NotFound();
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error occurred while deleting category with id {Id}.", id);
+				TempData["Error"] = "An error occurred while deleting the category. Please try again.";
+				return RedirectToAction(nameof(Index)); // Redirect, as the original view is gone.
+			}
 		}
 	}
 }
+

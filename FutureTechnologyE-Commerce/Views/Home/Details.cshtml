@@ -9,17 +9,17 @@
             <div class="row p-2">
                 <div class="col-12 p-1 mb-4">
                     <div class="card border-0 p-3 shadow border-top border-5 rounded">
-                        <img src="@product.ImageUrl" class="card-img-top" alt="add product image...">
+                        <img src="@product.ImageUrl" class="card-img-top" alt="...">
                         <div class="card-body pb-0">
                             <div class="pl-1">
                                 <p class="card-title h5 text-dark opacity-75 text-uppercase text-center">: @product.Name</p>
-                                <p class="card-title text-warning text-center"><span class="sandstone text-uppercase">Author:</span> @product.Name</p>
+                                <p class="card-title text-warning text-center"><span class="sandstone text-uppercase">Author:</span> @product.Description</p>
                             </div>
                             <div class="pl-1">
                                 <p class="card-title text-opacity-75 text-center mb-0">List Price:<span class="text-decoration-line-through">@product.Price.ToString("EGP")</span></p>
                             </div>
                             <div class="text-center mt-3">
-                                <a asp-action="Details" asp-controller="Home"asp-route-id="@product.ProductID" class="btn btn-primary">Details</a>
+                                <a asp-action="Details" asp-controller="Home" asp-route-id="@product.ProductID" class="btn btn-primary">Details</a>
                             </div>
                         </div>
                     </div>
