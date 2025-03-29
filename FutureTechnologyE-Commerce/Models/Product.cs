@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace FutureTechnologyE_Commerce.Models
 {
@@ -30,9 +31,13 @@ namespace FutureTechnologyE_Commerce.Models
 		[ForeignKey("ProductType")]
 		public int ProductTypeID { get; set; }
 
+		[ValidateNever]
 		public virtual Category Category { get; set; } = default!;
-		public virtual Brand Brand { get; set; } = default!;
-		public virtual ProductType ProductType { get; set; } =default!;
+        [ValidateNever]
+
+        public virtual Brand Brand { get; set; } = default!;
+        [ValidateNever]
+        public virtual ProductType ProductType { get; set; } =default!;
 	}
 }
 

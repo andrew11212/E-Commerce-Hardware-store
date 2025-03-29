@@ -43,22 +43,17 @@ namespace FutureTechnologyE_Commerce.Repository
 			return query.ToList();
 		}
 
-		public T Get(Expression<Func<T, bool>> Filter, params string[] includes)
-		{
-			IQueryable<T> query = Set;
+        public T Get(Expression<Func<T, bool>> filter, params string[] includeProperties)
+        {
+            IQueryable<T> query = Set;
+            foreach (var property in includeProperties)
+            {
+                query = query.Include(property);
+            }
+            return query.FirstOrDefault(filter);
+        }
 
-			query = query.Where(Filter);
-
-			// Apply string-based includes
-			foreach (var include in includes)
-			{
-				query = query.Include(include);
-			}
-
-			return query.FirstOrDefault();
-		}
-
-		public void Add(T entity)
+        public void Add(T entity)
 		{
 			Set.Add(entity);
 		}

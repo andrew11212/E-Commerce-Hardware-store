@@ -1,4 +1,5 @@
 ﻿using FutureTechnologyE_Commerce.Models;
+using FutureTechnologyE_Commerce.Repository.IRepositery;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,12 @@ namespace FutureTechnologyE_Commerce.Repository.IRepository
 {
 	public interface IUnitOfWork
 	{
-		ICategoryRepository CategoryRepository { get; }
-		IProductRepository ProductRepository { get; }
+        public ICategoryRepository CategoryRepository { get; }
+        public IProductRepository ProductRepository { get; }
+		public IProductTypeRepository ProductTypeRepository { get; }
 
-		public IShopingCartRepositery CartRepositery { get; }
+		public IBrandRepository BrandRepository { get; }
+        public IShopingCartRepositery CartRepositery { get; }
 
 		public IApplciationUserRepository applciationUserRepository { get; }
 		public IOrderHeaderRepository OrderHeader { get; }
