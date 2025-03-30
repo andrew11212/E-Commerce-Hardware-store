@@ -146,12 +146,14 @@ namespace FutureTechnologyE_Commerce.Controllers
                 }
 
                 CartVM.OrderHeader.ApplicationUser = user;
-                CartVM.OrderHeader.Name = SanitizeInput(user.Name);
-                CartVM.OrderHeader.PhoneNumber = SanitizePhoneNumber(user.PhoneNumber);
-                CartVM.OrderHeader.Address = SanitizeInput(user.StreetAddress);
-                CartVM.OrderHeader.City = SanitizeInput(user.City);
-                CartVM.OrderHeader.State = SanitizeInput(user.State);
-                CartVM.OrderHeader.PostalCode = SanitizeInput(user.PostalCode);
+                CartVM.OrderHeader.first_name = SanitizeInput(user.first_name);
+				CartVM.OrderHeader.last_name = SanitizeInput(user.last_name);
+				CartVM.OrderHeader.street= SanitizePhoneNumber(user.street);
+                CartVM.OrderHeader.building = SanitizeInput(user.building);
+				CartVM.OrderHeader.phone_number = SanitizeInput(user.building);
+				CartVM.OrderHeader.email = SanitizeInput(user.Email);
+                CartVM.OrderHeader.state= SanitizeInput(user.state);
+                CartVM.OrderHeader.floor = SanitizeInput(user.floor);
 
                 CartVM.OrderHeader.OrderTotal = CartVM.CartList.Sum(cart => cart.price * cart.Count);
                 return View(CartVM);
@@ -312,7 +314,7 @@ namespace FutureTechnologyE_Commerce.Controllers
         private async Task<string> GetPaymentKeyAsync(string authToken, int orderId, double amount, ApplicationUser user)
         {
             using var client = new RestClient(_paymob.BaseUrl + "acceptance/payment_keys");
-            var request = new RestRequest().AddHeader("Authorization", $"Bearer {authToken}").AddHeader("Content-Type", "application/json").AddJsonBody(new { amount_cents = (int)(amount * 100), currency = "EGP", order_id = orderId, billing_data = new { email = user.Email ?? "unknown@example.com", first_name = SanitizeInput(user.Name.Split(' ').FirstOrDefault() ?? "Unknown"), last_name = SanitizeInput(user.Name.Contains(" ") ? user.Name.Split(' ')[1] : "Unknown"), phone_number = SanitizePhoneNumber(user.PhoneNumber), street = SanitizeInput(user.StreetAddress ?? "NA"), building = "NA", city = SanitizeInput(user.City ?? "NA"), state = SanitizeInput(user.State ?? "NA"), postal_code = SanitizeInput(user.PostalCode ?? "NA"), country = "EG", apartment = "NA", floor = "NA" }, integration_id = _paymob.IntegrationId });
+            var request = new RestRequest().AddHeader("Authorization", $"Bearer {authToken}").AddHeader("Content-Type", "application/json").AddJsonBody(new { amount_cents = (int)(amount * 100), currency = "EGP", order_id = orderId, billing_data = new { email = user.Email ?? "unknown@example.com", first_name = SanitizeInput(user.first_name.Split(' ').FirstOrDefault() ?? "Unknown"), last_name = SanitizeInput(user.last_name.Contains(" ") ? user.street.Split(' ')[1] : "Unknown"), phone_number = SanitizePhoneNumber(user.PhoneNumber), street = SanitizeInput(user.street ?? "NA"), building = "NA", city = SanitizeInput(user.country ?? "NA"), country = "EG", apartment = "NA", floor = "NA" }, integration_id = _paymob.IntegrationId });
             var response = await client.PostAsync<PaymobPaymentKeyResponse>(request);
             return response?.Token ?? throw new Exception("Failed to get payment key");
         }

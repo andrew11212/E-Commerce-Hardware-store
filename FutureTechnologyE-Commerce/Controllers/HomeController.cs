@@ -1,4 +1,5 @@
 using FutureTechnologyE_Commerce.Models;
+using FutureTechnologyE_Commerce.Models.ViewModels;
 using FutureTechnologyE_Commerce.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,13 +18,17 @@ namespace FutureTechnologyE_Commerce.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public IActionResult Index()
+         public IActionResult Index()
         {
-            var productList = _unitOfWork.ProductRepository
-                .GetAll(includeProperties: "Category,Brand,ProductType")
-                .ToList();
+            var viewModel = new HomeIndexViewModel
+            {
+                // Get all products, including laptops
+                Products = _unitOfWork.ProductRepository.GetAll(null,includeProperties: "Category,Brand,ProductType").ToList(),
 
-            return View(productList);
+                // Get only Laptops.  This assumes you have a way to filter for laptops, such as by ProductType or Category.
+                Laptops = _unitOfWork.LaptopRepository.GetAll(null,includeProperties: "Category,Brand,ProductType").ToList(),
+            };
+            return View(viewModel);
         }
 
         public IActionResult Details(int id)

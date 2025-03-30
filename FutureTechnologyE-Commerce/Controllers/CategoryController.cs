@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging; // Added for logging
 
 namespace FutureTechnologyE_Commerce.Controllers
 {
-	//[Authorize(Roles = SD.Role_Admin)]
+	[Authorize(Roles = SD.Role_Admin)]
 	public class CategoryController : Controller
 	{
 		private readonly IUnitOfWork _unitOfWork;
