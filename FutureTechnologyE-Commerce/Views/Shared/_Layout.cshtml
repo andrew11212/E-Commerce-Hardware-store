@@ -3,122 +3,195 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - FutureTechnology</title>
+    <title> FutureTechnology</title>
     <link href="~/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="~/FutureTechnology.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="//cdn.datatables.net/2.1.7/css/dataTables.dataTables.min.css" />
     <style>
+        :root {
+            --primary: #007bff;
+            --secondary: #6c757d;
+            --accent: #dc3545;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+
+        .top-brand {
+            background-color: #0b60b6;
+            padding: 1rem;
+        }
+
         .navbar-brand {
             font-weight: 600;
             letter-spacing: 1px;
+            color: white !important;
+            font-size: xx-large;
+            text-transform: uppercase;
         }
 
-        .dropdown-menu {
-            min-width: 200px;
+        .nav-link {
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            transition: background 0.3s;
         }
 
-        .dropdown-item {
-            padding: 0.75rem 1.5rem;
+            .nav-link:hover {
+                background: var(--light);
+                color: var(--primary);
+            }
+
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
         }
 
-        .dropdown-divider {
-            margin: 0.5rem 0;
+        .search-btn {
+            padding: 0.375rem 0.75rem;
+            border: 2px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
         }
+
+            .search-btn:hover {
+                background: var(--primary);
+                color: white;
+            }
 
         .footer {
-            background-color: #f8f9fa;
-            padding: 1.5rem 0;
+            background-color: var(--light);
+            padding: 2rem 0;
+        }
+
+        @@media (max-width: 768px) {
+            .search-container {
+                width: 100%;
+                margin-top: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-            <div class="container">
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-                    FutureTechnology
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#navbarNav" aria-controls="navbarNav"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                Content Management
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-dark">
-                                <li>
-                                    <a class="dropdown-item" asp-controller="Product" asp-action="Index">
-                                        <i class="bi bi-box-seam me-2"></i>Products
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" asp-controller="Category" asp-action="Index">
-                                        <i class="bi bi-tags me-2"></i>Categories
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <div class="d-flex align-items-center">
-                        <a class="nav-link text-light me-3" asp-controller="Cart" asp-action="Index">
-                            <i class="bi bi-cart4 position-relative">
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    0
-                                </span>
-                            </i>
+    <!-- Brand Header -->
+    <div class="top-brand">
+        <div class="container text-center">
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                <b>Future Technology Store</b>
+            </a>
+        </div>
+    </div> 
+
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Content Management
                         </a>
-                        <partial name="_LoginPartial" />
-                    </div>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li>
+                                <a class="dropdown-item" asp-controller="Product" asp-action="Index">
+                                    <i class="bi bi-box-seam me-2"></i>Products
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="Category" asp-action="Index">
+                                    <i class="bi bi-tags me-2"></i>Categories
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <!-- Search Bar -->
+                <form asp-controller="Search" asp-action="Index" method="get" class="d-flex search-container">
+                    <input name="query" class="form-control me-2" type="search" placeholder="Search products...">
+                    <button class="btn search-btn" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+
+                <!-- Authentication and Cart -->
+                <div class="d-flex align-items-center ms-3">
+                    <partial name="_LoginPartial" />
+                    <a class="nav-link text-light ms-3" asp-controller="Cart" asp-action="Index">
+                        <i class="bi bi-cart4 position-relative">
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                0
+                            </span>
+                        </i>
+                    </a>
                 </div>
             </div>
-        </nav>
-    </header>
+        </div>
+    </nav>
 
-    <div class="container my-4">
+    <div class="container my-5">
         <main role="main">
             <partial name="_Notification" />
             @RenderBody()
         </main>
     </div>
 
-    <footer class="footer border-top">
+    <!-- Footer -->
+    <footer class="footer">
         <div class="container">
-            <div class="d-flex flex-wrap justify-content-between align-items-center py-3">
-                <div class="text-muted">© 2025 FutureTechnologyE_Commerce</div>
-                <ul class="nav col-md-4 justify-content-end">
-                    <li class="nav-item">
-                        <a asp-controller="Home" asp-action="Privacy" class="nav-link px-2 text-muted">
-                            Privacy Policy
-                        </a>
-                    </li>
-                </ul>
+            <div class="row gy-4">
+                <div class="col-md-3">
+                    <h5 class="fw-bold">About Us</h5>
+                    <p class="small text-muted">Your trusted source for quality electronics and tech products.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="fw-bold">Customer Service</h5>
+                    <ul class="list-unstyled small">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Shipping & Returns</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="fw-bold">Policies</h5>
+                    <ul class="list-unstyled small">
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="fw-bold">Newsletter</h5>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Your email">
+                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    </div>
+                    <div class="d-flex gap-3 justify-content-center">
+                        <a href="#" class="text-dark"><i class="bi bi-facebook fs-3"></i></a>
+                        <a href="#" class="text-dark"><i class="bi bi-instagram fs-3"></i></a>
+                        <a href="#" class="text-dark"><i class="bi bi-twitter fs-3"></i></a>
+                    </div>
+                </div>
             </div>
+            <hr class="my-4">
+            <p class="text-center text-muted mb-7">&copy; 2025 FutureTechnologyE_Commerce</p>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <!-- In your _Layout.cshtml or specific view -->
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="//cdn.datatables.net/2.1.7/js/dataTables.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
