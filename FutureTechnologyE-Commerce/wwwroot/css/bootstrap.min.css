@@ -6177,7 +6177,13 @@ textarea.form-control-lg {
 .carousel-inner {
     position: relative;
     width: 100%;
-    overflow: hidden
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 4.25rem;
+    transition: transform 0.3s ease;
+    height: 0;
+    padding-bottom: 50%;
+
 }
 
     .carousel-inner::after {
@@ -8414,7 +8420,8 @@ textarea.form-control-lg {
 
 .py-3 {
     padding-top: 1rem !important;
-    padding-bottom: 1rem !important
+    padding-bottom: 1rem !important;
+    border-radius: 2rem;
 }
 
 .py-4 {
