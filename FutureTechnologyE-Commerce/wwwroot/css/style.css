@@ -636,6 +636,21 @@ textarea.input {
     padding-top: 15px;
     padding-bottom: 15px;
 }
+/* Fixed size product images */
+.product-image {
+    width: 100px; /* Constant width */
+    height: 100px; /* Constant height */
+    object-fit: cover; /* Crop the image if necessary without distorting */
+    border-radius: 0.25rem; /* Optional: match your card styling */
+    transition: transform 0.3s ease; /* Optional: smooth hover effect */
+}
+
+/* Optional hover effect */
+.card:hover .product-image {
+    transform: scale(1.05);
+}
+
+
 
 /*=========================================================
 	03 -> Navigation

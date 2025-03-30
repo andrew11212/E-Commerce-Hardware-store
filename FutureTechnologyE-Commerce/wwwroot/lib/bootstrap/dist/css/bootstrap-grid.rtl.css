@@ -1827,8 +1827,9 @@
 }
 
 .py-3 {
-  padding-top: 1rem !important;
-  padding-bottom: 1rem !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    border-radius: 2rem;
 }
 
 .py-4 {
