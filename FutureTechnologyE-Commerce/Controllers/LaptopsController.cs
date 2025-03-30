@@ -1,176 +1,201 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using FutureTechnologyE_Commerce.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using FutureTechnologyE_Commerce.Models;
+using FutureTechnologyE_Commerce.Utility;
+using FutureTechnologyE_Commerce.Repository.IRepository;
 
 namespace FutureTechnologyE_Commerce.Controllers
 {
-    public class LaptopsController : Controller
-    {
-        private readonly ApplicationDbContext _context;
+	[Authorize(Roles = SD.Role_Admin)]
+	public class LaptopsController : Controller
+	{
+		private readonly IUnitOfWork _unitOfWork;
+		private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public LaptopsController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+		public LaptopsController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+		{
+			_unitOfWork = unitOfWork;
+			_webHostEnvironment = webHostEnvironment;
+		}
 
-        // GET: Laptops
-        public async Task<IActionResult> Index()
-        {
-            var applicationDbContext = _context.Laptops.Include(l => l.Brand).Include(l => l.Category).Include(l => l.ProductType);
-            return View(await applicationDbContext.ToListAsync());
-        }
+		// GET: Laptops
+		public IActionResult Index()
+		{
+			var laptops = _unitOfWork.LaptopRepository.GetAll(includeProperties: "Category,Brand,ProductType");
+			return View(laptops);
+		}
 
-        // GET: Laptops/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+		// GET: Laptops/Details/5
+		public IActionResult Details(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-            var laptop = await _context.Laptops
-                .Include(l => l.Brand)
-                .Include(l => l.Category)
-                .Include(l => l.ProductType)
-                .FirstOrDefaultAsync(m => m.ProductID == id);
-            if (laptop == null)
-            {
-                return NotFound();
-            }
+			var laptop = _unitOfWork.LaptopRepository.Get(l => l.ProductID == id, includeProperties: "Brand,Category,ProductType");
+			if (laptop == null)
+			{
+				return NotFound();
+			}
 
-            return View(laptop);
-        }
+			return View(laptop);
+		}
 
-        // GET: Laptops/Create
-        public IActionResult Create()
-        {
-            ViewData["BrandID"] = new SelectList(_context.Brands, "BrandID", "Name");
-            ViewData["CategoryID"] = new SelectList(_context.Categories, "CategoryID", "Name");
-            ViewData["ProductTypeID"] = new SelectList(_context.ProductTypes, "ProductTypeID", "Name");
-            return View();
-        }
+		// GET: Laptops/Create
+		public IActionResult Create()
+		{
+			ViewData["BrandID"] = new SelectList(_unitOfWork.BrandRepository.GetAll(), "BrandID", "Name");
+			ViewData["CategoryID"] = new SelectList(_unitOfWork.CategoryRepository.GetAll(), "CategoryID", "Name");
+			ViewData["ProductTypeID"] = new SelectList(_unitOfWork.ProductTypeRepository.GetAll(), "ProductTypeID", "Name");
+			return View();
+		}
 
-        // POST: Laptops/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Processor,RAM,Storage,ScreenSize,GraphicsCard,ProductID,Name,Description,Price,CategoryID,BrandID,StockQuantity,ProductTypeID")] Laptop laptop)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(laptop);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["BrandID"] = new SelectList(_context.Brands, "BrandID", "Name", laptop.BrandID);
-            ViewData["CategoryID"] = new SelectList(_context.Categories, "CategoryID", "Name", laptop.CategoryID);
-            ViewData["ProductTypeID"] = new SelectList(_context.ProductTypes, "ProductTypeID", "Name", laptop.ProductTypeID);
-            return View(laptop);
-        }
+		// POST: Laptops/Create
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Create([Bind("Processor,RAM,Storage,ScreenSize,GraphicsCard,Name,Description,Price,CategoryID,BrandID,StockQuantity,ProductTypeID")] Laptop laptop, IFormFile? file)
+		{
+			if (ModelState.IsValid)
+			{
+				// Handle image upload
+				if (file != null && file.Length > 0)
+				{
+					string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+					string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "products", fileName);
 
-        // GET: Laptops/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+					using (var fileStream = new FileStream(imagePath, FileMode.Create))
+					{
+						await file.CopyToAsync(fileStream);
+					}
 
-            var laptop = await _context.Laptops.FindAsync(id);
-            if (laptop == null)
-            {
-                return NotFound();
-            }
-            ViewData["BrandID"] = new SelectList(_context.Brands, "BrandID", "Name", laptop.BrandID);
-            ViewData["CategoryID"] = new SelectList(_context.Categories, "CategoryID", "Name", laptop.CategoryID);
-            ViewData["ProductTypeID"] = new SelectList(_context.ProductTypes, "ProductTypeID", "Name", laptop.ProductTypeID);
-            return View(laptop);
-        }
+					laptop.ImageUrl = "/images/products/" + fileName; // Store the relative path
+				}
 
-        // POST: Laptops/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Processor,RAM,Storage,ScreenSize,GraphicsCard,ProductID,Name,Description,Price,CategoryID,BrandID,StockQuantity,ProductTypeID")] Laptop laptop)
-        {
-            if (id != laptop.ProductID)
-            {
-                return NotFound();
-            }
+				_unitOfWork.LaptopRepository.Add(laptop);
+				_unitOfWork.Save(); // Save changes
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(laptop);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!LaptopExists(laptop.ProductID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["BrandID"] = new SelectList(_context.Brands, "BrandID", "Name", laptop.BrandID);
-            ViewData["CategoryID"] = new SelectList(_context.Categories, "CategoryID", "Name", laptop.CategoryID);
-            ViewData["ProductTypeID"] = new SelectList(_context.ProductTypes, "ProductTypeID", "Name", laptop.ProductTypeID);
-            return View(laptop);
-        }
+				return RedirectToAction(nameof(Index));
+			}
 
-        // GET: Laptops/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+			// If ModelState is not valid, repopulate dropdowns
+			ViewData["BrandID"] = new SelectList(_unitOfWork.BrandRepository.GetAll(), "BrandID", "Name", laptop.BrandID);
+			ViewData["CategoryID"] = new SelectList(_unitOfWork.CategoryRepository.GetAll(), "CategoryID", "Name", laptop.CategoryID);
+			ViewData["ProductTypeID"] = new SelectList(_unitOfWork.ProductTypeRepository.GetAll(), "ProductTypeID", "Name", laptop.ProductTypeID);
+			return View(laptop);
+		}
 
-            var laptop = await _context.Laptops
-                .Include(l => l.Brand)
-                .Include(l => l.Category)
-                .Include(l => l.ProductType)
-                .FirstOrDefaultAsync(m => m.ProductID == id);
-            if (laptop == null)
-            {
-                return NotFound();
-            }
+		// GET: Laptops/Edit/5
+		public IActionResult Edit(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-            return View(laptop);
-        }
+			var laptop = _unitOfWork.LaptopRepository.Get(l => l.ProductID == id);
+			if (laptop == null)
+			{
+				return NotFound();
+			}
 
-        // POST: Laptops/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var laptop = await _context.Laptops.FindAsync(id);
-            if (laptop != null)
-            {
-                _context.Laptops.Remove(laptop);
-            }
+			ViewData["BrandID"] = new SelectList(_unitOfWork.BrandRepository.GetAll(), "BrandID", "Name", laptop.BrandID);
+			ViewData["CategoryID"] = new SelectList(_unitOfWork.CategoryRepository.GetAll(), "CategoryID", "Name", laptop.CategoryID);
+			ViewData["ProductTypeID"] = new SelectList(_unitOfWork.ProductTypeRepository.GetAll(), "ProductTypeID", "Name", laptop.ProductTypeID);
+			return View(laptop);
+		}
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+		// POST: Laptops/Edit/5
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Edit(int id, [Bind("Processor,RAM,Storage,ScreenSize,GraphicsCard,ProductID,Name,Description,Price,CategoryID,BrandID,StockQuantity,ProductTypeID,ImageUrl")] Laptop laptop, IFormFile file)
+		{
+			if (id != laptop.ProductID)
+			{
+				return NotFound();
+			}
 
-        private bool LaptopExists(int id)
-        {
-            return _context.Laptops.Any(e => e.ProductID == id);
-        }
-    }
+			if (ModelState.IsValid)
+			{
+				// Handle image upload
+				if (file != null && file.Length > 0)
+				{
+					string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+					string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "products", fileName);
+
+					// Delete the old image if it exists
+					if (!string.IsNullOrEmpty(laptop.ImageUrl))
+					{
+						string oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, laptop.ImageUrl.TrimStart('/')); //remove starting /
+						if (System.IO.File.Exists(oldImagePath))
+						{
+							System.IO.File.Delete(oldImagePath);
+						}
+					}
+
+					using (var fileStream = new FileStream(imagePath, FileMode.Create))
+					{
+						await file.CopyToAsync(fileStream);
+					}
+
+					laptop.ImageUrl = "/images/products/" + fileName; //update with new image
+				}
+				_unitOfWork.LaptopRepository.Update(laptop);
+				_unitOfWork.Save();
+				return RedirectToAction(nameof(Index));
+			}
+			//if model state is invalid
+			ViewData["BrandID"] = new SelectList(_unitOfWork.BrandRepository.GetAll(), "BrandID", "Name", laptop.BrandID);
+			ViewData["CategoryID"] = new SelectList(_unitOfWork.CategoryRepository.GetAll(), "CategoryID", "Name", laptop.CategoryID);
+			ViewData["ProductTypeID"] = new SelectList(_unitOfWork.ProductTypeRepository.GetAll(), "ProductTypeID", "Name", laptop.ProductTypeID);
+			return View(laptop);
+		}
+
+		// GET: Laptops/Delete/5
+		public IActionResult Delete(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
+
+			var laptop = _unitOfWork.LaptopRepository.Get(l => l.ProductID == id, includeProperties: "Brand,Category,ProductType");
+			if (laptop == null)
+			{
+				return NotFound();
+			}
+
+			return View(laptop);
+		}
+
+		// POST: Laptops/Delete/5
+		[HttpPost, ActionName("Delete")]
+		[ValidateAntiForgeryToken]
+		public IActionResult DeleteConfirmed(int id)
+		{
+			var laptop = _unitOfWork.LaptopRepository.Get(l => l.ProductID == id);
+			if (laptop != null)
+			{
+				// Delete the image file
+				if (!string.IsNullOrEmpty(laptop.ImageUrl))
+				{
+					string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, laptop.ImageUrl.TrimStart('/'));
+					if (System.IO.File.Exists(imagePath))
+					{
+						System.IO.File.Delete(imagePath);
+					}
+				}
+				_unitOfWork.LaptopRepository.Remove(laptop);
+				_unitOfWork.Save();
+			}
+
+			return RedirectToAction(nameof(Index));
+		}
+	}
 }

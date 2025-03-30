@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using FutureTechnologyE_Commerce.Utility;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FutureTechnologyE_Commerce.Areas.Identity.Pages.Account
 {
@@ -30,27 +32,30 @@ namespace FutureTechnologyE_Commerce.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public RegisterModel(
-            UserManager<ApplicationUser> userManager,
-            IUserStore<ApplicationUser> userStore,
-            SignInManager<ApplicationUser> signInManager,
-            ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
-        {
-            _userManager = userManager;
-            _userStore = userStore;
-            _emailStore = GetEmailStore();
-            _signInManager = signInManager;
-            _logger = logger;
-            _emailSender = emailSender;
-        }
+		public RegisterModel(
+			UserManager<ApplicationUser> userManager,
+			IUserStore<ApplicationUser> userStore,
+			SignInManager<ApplicationUser> signInManager,
+			ILogger<RegisterModel> logger,
+			IEmailSender emailSender,
+			RoleManager<IdentityRole> roleManager)
+		{
+			_userManager = userManager;
+			_userStore = userStore;
+			_emailStore = GetEmailStore();
+			_signInManager = signInManager;
+			_logger = logger;
+			_emailSender = emailSender;
+			_roleManager = roleManager;
+		}
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        [BindProperty]
+		/// <summary>
+		///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+		///     directly from your code. This API may change or be removed in future releases.
+		/// </summary>
+		[BindProperty]
         public InputModel Input { get; set; }
 
         /// <summary>
@@ -80,11 +85,15 @@ namespace FutureTechnologyE_Commerce.Areas.Identity.Pages.Account
             [Display(Name = "Email")]
             public string Email { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Required]
+
+			public string Role { get; set; }
+
+			public IEnumerable<SelectListItem> RoleList { get; set; }
+			/// <summary>
+			///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+			///     directly from your code. This API may change or be removed in future releases.
+			/// </summary>
+			[Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
@@ -101,13 +110,27 @@ namespace FutureTechnologyE_Commerce.Areas.Identity.Pages.Account
         }
 
 
-        public async Task OnGetAsync(string returnUrl = null)
-        {
-            ReturnUrl = returnUrl;
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-        }
+		public async Task OnGetAsync(string returnUrl = null)
+		{
+			if (!await _roleManager.RoleExistsAsync(SD.Role_Cust))
+			{
+				await _roleManager.CreateAsync(new IdentityRole { Name = SD.Role_Admin });
+				await _roleManager.CreateAsync(new IdentityRole { Name = SD.Role_Cust });
+			}
+			Input = new()
+			{
+				RoleList = _roleManager.Roles.Select(r => r.Name).Select(l => new SelectListItem
+				{
+					Text = l,
+					Value = l
+				}),
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+			};
+			ReturnUrl = returnUrl;
+			ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+		}
+
+		public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
@@ -121,7 +144,15 @@ namespace FutureTechnologyE_Commerce.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+					if (!string.IsNullOrEmpty(Input.Role))
+					{
+						await _userManager.AddToRoleAsync(user, Input.Role);
+					}
+					else
+					{
+						await _userManager.AddToRoleAsync(user, SD.Role_Cust);
+					}
+					_logger.LogInformation("User created a new account with password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

@@ -24,14 +24,17 @@ namespace FutureTechnologyE_Commerce.Models
 		public DateTime? PaymentDate { get; set; }
 		public DateOnly? PaymentDueDate { get; set; }
 
-		public string? PaymentIntentId { get; set; }
-		public string? Name { get; set; } = string.Empty;
-		public string? Address { get; set; } = string.Empty;
-		public string? City { get; set; } = string.Empty;
-		public string? State { get; set; } = string.Empty;
-		public string? PostalCode { get; set; } = string.Empty;
+		public string first_name { get; set; } = string.Empty;
+		public string last_name { get; set; } = string.Empty;
+		public string? apartment { get; set; } = string.Empty;
+		public string? street { get; set; } = string.Empty;
+		public string? building { get; set; } = string.Empty;
+		public string? phone_number { get; set; } = string.Empty;
+		public string? country { get; set; } = string.Empty;
+		public string? email { get; set; } = string.Empty;
 
-		public string? PhoneNumber { get; set; } = string.Empty;
+		public string? floor { get; set; } = string.Empty;
+		public string? state { get; set; } = string.Empty;
 
 	}
 }
