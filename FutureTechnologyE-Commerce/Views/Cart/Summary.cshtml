@@ -1,0 +1,137 @@
+﻿@model CartViewModel
+@Html.AntiForgeryToken()
+<form method="post" asp-area="customer" asp-controller="Cart" asp-action="Summary" class="order-summary-form">
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                    <!-- Header -->
+                    <div class="card-header bg-gradient text-white py-4" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="m-0 fw-bold">Order Summary</h4>
+                            <a asp-action="Index" class="btn btn-light btn-sm rounded-pill px-3 d-none d-md-inline">
+                                <i class="bi bi-arrow-left me-2"></i>Back to Cart
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Header -->
+                    <div class="d-md-none p-3 border-bottom bg-light">
+                        <a asp-action="Index" class="btn btn-outline-primary w-100 rounded-pill mb-3">
+                            <i class="bi bi-arrow-left me-2"></i>Back to Cart
+                        </a>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="card-body p-4">
+                        <div class="row g-4">
+                            <!-- Shipping Details -->
+                            <div class="col-12 col-lg-7">
+                                <div class="card border-0 shadow-sm rounded-4">
+                                    <div class="card-header bg-light">
+                                        <h5 class="m-0 text-primary">Shipping Details</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <input asp-for="OrderHeader.Name" class="form-control form-control-lg" placeholder="Full Name" />
+                                                <span asp-validation-for="OrderHeader.Name" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-12">
+                                                <input asp-for="OrderHeader.PhoneNumber" class="form-control form-control-lg" placeholder="Phone Number" />
+                                                <span asp-validation-for="OrderHeader.PhoneNumber" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-12">
+                                                <input asp-for="OrderHeader.Address" class="form-control form-control-lg" placeholder="Street Address" />
+                                                <span asp-validation-for="OrderHeader.Address" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-12 col-md-6">
+                                                <input asp-for="OrderHeader.City" class="form-control form-control-lg" placeholder="City" />
+                                                <span asp-validation-for="OrderHeader.City" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-12 col-md-6">
+                                                <input asp-for="OrderHeader.State" class="form-control form-control-lg" placeholder="State/Province" />
+                                                <span asp-validation-for="OrderHeader.State" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-12 col-md-6">
+                                                <input asp-for="OrderHeader.PostalCode" class="form-control form-control-lg" placeholder="Postal Code" />
+                                                <span asp-validation-for="OrderHeader.PostalCode" class="text-danger small"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Order Summary -->
+                            <div class="col-12 col-lg-5">
+                                <div class="card border-0 shadow-sm rounded-4">
+                                    <div class="card-header bg-light">
+                                        <h5 class="m-0 text-primary">Order Summary</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="list-group list-group-flush">
+                                            @foreach (var item in Model.CartList)
+                                            {
+                                                <div class="list-group-item px-0">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-3">
+                                                            <img src="@item.Product.ImageUrl"
+                                                                 class="img-fluid rounded-3"
+                                                                 style="aspect-ratio: 1/1; object-fit: cover;">
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <h6 class="mb-1">@item.Product.Name</h6>
+                                                            <small class="text-muted">Qty: @item.Count</small>
+                                                        </div>
+                                                        <div class="col-3 text-end">
+                                                            <span class="fw-semibold">@((item.price * item.Count).ToString("c"))</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+
+                                        <!-- Total -->
+                                        <div class="my-4">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="text-muted">Subtotal</span>
+                                                <span class="h5 mb-0">@Model.OrderHeader.OrderTotal.ToString("c")</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="text-muted">Shipping</span>
+                                                <span class="text-success">Free</span>
+                                            </div>
+                                            <hr class="my-3">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h5 class="m-0">Total</h5>
+                                                <h3 class="text-primary">@Model.OrderHeader.OrderTotal.ToString("c")</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="card-footer bg-white border-0">
+                        <div class="row g-3 align-items-center px-4 pb-4">
+                            <div class="col-12 col-md-7">
+                                <p class="text-muted mb-0">
+                                    <i class="bi bi-truck me-2"></i>
+                                    Estimated Delivery: <strong>@DateTime.Now.AddDays(3).ToShortDateString()</strong> - <strong>@DateTime.Now.AddDays(7).ToShortDateString()</strong>
+                                </p>
+                            </div>
+                            <div class="col-12 col-md-5">
+                                <button type="submit" class="btn btn-lg btn-primary w-100 rounded-pill"
+                                        style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);">
+                                    Place Order <i class="bi bi-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
