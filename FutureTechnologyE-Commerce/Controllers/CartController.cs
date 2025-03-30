@@ -16,535 +16,369 @@ using Microsoft.Extensions.Options;
 
 namespace FutureTechnologyE_Commerce.Controllers
 {
-	[Authorize] //  Apply authorization at the controller level
-	[EnableRateLimiting("fixed")] // Apply rate limiting policy (configure in Program.cs)
-	public class CartController : Controller
-	{
-		private readonly IUnitOfWork _unitOfWork;
-		private readonly Paymob _paymob;
-		private readonly ILogger<CartController> _logger;
-		private readonly IAntiforgery _antiforgery;
+    [Authorize]
+    [EnableRateLimiting("fixed")]
+    public class CartController : Controller
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly Paymob _paymob;
+        private readonly ILogger<CartController> _logger;
+        private readonly IAntiforgery _antiforgery;
 
-		[BindProperty]
-		public CartViewModel CartVM { get; set; } = default!; //  Initialize to default!
+        [BindProperty]
+        public CartViewModel CartVM { get; set; } = new CartViewModel(); // Initialize directly
 
-		public CartController(
-			IUnitOfWork unitOfWork,
-			IOptions<Paymob> paymob,
-			ILogger<CartController> logger,
-			IAntiforgery antiforgery)
-		{
-			_unitOfWork = unitOfWork;
-			_paymob = paymob.Value;
-			_logger = logger;
-			_antiforgery = antiforgery;
-		}
+        public CartController(
+            IUnitOfWork unitOfWork,
+            IOptions<Paymob> paymob,
+            ILogger<CartController> logger,
+            IAntiforgery antiforgery)
+        {
+            _unitOfWork = unitOfWork;
+            _paymob = paymob.Value;
+            _logger = logger;
+            _antiforgery = antiforgery;
+        }
 
-		public IActionResult Index()
-		{
-			try
-			{
-				var userId = GetValidatedUserId();
-				if (userId == null)
-				{
-					_logger.LogWarning("Unauthorized access to Cart/Index");
-					return Unauthorized();
-				}
+        public IActionResult Index()
+        {
+            try
+            {
+                var userId = GetValidatedUserId();
+                if (userId == null) return Unauthorized();
 
-				CartVM = new()
-				{
-					CartList = _unitOfWork.CartRepositery.GetAll(c => c.ApplicationUserId == userId, "Product"),
-					OrderHeader = new()
-				};
-				foreach (var cart in CartVM.CartList)
-				{
-					CartVM.OrderHeader.OrderTotal += cart.price * cart.Count;
-				}
-				return View(CartVM);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error in Cart/Index");
-				TempData["Error"] = "Failed to load cart. Please try again.";
-				return View(new CartViewModel()); // Return empty model, avoid null
-			}
-		}
+                CartVM.CartList = _unitOfWork.CartRepositery.GetAll(c => c.ApplicationUserId == userId, "Product").ToList();
+                CartVM.OrderHeader = new OrderHeader();
 
-		public IActionResult Summary()
-		{
-			try
-			{
-				var userId = GetValidatedUserId();
-				if (userId == null)
-				{
-					_logger.LogWarning("Unauthorized access to Cart/Summary");
-					return Unauthorized();
-				}
+                CartVM.OrderHeader.OrderTotal = CartVM.CartList.Sum(cart => cart.price * cart.Count);
+                return View(CartVM);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in Cart/Index");
+                TempData["Error"] = "Failed to load cart. Please try again.";
+                return View(new CartViewModel());
+            }
+        }
 
-				CartVM = new()
-				{
-					CartList = _unitOfWork.CartRepositery.GetAll(u => u.ApplicationUserId == userId, "Product"),
-					OrderHeader = new()
-				};
-				var user = _unitOfWork.applciationUserRepository.Get(u => u.Id == userId);
-				if (user == null)
-				{
-					_logger.LogWarning("User not found in Cart/Summary for userId: {UserId}", userId);
-					return NotFound("User not found");
-				}
+        #region Cart Operations
 
-				CartVM.OrderHeader.ApplicationUser = user;
-				CartVM.OrderHeader.Name = SanitizeInput(user.Name);
-				CartVM.OrderHeader.PhoneNumber = SanitizePhoneNumber(user.PhoneNumber);
-				CartVM.OrderHeader.Address = SanitizeInput(user.StreetAddress);
-				CartVM.OrderHeader.City = SanitizeInput(user.City);
-				CartVM.OrderHeader.State = SanitizeInput(user.State);
-				CartVM.OrderHeader.PostalCode = SanitizeInput(user.PostalCode);
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddToCart(int productId, int count = 1)
+        {
+            var userId = GetValidatedUserId();
+            if (userId == null) return Unauthorized();
 
-				foreach (var cart in CartVM.CartList)
-				{
-					CartVM.OrderHeader.OrderTotal += cart.price * cart.Count;
-				}
-				return View(CartVM);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error in Cart/Summary");
-				TempData["Error"] = "Failed to load order summary. Please try again.";
-				return RedirectToAction("Index"); // Redirect to a safe page
-			}
-		}
+            var product = _unitOfWork.ProductRepository.Get(p => p.ProductID == productId);
+            if (product == null || product.StockQuantity < count)
+            {
+                TempData["Error"] = "Product is unavailable or insufficient stock";
+                return RedirectToAction("Index", "Home");
+            }
 
-		[HttpPost]
-		[ActionName("Summary")]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> SummaryPOST()
-		{
-			try
-			{
-				var userId = GetValidatedUserId();
-				if (userId == null)
-				{
-					_logger.LogWarning("Unauthorized access to Cart/SummaryPOST");
-					return Unauthorized();
-				}
+            var cartItem = _unitOfWork.CartRepositery.Get(c => c.ApplicationUserId == userId && c.ProductId == productId);
 
-				CartVM.CartList = _unitOfWork.CartRepositery.GetAll(u => u.ApplicationUserId == userId, "Product");
-				if (!CartVM.CartList.Any())
-				{
-					_logger.LogWarning("Cart is empty for user {UserId} in Cart/SummaryPOST", userId);
-					TempData["Error"] = "Your cart is empty.";
-					return RedirectToAction("Index");
-				}
+            if (cartItem != null)
+            {
+                cartItem.Count += count;
+                _unitOfWork.CartRepositery.Update(cartItem);
+            }
+            else
+            {
+                _unitOfWork.CartRepositery.Add(new ShopingCart
+                {
+                    ApplicationUserId = userId,
+                    ProductId = productId,
+                    Count = count
+                });
+            }
 
-				CartVM.OrderHeader.OrderDate = DateTime.UtcNow;
-				CartVM.OrderHeader.ApplicationUserId = userId;
+            _unitOfWork.Save();
+            TempData["Success"] = "Item added to cart successfully";
+            return RedirectToAction("Index");
+        }
 
-				var applicationUser = _unitOfWork.applciationUserRepository.Get(u => u.Id == userId);
-				if (applicationUser == null)
-				{
-					_logger.LogError("User not found in Cart/SummaryPOST for user {UserId}", userId);
-					return NotFound("User not found");
-				}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateCart(int cartId, int count)
+        {
+            var cart = _unitOfWork.CartRepositery.Get(c => c.Id == cartId && c.ApplicationUserId == GetValidatedUserId());
 
-				foreach (var cart in CartVM.CartList)
-				{
-					CartVM.OrderHeader.OrderTotal += cart.price * cart.Count;
-				}
+            if (cart == null)
+            {
+                TempData["Error"] = "Cart item not found";
+                return RedirectToAction("Index");
+            }
 
-				if (!ValidateOrderTotal(CartVM.OrderHeader.OrderTotal))
-				{
-					_logger.LogWarning("Invalid order total for user {UserId} in Cart/SummaryPOST: {OrderTotal}", userId, CartVM.OrderHeader.OrderTotal);
-					TempData["Error"] = "Invalid order total.";
-					return RedirectToAction("Summary");
-				}
+            var product = _unitOfWork.ProductRepository.Get(p => p.ProductID == cart.ProductId);
+            if (product == null || product.StockQuantity < count)
+            {
+                TempData["Error"] = "Requested quantity exceeds available stock";
+                return RedirectToAction("Index");
+            }
 
-				SetOrderAndPaymentStatus(applicationUser);
+            cart.Count = count;
+            _unitOfWork.CartRepositery.Update(cart);
+            _unitOfWork.Save();
 
-				_unitOfWork.OrderHeader.Add(CartVM.OrderHeader);
-				_unitOfWork.Save(); // Save here to get the OrderHeader.Id
+            TempData["Success"] = "Cart updated successfully";
+            return RedirectToAction("Index");
+        }
 
-				AddOrderDetails(CartVM.OrderHeader.Id);
+        #endregion
 
-				//  Consider wrapping the payment processing in a transaction
-				//  to ensure atomicity.  If payment fails, you might want to
-				//  rollback the order.  This adds complexity, so weigh
-				//  the trade-offs.
+        public IActionResult Summary()
+        {
+            try
+            {
+                var userId = GetValidatedUserId();
+                if (userId == null) return Unauthorized();
 
-				return await ProcessPaymentAsync(applicationUser); // Await the async method
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error processing order for user {UserId} in Cart/SummaryPOST", GetValidatedUserId());
-				TempData["Error"] = "An error occurred while processing your order. Please try again later.";
-				return RedirectToAction("Summary");
-			}
-		}
+                CartVM.CartList = _unitOfWork.CartRepositery.GetAll(u => u.ApplicationUserId == userId, "Product").ToList();
+                CartVM.OrderHeader = new OrderHeader();
 
-		[HttpPost]
-		public IActionResult PaymentCallback()
-		{
-			try
-			{
-				var transactionId = Request.Form["transaction_id"];
-				var order = Request.Form["order"]; // Paymob order ID is in the "order" parameter
-				var success = Request.Form["success"] == "true";
-				//var paymobOrderId = HttpContext.Session.GetInt32("PaymobOrderId"); // No longer rely on session
+                var user = _unitOfWork.applciationUserRepository.Get(u => u.Id == userId);
+                if (user == null)
+                {
+                    _logger.LogWarning("User not found in Cart/Summary for userId: {UserId}", userId);
+                    return NotFound("User not found");
+                }
 
-				if (string.IsNullOrEmpty(order) || !int.TryParse(order, out int paymobOrderId))
-				{
-					_logger.LogWarning("Invalid order ID in payment callback: Order={Order}", order);
-					return BadRequest("Invalid order ID");
-				}
-				if (!ValidateCallback(order, paymobOrderId, transactionId))
-				{
-					_logger.LogWarning("Invalid payment callback data: OrderId={OrderId}, TransactionId={TransactionId}", order, transactionId);
-					return BadRequest("Invalid callback data");
-				}
+                CartVM.OrderHeader.ApplicationUser = user;
+                CartVM.OrderHeader.Name = SanitizeInput(user.Name);
+                CartVM.OrderHeader.PhoneNumber = SanitizePhoneNumber(user.PhoneNumber);
+                CartVM.OrderHeader.Address = SanitizeInput(user.StreetAddress);
+                CartVM.OrderHeader.City = SanitizeInput(user.City);
+                CartVM.OrderHeader.State = SanitizeInput(user.State);
+                CartVM.OrderHeader.PostalCode = SanitizeInput(user.PostalCode);
 
-				var orderHeader = _unitOfWork.OrderHeader.Get(o => o.PaymobOrderId == paymobOrderId); // Use PaymobOrderId
-				if (orderHeader == null)
-				{
-					_logger.LogWarning("Order not found for PaymobOrderId={PaymobOrderId} in PaymentCallback", paymobOrderId);
-					return NotFound("Order not found");
-				}
+                CartVM.OrderHeader.OrderTotal = CartVM.CartList.Sum(cart => cart.price * cart.Count);
+                return View(CartVM);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in Cart/Summary");
+                TempData["Error"] = "Failed to load order summary. Please try again.";
+                return RedirectToAction("Index");
+            }
+        }
 
-				UpdateOrderStatus(orderHeader, success, transactionId);
-				_unitOfWork.Save();
-				//HttpContext.Session.Remove("PaymobOrderId"); // Remove session data
+        [HttpPost]
+        [ActionName("Summary")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SummaryPOST()
+        {
+            try
+            {
+                var userId = GetValidatedUserId();
+                if (userId == null) return Unauthorized();
 
-				return RedirectToAction("OrderConfirmation", new { orderId = orderHeader.Id });
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error processing payment callback");
-				return StatusCode(500, "Callback processing failed");
-			}
-		}
+                var cartItems = _unitOfWork.CartRepositery.GetAll(c => c.ApplicationUserId == userId, "Product").ToList();
 
+                if (!cartItems.Any())
+                {
+                    TempData["Error"] = "Your cart is empty";
+                    return RedirectToAction("Index");
+                }
 
+                foreach (var cart in cartItems)
+                {
+                    var product = _unitOfWork.ProductRepository.Get(p => p.ProductID == cart.ProductId);
+                    if (product == null || product.StockQuantity < cart.Count)
+                    {
+                        TempData["Error"] = $"Item {cart.Product.Name} is out of stock";
+                        return RedirectToAction("Index");
+                    }
+                    product.StockQuantity -= cart.Count;
+                    _unitOfWork.ProductRepository.Ubdate(product);
+                }
 
-		// Helper Methods
-		private string? GetValidatedUserId()
-		{
-			var claimsIdentity = User.Identity as ClaimsIdentity;
-			var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-			if (string.IsNullOrWhiteSpace(userId) || !Guid.TryParse(userId, out _))
-			{
-				_logger.LogWarning("Invalid user ID.");
-				return null;
-			}
-			return userId;
-		}
+                CartVM.OrderHeader.ApplicationUserId = userId;
+                SetOrderAndPaymentStatus(CartVM.OrderHeader);
 
-		private string SanitizeInput(string input)
-		{
-			if (string.IsNullOrWhiteSpace(input))
-			{
-				return "NA";
-			}
-			string sanitized = Regex.Replace(input.Trim(), @"[<>&'""\\/]", "");
-			return sanitized.Length > 255 ? sanitized.Substring(0, 255) : sanitized; // Limit length
-		}
+                _unitOfWork.OrderHeader.Add(CartVM.OrderHeader);
+                _unitOfWork.Save();
 
-		private string SanitizePhoneNumber(string phoneNumber)
-		{
-			if (string.IsNullOrWhiteSpace(phoneNumber))
-			{
-				return "+201234567890";
-			}
-			string sanitized = Regex.Replace(phoneNumber.Trim(), @"[^0-9+]", "");
-			if (!sanitized.StartsWith("+"))
-			{
-				sanitized = "+20" + sanitized;
-			}
-			return sanitized.Length > 20 ? sanitized.Substring(0, 20) : sanitized;  // Limit length
-		}
+                var user = _unitOfWork.applciationUserRepository.Get(u => u.Id == userId);
+                if (user == null) return NotFound("User not found");
 
-		private bool ValidateOrderTotal(double total)
-		{
-			return total > 0 && total < 1_000_000;
-		}
+                return await ProcessPaymentAsync(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Order processing failed");
+                TempData["Error"] = "Order processing failed. Please try again.";
+                return RedirectToAction("Summary");
+            }
+        }
 
-		private void SetOrderAndPaymentStatus(ApplicationUser user)
-		{
-			CartVM.OrderHeader.PaymentStatus = SD.Payment_Status_Pending;
-			CartVM.OrderHeader.OrderStatus = SD.Status_Pending;
-		}
+        [HttpPost]
+        public IActionResult PaymentCallback()
+        {
+            try
+            {
+                var transactionId = Request.Form["transaction_id"];
+                var order = Request.Form["order"];
+                var success = Request.Form["success"] == "true";
 
-		private void AddOrderDetails(int orderId)
-		{
-			try
-			{
-				foreach (var cart in CartVM.CartList)
-				{
-					var orderDetail = new OrderDetail
-					{
-						ProductId = cart.ProductId,
-						OrderId = orderId,
-						Price = cart.price,
-						Count = cart.Count
-					};
-					_unitOfWork.OrderDetail.Add(orderDetail);
-				}
-				_unitOfWork.Save();
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error adding order details for order {OrderId}", orderId);
-				throw; // Re-throw the exception to be caught in SummaryPOST
-			}
-		}
+                if (string.IsNullOrEmpty(order) || !int.TryParse(order, out int paymobOrderId))
+                {
+                    _logger.LogWarning("Invalid order ID in payment callback: Order={Order}", order);
+                    return BadRequest("Invalid order ID");
+                }
 
-		private async Task<IActionResult> ProcessPaymentAsync(ApplicationUser user)
-		{
-			try
-			{
-				string authToken = await GetAuthTokenAsync();
-				int paymobOrderId = await CreateOrderAsync(authToken, CartVM.OrderHeader.OrderTotal);
-				string paymentKey = await GetPaymentKeyAsync(authToken, paymobOrderId, CartVM.OrderHeader.OrderTotal, user);
+                if (!ValidateCallback(order, paymobOrderId, transactionId))
+                {
+                    _logger.LogWarning("Invalid payment callback data: OrderId={OrderId}, TransactionId={TransactionId}", order, transactionId);
+                    return BadRequest("Invalid callback data");
+                }
 
-				CartVM.OrderHeader.PaymobOrderId = paymobOrderId; // Store Paymob order ID
-				_unitOfWork.OrderHeader.Update(CartVM.OrderHeader);
-				_unitOfWork.Save();
+                var orderHeader = _unitOfWork.OrderHeader.Get(o => o.PaymobOrderId == paymobOrderId);
+                if (orderHeader == null)
+                {
+                    _logger.LogWarning("Order not found for PaymobOrderId={PaymobOrderId} in PaymentCallback", paymobOrderId);
+                    return NotFound("Order not found");
+                }
 
-				//HttpContext.Session.SetInt32("PaymobOrderId", paymobOrderId);  //remove session
-				string paymentUrl = $"https://accept.paymob.com/api/acceptance/iframes/{_paymob.IframeId}?payment_token={paymentKey}";
+                UpdateOrderStatus(orderHeader, success, transactionId);
+                _unitOfWork.Save();
 
-				if (!Uri.TryCreate(paymentUrl, UriKind.Absolute, out var uri) || uri.Scheme != "https")
-				{
-					_logger.LogError("Invalid payment URL: {PaymentUrl}", paymentUrl);
-					throw new Exception("Invalid payment URL");
-				}
+                return RedirectToAction("OrderConfirmation", new { orderId = orderHeader.Id });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing payment callback");
+                return StatusCode(500, "Callback processing failed");
+            }
+        }
 
-				return Redirect(uri.ToString()); // Use the safe URI
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Payment processing failed");
-				throw; // Re-throw to be handled in SummaryPOST
-			}
-		}
+        #region Helper Methods
+        private string? GetValidatedUserId()
+        {
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            var userId = claimsIdentity?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return string.IsNullOrEmpty(userId) ? null : userId;
+        }
 
-		private async Task<string> GetAuthTokenAsync()
-		{
-			var options = new RestClientOptions(_paymob.BaseUrl + "auth/tokens")
-			{
-				ThrowOnAnyError = true
-			};
-			using var client = new RestClient(options);
-			var request = new RestRequest()
-				.AddHeader("Content-Type", "application/json")
-				.AddJsonBody(new { api_key = _paymob.ApiKey });
+        private string SanitizeInput(string input) => string.IsNullOrWhiteSpace(input) ? "NA" : Regex.Replace(input.Trim(), @"[<>&'""\\/]", "").Substring(0, Math.Min(255, input.Trim().Length));
 
-			var response = await client.PostAsync<PaymobAuthResponse>(request);
-			if (response == null || string.IsNullOrEmpty(response.Token))
-			{
-				_logger.LogError($"Failed to authenticate with Paymob.  Response: {Response.StatusCode}" );
-				throw new Exception("Failed to authenticate with Paymob");
-			}
-			return response.Token;
-		}
+        private string SanitizePhoneNumber(string phoneNumber) => string.IsNullOrWhiteSpace(phoneNumber) ? "+201234567890" : Regex.Replace(phoneNumber.Trim(), @"[^0-9+]", "").StartsWith("+") ? phoneNumber.Substring(0, Math.Min(20, phoneNumber.Length)) : ("+20" + phoneNumber).Substring(0, Math.Min(20, phoneNumber.Length + 3));
 
-		private async Task<int> CreateOrderAsync(string authToken, double amount)
-		{
-			var options = new RestClientOptions(_paymob.BaseUrl + "ecommerce/orders")
-			{
-				ThrowOnAnyError = true
-			};
-			using var client = new RestClient(options);
-			var request = new RestRequest()
-				.AddHeader("Authorization", $"Bearer {authToken}")
-				.AddHeader("Content-Type", "application/json")
-				.AddJsonBody(new
-				{
-					amount_cents = (int)(amount * 100),
-					currency = "EGP",
-					merchant_id = _paymob.MerchantId
-				});
+        private void SetOrderAndPaymentStatus(OrderHeader orderHeader)
+        {
+            orderHeader.PaymentStatus = SD.Payment_Status_Pending;
+            orderHeader.OrderStatus = SD.Status_Pending;
+        }
 
-			var response = await client.PostAsync<PaymobOrderResponse>(request);
-			if (response == null)
-			{
-				_logger.LogError($"Failed to create Paymob order. Response: {Response.StatusCode}");
-				throw new Exception("Failed to create Paymob order");
-			}
-			return response.Id;
-		}
+        private async Task<IActionResult> ProcessPaymentAsync(ApplicationUser user)
+        {
+            try
+            {
+                string authToken = await GetAuthTokenAsync();
+                int paymobOrderId = await CreateOrderAsync(authToken, CartVM.OrderHeader.OrderTotal);
+                string paymentKey = await GetPaymentKeyAsync(authToken, paymobOrderId, CartVM.OrderHeader.OrderTotal, user);
 
-		private async Task<string> GetPaymentKeyAsync(string authToken, int orderId, double amount, ApplicationUser user)
-		{
-			var options = new RestClientOptions(_paymob.BaseUrl + "acceptance/payment_keys")
-			{
-				ThrowOnAnyError = true
-			};
-			using var client = new RestClient(options);
-			var request = new RestRequest()
-				.AddHeader("Authorization", $"Bearer {authToken}")
-				.AddHeader("Content-Type", "application/json")
-				.AddJsonBody(new
-				{
-					amount_cents = (int)(amount * 100),
-					currency = "EGP",
-					order_id = orderId,
-					billing_data = new
-					{
-						email = user.Email ?? "unknown@example.com",
-						first_name = SanitizeInput(user.Name.Split(' ').FirstOrDefault() ?? "Unknown"),
-						last_name = SanitizeInput(user.Name.Contains(" ") ? user.Name.Split(' ')[1] : "Unknown"),
-						phone_number = SanitizePhoneNumber(user.PhoneNumber),
-						street = SanitizeInput(user.StreetAddress ?? "NA"),
-						building = "NA",
-						city = SanitizeInput(user.City ?? "NA"),
-						state = SanitizeInput(user.State ?? "NA"),
-						postal_code = SanitizeInput(user.PostalCode ?? "NA"),
-						country = "EG",
-						apartment = "NA",
-						floor = "NA"
-					},
-					integration_id = _paymob.IntegrationId
-				});
+                CartVM.OrderHeader.PaymobOrderId = paymobOrderId;
+                _unitOfWork.OrderHeader.Update(CartVM.OrderHeader);
+                _unitOfWork.Save();
 
-			var response = await client.PostAsync<PaymobPaymentKeyResponse>(request);
+                string paymentUrl = $"https://accept.paymob.com/api/acceptance/iframes/{_paymob.IframeId}?payment_token={paymentKey}";
+                return Redirect(paymentUrl);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Payment processing failed");
+                throw;
+            }
+        }
 
-			if (response == null || string.IsNullOrEmpty(response.Token))
-			{
-				_logger.LogError($"Failed to get payment key. Response: {Response.StatusCode}");
-				throw new Exception("Failed to get payment key");
-			}
-			return response.Token;
-		}
+        private async Task<string> GetAuthTokenAsync()
+        {
+            using var client = new RestClient(_paymob.BaseUrl + "auth/tokens");
+            var request = new RestRequest().AddHeader("Content-Type", "application/json").AddJsonBody(new { api_key = _paymob.ApiKey });
+            var response = await client.PostAsync<PaymobAuthResponse>(request);
+            return response?.Token ?? throw new Exception("Failed to authenticate with Paymob");
+        }
 
-		private bool ValidateCallback(string orderId, int? paymobOrderId, string transactionId)
-		{
-			//  IMPORTANT:  Add HMAC validation here.  This is critical
-			//  for security.  Paymob provides a way to validate the
-			//  integrity of the callback data using a secure hash.
-			//  You MUST implement this to prevent malicious users from
-			//  tampering with the callback.
-			//  See Paymob's documentation for details on how to do this.
-			//
-			//  The following is INSECURE and MUST be replaced:
-			if (paymobOrderId == null || orderId != paymobOrderId.ToString() || string.IsNullOrEmpty(transactionId))
-			{
-				return false;
-			}
-			return true;
-		}
+        private async Task<int> CreateOrderAsync(string authToken, double amount)
+        {
+            using var client = new RestClient(_paymob.BaseUrl + "ecommerce/orders");
+            var request = new RestRequest().AddHeader("Authorization", $"Bearer {authToken}").AddHeader("Content-Type", "application/json").AddJsonBody(new { amount_cents = (int)(amount * 100), currency = "EGP", merchant_id = _paymob.MerchantId });
+            var response = await client.PostAsync<PaymobOrderResponse>(request);
+            return response?.Id ?? throw new Exception("Failed to create Paymob order");
+        }
 
-		private void UpdateOrderStatus(OrderHeader orderHeader, bool success, string transactionId)
-		{
-			if (success)
-			{
-				orderHeader.PaymentStatus = SD.Payment_Status_Approved;
-				orderHeader.OrderStatus = SD.Status_Approved;
-				orderHeader.TransactionId = transactionId;
-			}
-			else
-			{
-				orderHeader.PaymentStatus = SD.Payment_Status_Rejected;
-				orderHeader.OrderStatus = SD.Status_Cancelled;
-			}
-			_unitOfWork.OrderHeader.Update(orderHeader);
-		}
+        private async Task<string> GetPaymentKeyAsync(string authToken, int orderId, double amount, ApplicationUser user)
+        {
+            using var client = new RestClient(_paymob.BaseUrl + "acceptance/payment_keys");
+            var request = new RestRequest().AddHeader("Authorization", $"Bearer {authToken}").AddHeader("Content-Type", "application/json").AddJsonBody(new { amount_cents = (int)(amount * 100), currency = "EGP", order_id = orderId, billing_data = new { email = user.Email ?? "unknown@example.com", first_name = SanitizeInput(user.Name.Split(' ').FirstOrDefault() ?? "Unknown"), last_name = SanitizeInput(user.Name.Contains(" ") ? user.Name.Split(' ')[1] : "Unknown"), phone_number = SanitizePhoneNumber(user.PhoneNumber), street = SanitizeInput(user.StreetAddress ?? "NA"), building = "NA", city = SanitizeInput(user.City ?? "NA"), state = SanitizeInput(user.State ?? "NA"), postal_code = SanitizeInput(user.PostalCode ?? "NA"), country = "EG", apartment = "NA", floor = "NA" }, integration_id = _paymob.IntegrationId });
+            var response = await client.PostAsync<PaymobPaymentKeyResponse>(request);
+            return response?.Token ?? throw new Exception("Failed to get payment key");
+        }
 
-		public IActionResult Plus(int cartId)
-		{
-			try
-			{
-				var cart = _unitOfWork.CartRepositery.Get(c => c.Id == cartId);
-				if (cart != null)
-				{
-					cart.Count++;
-					_unitOfWork.CartRepositery.Update(cart);
-					_unitOfWork.Save();
-				}
-				return RedirectToAction("Index");
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error in Cart/Plus for cartId: {CartId}", cartId);
-				TempData["Error"] = "Failed to update cart. Please try again.";
-				return RedirectToAction("Index");
-			}
-		}
+        private bool ValidateCallback(string orderId, int? paymobOrderId, string transactionId)
+        {
+            // IMPORTANT: Implement HMAC validation here for security.
+            if (paymobOrderId == null || orderId != paymobOrderId.ToString() || string.IsNullOrEmpty(transactionId)) return false;
+            return true;
+        }
 
-		public IActionResult Minus(int cartId)
-		{
-			try
-			{
-				var cart = _unitOfWork.CartRepositery.Get(c => c.Id == cartId);
-				if (cart != null)
-				{
-					if (cart.Count > 1)
-					{
-						cart.Count--;
-						_unitOfWork.CartRepositery.Update(cart);
-						_unitOfWork.Save();
-					}
-					else
-					{
-						_unitOfWork.CartRepositery.Remove(cart);
-						_unitOfWork.Save();
-					}
-				}
-				return RedirectToAction("Index");
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error in Cart/Minus for cartId: {CartId}", cartId);
-				TempData["Error"] = "Failed to update cart. Please try again.";
-				return RedirectToAction("Index");
-			}
-		}
+        private void UpdateOrderStatus(OrderHeader orderHeader, bool success, string transactionId)
+        {
+            orderHeader.PaymentStatus = success ? SD.Payment_Status_Approved : SD.Payment_Status_Rejected;
+            orderHeader.OrderStatus = success ? SD.Status_Approved : SD.Status_Cancelled;
+            orderHeader.TransactionId = transactionId;
+            _unitOfWork.OrderHeader.Update(orderHeader);
+        }
 
-		public IActionResult Remove(int cartId)
-		{
-			try
-			{
-				var cart = _unitOfWork.CartRepositery.Get(c => c.Id == cartId);
-				if (cart != null)
-				{
-					_unitOfWork.CartRepositery.Remove(cart);
-					_unitOfWork.Save();
-				}
-				return RedirectToAction("Index");
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error in Cart/Remove for cartId: {CartId}", cartId);
-				TempData["Error"] = "Failed to remove item from cart. Please try again.";
-				return RedirectToAction("Index");
-			}
-		}
+        public IActionResult Remove(int cartId)
+        {
+            try
+            {
+                var cart = _unitOfWork.CartRepositery.Get(c => c.Id == cartId);
+                if (cart != null)
+                {
+                    _unitOfWork.CartRepositery.Remove(cart);
+                    _unitOfWork.Save();
+                }
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in Cart/Remove for cartId: {CartId}", cartId);
+                TempData["Error"] = "Failed to remove item from cart. Please try again.";
+                return RedirectToAction("Index");
+            }
+        }
 
-		public IActionResult OrderConfirmation()
-		{
-			var orderId = (int?)TempData["OrderId"];
-			if (orderId == null)
-			{
-				_logger.LogWarning("OrderId is null in Cart/OrderConfirmation");
-				TempData["Error"] = "Order confirmation details are missing.";
-				return RedirectToAction("Index");
-			}
-			try
-			{
-				var orderHeader = _unitOfWork.OrderHeader.Get(o => o.Id == orderId);
-				if (orderHeader == null)
-				{
-					_logger.LogWarning("Order with id {OrderId} not found in Cart/OrderConfirmation", orderId);
-					TempData["Error"] = "Order not found.";
-					return RedirectToAction("Index");
-				}
-				return View(orderId);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error in Cart/OrderConfirmation for orderId: {OrderId}", orderId);
-				TempData["Error"] = "Failed to load order confirmation.";
-				return RedirectToAction("Index");
-			}
-		}
-	}
+        public IActionResult OrderConfirmation()
+        {
+            var orderId = (int?)TempData["OrderId"];
+            if (orderId == null)
+            {
+                _logger.LogWarning("OrderId is null in Cart/OrderConfirmation");
+                TempData["Error"] = "Order confirmation details are missing.";
+                return RedirectToAction("Index");
+            }
+            try
+            {
+                var orderHeader = _unitOfWork.OrderHeader.Get(o => o.Id == orderId);
+                if (orderHeader == null)
+                {
+                    _logger.LogWarning("Order with id {OrderId} not found in Cart/OrderConfirmation", orderId);
+                    TempData["Error"] = "Order not found.";
+                    return RedirectToAction("Index");
+                }
+                return View(orderId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in Cart/OrderConfirmation for orderId: {OrderId}", orderId);
+                TempData["Error"] = "Failed to load order confirmation.";
+                return RedirectToAction("Index");
+            }
+        }
+        #endregion
+    }
 }
-

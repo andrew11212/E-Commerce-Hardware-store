@@ -41,15 +41,22 @@
                     </p>
                 </div>
 
-                <div class="d-grid gap-3">
-                    <button class="btn btn-lg btn-primary rounded-pill"
-                    @(Model.StockQuantity == 0 ? "disabled" : "")>
-                        Add to Cart <i class="bi bi-cart-plus ms-2"></i>
-                    </button>
-                    <a href="#" class="btn btn-outline-secondary rounded-pill">
-                        Wishlist <i class="bi bi-heart"></i>
-                    </a>
-                </div>
+                <!-- Add to Cart Form -->
+                <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="productId" value="@Model.ProductID" />
+
+                    <div class="d-grid gap-3">
+                        <button type="submit"
+                                class="btn btn-lg btn-primary rounded-pill"
+                                @(Model.StockQuantity == 0 ? "disabled" : "")>
+                            Add to Cart <i class="bi bi-cart-plus ms-2"></i>
+                        </button>
+                        <a href="#" class="btn btn-outline-secondary rounded-pill">
+                            Wishlist <i class="bi bi-heart"></i>
+                        </a>
+                    </div>
+                </form>
             </div>
         </div>
 
