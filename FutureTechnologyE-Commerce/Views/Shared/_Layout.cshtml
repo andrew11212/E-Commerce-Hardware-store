@@ -10,145 +10,257 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 
-    <style>
-        :root {
-            --primary: #007bff;
-            --secondary: #6c757d;
-            --accent: #dc3545;
-            --light: #f8f9fa;
-            --dark: #343a40;
+<style>
+        
+        /* Contact Bar Base Styles */
+        .contact-bar {
+            background-color: #0219f9;
+            color: white;
+            padding: 0.75rem 0;
+            font-size: 0.875rem;
         }
 
-        .top-brand {
-            background-color: #1125ab;
-            padding: 1rem 0;
+        .contact-bar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
-        .navbar-brand {
-            font-weight: 600;
-            letter-spacing: 1px;
-            color: white !important;
-            font-size: xx-large;
-            text-transform: uppercase;
-            transition: font-size 0.3s;
+        .contact-bar a {
+            color: white;
+            transition: color 0.3s;
+            margin: 0 0.5rem;
         }
 
-        .nav-link {
-            padding: 0.75rem 1.25rem;
-            border-radius: 8px;
-            transition: background 0.3s;
-        }
-
-            .nav-link:hover {
-                background: var(--light);
-                color: var(--primary);
+            .contact-bar a:hover {
+                color: #0d6efd;
+                text-decoration: none;
             }
 
-        .search-container {
-            position: relative;
-            width: 100%;
-            max-width: 400px;
-            transition: all 0.3s;
+        .contact-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex: 1 1 50%;
         }
 
-        .search-btn {
-            padding: 0.375rem 0.75rem;
-            border: 2px solid var(--primary);
-            background: transparent;
-            color: var(--primary);
-            transition: all 0.3s;
+        .quick-links {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            flex: 1 1 50%;
         }
 
-            .search-btn:hover {
-                background: var(--primary);
-                color: white;
-            }
-
-        .footer {
-            background-color: var(--light);
-            padding: 2rem 0;
-        }
-
-        .wishlist-icon {
-            position: relative;
-            cursor: pointer;
-        }
-
+        /* Responsive Improvements */
         @@media (max-width: 992px) {
-            .navbar-brand {
-                font-size: large;
-            }
-
-            .top-brand .container {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 1rem;
-            }
-
-            .search-container {
-                width: 100%;
-                order: 2;
-                margin-top: 1rem;
-            }
-
-            .navbar-collapse {
-                flex-basis: 100%;
-                order: 1;
-            }
-
-            .social-icons {
-                justify-content: center !important;
-            }
-
-            .nav-item.dropdown {
+            .contact-bar .container {
+                flex-direction: column;
                 text-align: center;
             }
-        }
 
-        @@media (max-width: 768px) {
-            .search-container input {
-                width: 100%;
+            .contact-info, .quick-links {
+                flex: 1 1 100%;
+                justify-content: center;
+                gap: 0.75rem;
             }
 
-            .search-btn {
-                width: 100%;
+            .quick-links {
+                flex-wrap: wrap;
                 margin-top: 0.5rem;
             }
 
-            .footer .col-md-3 {
-                flex: 0 0 100%;
-                max-width: 100%;
-            }
-
-            .footer input[type="email"] {
-                width: 100%;
-            }
-
-            .top-brand .container {
-                padding: 0 1rem;
-            }
+                .quick-links a {
+                    padding: 0.5rem 1rem;
+                    margin: 0.25rem;
+                    white-space: nowrap;
+                }
         }
 
         @@media (max-width: 576px) {
-            .navbar-brand {
-                font-size: medium;
+            .contact-bar {
+                font-size: 0.75rem;
+                padding: 1rem 0;
             }
 
-            .top-brand {
-                padding: 0.5rem 0;
+            .contact-info {
+                gap: 1rem;
             }
 
-            .footer .input-group {
-                flex-direction: column;
-            }
-
-            .footer .form-control {
-                margin-bottom: 0.5rem;
+            .quick-links a {
+                flex: 1 1 45%;
+                margin: 0.25rem 0;
             }
         }
-    </style>
+   
+
+    /* Top Brand */
+    .top-brand {
+        background-color: #1125ab;
+        padding: 1rem 0;
+    }
+
+    .navbar-brand {
+        font-weight: 600;
+        letter-spacing: 1px;
+        color: white !important;
+        font-size: xx-large;
+        text-transform: uppercase;
+        transition: font-size 0.3s;
+    }
+
+    .nav-link {
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        transition: background 0.3s;
+    }
+
+        .nav-link:hover {
+            background: var(--light);
+            color: var(--primary);
+        }
+
+    /* Search */
+    .search-container {
+        position: relative;
+        width: 100%;
+        max-width: 400px;
+        transition: all 0.3s;
+    }
+
+    .search-btn {
+        padding: 0.375rem 0.75rem;
+        border: 2px solid var(--primary);
+        background: transparent;
+        color: var(--primary);
+        transition: all 0.3s;
+    }
+
+        .search-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+    /* Footer */
+    .footer {
+        background-color: var(--light);
+        padding: 2rem 0;
+    }
+
+    /* Responsive Fixes */
+    @@media (max-width: 992px) {
+        .contact-bar .container {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .contact-info, .quick-links {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .contact-bar a {
+            margin: 0.25rem 0;
+        }
+
+        .navbar-brand {
+            font-size: large;
+        }
+
+        .top-brand .container {
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .search-container {
+            width: 100%;
+            order: 2;
+            margin-top: 1rem;
+        }
+
+        .navbar-collapse {
+            flex-basis: 100%;
+            order: 1;
+        }
+
+        .social-icons {
+            justify-content: center !important;
+        }
+
+        .nav-item.dropdown {
+            text-align: center;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .contact-bar .container {
+            padding: 0 1rem;
+        }
+
+        .search-container input {
+            width: 100%;
+        }
+
+        .search-btn {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .footer .col-md-3 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        .footer input[type="email"] {
+            width: 100%;
+        }
+
+        .top-brand .container {
+            padding: 0 1rem;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .contact-bar {
+            font-size: 0.75rem;
+        }
+
+        .navbar-brand {
+            font-size: medium;
+        }
+
+        .top-brand {
+            padding: 0.5rem 0;
+        }
+
+        .footer .input-group {
+            flex-direction: column;
+        }
+
+        .footer .form-control {
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>
+
 </head>
+
 <body>
+
+    <div class="contact-bar">
+        <div class="container">
+            <div class="contact-info">
+                <span><i class="bi bi-telephone me-2"></i>+1 800 123 4567</span>
+                <span><i class="bi bi-envelope me-2"></i>Yasser_elg_Sh2010@yahoo.com</span>
+            </div>      
+        </div>
+    </div>
+
+    <!-- Top Brand Section -->
     <div class="top-brand">
         <div class="container d-flex flex-wrap justify-content-between align-items-center">
             <a class="navbar-brand" asp-controller="Home" asp-action="Index">
@@ -161,8 +273,8 @@
                 </a>
                 <a href="#" class="text-decoration-none"
                    style="background: linear-gradient(45deg, #E1306C, #F56040, #FCAF45, #FFDC80);
-                          -webkit-background-clip: text;
-                          color: transparent;">
+                      -webkit-background-clip: text;
+                      color: transparent;">
                     <i class="bi bi-instagram fs-3"></i>
                 </a>
                 <a href="https://youtube.com/@@user-yasser1?si=Vzyksk7wFrVUyIdX"
@@ -175,16 +287,19 @@
             </div>
 
             <div class="d-flex align-items-center gap-3">
-                <a class="nav-link text-light" asp-controller="Wishlist" asp-action="Index">
+                <a class="nav-link text-light icon-text-link" asp-controller="Wishlist" asp-action="Index">
                     <i class="bi bi-heart fs-4"></i>
+                    <span class="text-light small mb-0">Wishlist</span>
                 </a>
-                <a class="nav-link text-light" asp-controller="Cart" asp-action="Index">
+                <a class="nav-link text-light icon-text-link" asp-controller="Cart" asp-action="Index">
                     <i class="bi bi-cart fs-4"></i>
+                    <span class="text-light small mb-0">Cart</span>
                 </a>
             </div>
         </div>
     </div>
 
+    <!-- Main Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
@@ -195,9 +310,6 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button"
