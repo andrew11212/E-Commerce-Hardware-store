@@ -10,6 +10,7 @@ using FutureTechnologyE_Commerce.Utility;
 using FutureTechnologyE_Commerce.Repository.IRepository;
 using FutureTechnologyE_Commerce.Models.ViewModels;
 using Microsoft.Extensions.Logging; // Add logging
+using System.Linq; // Make sure this is included
 
 namespace FutureTechnologyE_Commerce.Controllers
 {
@@ -28,12 +29,12 @@ namespace FutureTechnologyE_Commerce.Controllers
 		}
 
 		// GET: Laptops
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
 			try
 			{
-				var laptops = _unitOfWork.LaptopRepository.GetAll(includeProperties: "Category,Brand,ProductType");
-				return View(laptops);
+				var laptops = await _unitOfWork.LaptopRepository.GetAllAsync(includeProperties: "Category,Brand,ProductType");
+				return View(laptops.ToList());
 			}
 			catch (Exception ex)
 			{
@@ -43,7 +44,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 		}
 
 		// GET: Laptops/Details/5
-		public IActionResult Details(int? id)
+		public async Task<IActionResult> Details(int? id)
 		{
 			try
 			{
@@ -52,7 +53,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 					return NotFound();
 				}
 
-				var laptop = _unitOfWork.LaptopRepository.Get(l => l.ProductID == id, includeProperties: "Brand,Category,ProductType");
+				var laptop = await _unitOfWork.LaptopRepository.GetAsync(l => l.ProductID == id, includeProperties: "Brand,Category,ProductType");
 				if (laptop == null)
 				{
 					return NotFound();
@@ -68,21 +69,21 @@ namespace FutureTechnologyE_Commerce.Controllers
 		}
 
 		// GET: Laptops/Create
-		public IActionResult Create()
+		public async Task<IActionResult> Create()
 		{
 			try
 			{
-				LaptopViewModel LabtobVM = new()
+				LaptopViewModel laptopVM = new()
 				{
 					Laptop = new Laptop(),
-					CategoryList = _unitOfWork.CategoryRepository.GetAll().Select(c =>
+					CategoryList = (await _unitOfWork.CategoryRepository.GetAllAsync()).Select(c =>
 						new SelectListItem { Text = c.Name, Value = c.CategoryID.ToString() }).ToList(),
-					BrandList = _unitOfWork.BrandRepository.GetAll().Select(b =>
+					BrandList = (await _unitOfWork.BrandRepository.GetAllAsync()).Select(b =>
 						new SelectListItem { Text = b.Name, Value = b.BrandID.ToString() }).ToList(),
-					ProductTypeList = _unitOfWork.ProductTypeRepository.GetAll().Select(pt =>
+					ProductTypeList = (await _unitOfWork.ProductTypeRepository.GetAllAsync()).Select(pt =>
 						new SelectListItem { Text = pt.Name, Value = pt.ProductTypeID.ToString() }).ToList()
 				};
-				return View(LabtobVM);
+				return View(laptopVM);
 			}
 			catch (Exception ex)
 			{
@@ -94,7 +95,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 		// POST: Laptops/Create
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create(LaptopViewModel laptopVm, IFormFile? file)
+		public async Task<IActionResult> Create(LaptopViewModel laptopVM, IFormFile? file)
 		{
 			try
 			{
@@ -110,23 +111,23 @@ namespace FutureTechnologyE_Commerce.Controllers
 							await file.CopyToAsync(fileStream);
 						}
 
-						laptopVm.Laptop.ImageUrl = "/images/products/" + fileName;
+						laptopVM.Laptop.ImageUrl = "/images/products/" + fileName;
 					}
 
-					_unitOfWork.LaptopRepository.Add(laptopVm.Laptop);
-					_unitOfWork.Save();
+					await _unitOfWork.LaptopRepository.AddAsync(laptopVM.Laptop);
+					await _unitOfWork.SaveAsync();
 
 					return RedirectToAction(nameof(Index));
 				}
 
-				laptopVm.CategoryList = _unitOfWork.CategoryRepository.GetAll().Select(c =>
+				laptopVM.CategoryList = (await _unitOfWork.CategoryRepository.GetAllAsync()).Select(c =>
 						new SelectListItem { Text = c.Name, Value = c.CategoryID.ToString() }).ToList();
-				laptopVm.BrandList = _unitOfWork.BrandRepository.GetAll().Select(b =>
+				laptopVM.BrandList = (await _unitOfWork.BrandRepository.GetAllAsync()).Select(b =>
 					new SelectListItem { Text = b.Name, Value = b.BrandID.ToString() }).ToList();
-				laptopVm.ProductTypeList = _unitOfWork.ProductTypeRepository.GetAll().Select(pt =>
+				laptopVM.ProductTypeList = (await _unitOfWork.ProductTypeRepository.GetAllAsync()).Select(pt =>
 					new SelectListItem { Text = pt.Name, Value = pt.ProductTypeID.ToString() }).ToList();
 
-				return View(laptopVm); // Return the ViewModel, not just Laptop
+				return View(laptopVM); // Return the ViewModel, not just Laptop
 			}
 			catch (Exception ex)
 			{
@@ -136,7 +137,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 		}
 
 		// GET: Laptops/Edit/5
-		public IActionResult Edit(int? id)
+		public async Task<IActionResult> Edit(int? id)
 		{
 			try
 			{
@@ -145,23 +146,23 @@ namespace FutureTechnologyE_Commerce.Controllers
 					return NotFound();
 				}
 
-				var laptop = _unitOfWork.LaptopRepository.Get(l => l.ProductID == id);
+				var laptop = await _unitOfWork.LaptopRepository.GetAsync(l => l.ProductID == id);
 				if (laptop == null)
 				{
 					return NotFound();
 				}
-				LaptopViewModel LabtobVM = new()
+				LaptopViewModel laptopVM = new()
 				{
 					Laptop = laptop,
-					CategoryList = _unitOfWork.CategoryRepository.GetAll().Select(c =>
+					CategoryList = (await _unitOfWork.CategoryRepository.GetAllAsync()).Select(c =>
 						new SelectListItem { Text = c.Name, Value = c.CategoryID.ToString() }).ToList(),
-					BrandList = _unitOfWork.BrandRepository.GetAll().Select(b =>
+					BrandList = (await _unitOfWork.BrandRepository.GetAllAsync()).Select(b =>
 						new SelectListItem { Text = b.Name, Value = b.BrandID.ToString() }).ToList(),
-					ProductTypeList = _unitOfWork.ProductTypeRepository.GetAll().Select(pt =>
+					ProductTypeList = (await _unitOfWork.ProductTypeRepository.GetAllAsync()).Select(pt =>
 						new SelectListItem { Text = pt.Name, Value = pt.ProductTypeID.ToString() }).ToList()
 				};
 
-				return View(LabtobVM);
+				return View(laptopVM);
 			}
 			catch (Exception ex)
 			{
@@ -173,11 +174,11 @@ namespace FutureTechnologyE_Commerce.Controllers
 		// POST: Laptops/Edit/5
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, LaptopViewModel laptopVm, IFormFile file)
+		public async Task<IActionResult> Edit(int id, LaptopViewModel laptopVM, IFormFile file)
 		{
 			try
 			{
-				if (id != laptopVm.Laptop.ProductID)
+				if (id != laptopVM.Laptop.ProductID)
 				{
 					return NotFound();
 				}
@@ -189,9 +190,9 @@ namespace FutureTechnologyE_Commerce.Controllers
 						string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
 						string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "products", fileName);
 
-						if (!string.IsNullOrEmpty(laptopVm.Laptop.ImageUrl))
+						if (!string.IsNullOrEmpty(laptopVM.Laptop.ImageUrl))
 						{
-							string oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, laptopVm.Laptop.ImageUrl.TrimStart('/'));
+							string oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, laptopVM.Laptop.ImageUrl.TrimStart('/'));
 							if (System.IO.File.Exists(oldImagePath))
 							{
 								System.IO.File.Delete(oldImagePath);
@@ -203,21 +204,21 @@ namespace FutureTechnologyE_Commerce.Controllers
 							await file.CopyToAsync(fileStream);
 						}
 
-						laptopVm.Laptop.ImageUrl = "/images/products/" + fileName;
+						laptopVM.Laptop.ImageUrl = "/images/products/" + fileName;
 					}
-					_unitOfWork.LaptopRepository.Update(laptopVm.Laptop);
-					_unitOfWork.Save();
+					await _unitOfWork.LaptopRepository.UpdateAsync(laptopVM.Laptop);
+					await _unitOfWork.SaveAsync();
 					return RedirectToAction(nameof(Index));
 				}
 
-				laptopVm.CategoryList = _unitOfWork.CategoryRepository.GetAll().Select(c =>
+				laptopVM.CategoryList = (await _unitOfWork.CategoryRepository.GetAllAsync()).Select(c =>
 						new SelectListItem { Text = c.Name, Value = c.CategoryID.ToString() }).ToList();
-				laptopVm.BrandList = _unitOfWork.BrandRepository.GetAll().Select(b =>
+				laptopVM.BrandList = (await _unitOfWork.BrandRepository.GetAllAsync()).Select(b =>
 					new SelectListItem { Text = b.Name, Value = b.BrandID.ToString() }).ToList();
-				laptopVm.ProductTypeList = _unitOfWork.ProductTypeRepository.GetAll().Select(pt =>
+				laptopVM.ProductTypeList = (await _unitOfWork.ProductTypeRepository.GetAllAsync()).Select(pt =>
 					new SelectListItem { Text = pt.Name, Value = pt.ProductTypeID.ToString() }).ToList();
 
-				return View(laptopVm);
+				return View(laptopVM);
 			}
 			catch (Exception ex)
 			{
@@ -227,7 +228,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 		}
 
 		// GET: Laptops/Delete/5
-		public IActionResult Delete(int? id)
+		public async Task<IActionResult> Delete(int? id)
 		{
 			try
 			{
@@ -236,7 +237,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 					return NotFound();
 				}
 
-				var laptop = _unitOfWork.LaptopRepository.Get(l => l.ProductID == id, includeProperties: "Brand,Category,ProductType");
+				var laptop = await _unitOfWork.LaptopRepository.GetAsync(l => l.ProductID == id, includeProperties: "Brand,Category,ProductType");
 				if (laptop == null)
 				{
 					return NotFound();
@@ -254,11 +255,11 @@ namespace FutureTechnologyE_Commerce.Controllers
 		// POST: Laptops/Delete/5
 		[HttpPost, ActionName("Delete")]
 		[ValidateAntiForgeryToken]
-		public IActionResult DeleteConfirmed(int id)
+		public async Task<IActionResult> DeleteConfirmed(int id)
 		{
 			try
 			{
-				var laptop = _unitOfWork.LaptopRepository.Get(l => l.ProductID == id);
+				var laptop = await _unitOfWork.LaptopRepository.GetAsync(l => l.ProductID == id);
 				if (laptop != null)
 				{
 					if (!string.IsNullOrEmpty(laptop.ImageUrl))
@@ -269,8 +270,8 @@ namespace FutureTechnologyE_Commerce.Controllers
 							System.IO.File.Delete(imagePath);
 						}
 					}
-					_unitOfWork.LaptopRepository.Remove(laptop);
-					_unitOfWork.Save();
+					await _unitOfWork.LaptopRepository.RemoveAsync(laptop);
+					await _unitOfWork.SaveAsync();
 				}
 				return RedirectToAction(nameof(Index));
 			}

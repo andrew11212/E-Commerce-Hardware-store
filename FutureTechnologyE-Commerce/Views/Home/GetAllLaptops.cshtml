@@ -1,0 +1,110 @@
+﻿@model FutureTechnologyE_Commerce.Models.ViewModels.HomeIndexViewModel
+
+@{
+    ViewData["Title"] = "All Laptops";
+}
+
+<div class="container my-5">
+    <div class="row g-4">
+        @foreach (var item in Model.Laptops)
+        {
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                    <!-- Product Image -->
+                    <div class="position-relative">
+                        <img src="@item.ImageUrl"
+                             class="card-img-top img-fluid object-fit-cover"
+                             style="aspect-ratio: 16/9"
+                             alt="@item.Name">
+
+                        <div class="position-absolute top-0 end-0 m-3">
+                            <span class="badge bg-primary">@item.Category.Name</span>
+                            <span class="badge bg-secondary">@item.Brand.Name</span>
+                            
+
+                        </div>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold text-truncate">@item.Name</h5>
+                        <p class="card-text text-muted small mb-2">@item.ProductType.Name</p>
+
+                        <!-- Laptop-specific details -->
+                        @if (item is Laptop laptop)
+                        {
+                            <div class="mb-3 small text-dark">
+                                <div><strong>Processor:</strong> @laptop.Processor</div>
+                                <div><strong>RAM:</strong> @laptop.RAM</div>
+                                <div><strong>Storage:</strong> @laptop.Storage</div>
+                                <div><strong>Screen:</strong> @laptop.ScreenSize"</div>
+                                <div><strong>Graphics:</strong> @laptop.GraphicsCard</div>
+                            </div>
+                        }
+
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            @*<div>
+                                    <span class="h5 text-primary fw-bold">@item.Price.ToString("C")</span>
+                                    @if (item.Discount > 0)
+                                    {
+                                        <span class="text-danger ms-2">
+                                            <del>@((item.Price * 1.2m).ToString("C"))</del>
+                                        </span>
+                                    }
+                                </div>*@
+
+                            <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="productId" value="@item.ProductID" />
+                                <div class="d-grid gap-2">
+                                    <button type="submit"
+                                            class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center"
+                                            @(item.StockQuantity == 0 ? "disabled" : "")>
+                                        <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
+                                        <span class="btn-text">Add to Cart</span> <i class="bi bi-cart-plus ms-2"></i>
+                                    </button>
+                                    <a href="#" class="btn btn-outline-secondary rounded-pill btn-sm d-flex align-items-center">
+                                        <i class="bi bi-heart me-2"></i> Wishlist
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+    .object-fit-cover {
+        object-fit: cover;
+    }
+
+    .badge {
+        font-size: 0.8rem;
+        font-weight: 500;
+        padding: 0.3rem 0.6rem;
+        border-radius: 12px;
+        text-transform: uppercase;
+    }
+
+    @@media (max-width: 768px) {
+        .card {
+            border-radius: 16px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+        }
+    }
+</style>

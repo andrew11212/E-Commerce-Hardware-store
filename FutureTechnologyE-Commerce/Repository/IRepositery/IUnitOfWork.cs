@@ -24,6 +24,6 @@ namespace FutureTechnologyE_Commerce.Repository.IRepository
 		public IOrderDetailRepository OrderDetail { get; }
 
 		IDbContextTransaction BeginTransaction(); // Add this line
-		void Save();
+		public Task SaveAsync();
 	}
 }

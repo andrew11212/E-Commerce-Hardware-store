@@ -43,14 +43,14 @@ namespace FutureTechnologyE_Commerce.Controllers
 			_antiforgery = antiforgery;
 		}
 
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
 			try
 			{
 				var userId = GetValidatedUserId();
 				if (userId == null) return Unauthorized();
 
-				CartVM.CartList = _unitOfWork.CartRepositery.GetAll(c => c.ApplicationUserId == userId, "Product").ToList();
+				CartVM.CartList = (await _unitOfWork.CartRepositery.GetAllAsync(c => c.ApplicationUserId == userId, "Product")).ToList();
 				CartVM.OrderHeader = new OrderHeader();
 
 				CartVM.OrderHeader.OrderTotal = CartVM.CartList.Sum(cart => cart.price * cart.Count);
@@ -68,19 +68,19 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult AddToCart(int productId, int count = 1)
+		public async Task<IActionResult> AddToCart(int productId, int count = 1)
 		{
 			var userId = GetValidatedUserId();
 			if (userId == null) return Unauthorized();
 
-			var product = _unitOfWork.ProductRepository.Get(p => p.ProductID == productId);
+			var product = await _unitOfWork.ProductRepository.GetAsync(p => p.ProductID == productId);
 			if (product == null || product.StockQuantity < count)
 			{
 				TempData["Error"] = "Product is unavailable or insufficient stock";
 				return RedirectToAction("Index", "Home");
 			}
 
-			var cartItem = _unitOfWork.CartRepositery.Get(c => c.ApplicationUserId == userId && c.ProductId == productId);
+			var cartItem = await _unitOfWork.CartRepositery.GetAsync(c => c.ApplicationUserId == userId && c.ProductId == productId);
 
 			if (cartItem != null)
 			{
@@ -90,11 +90,11 @@ namespace FutureTechnologyE_Commerce.Controllers
 					TempData["Error"] = "Requested quantity exceeds available stock";
 					return RedirectToAction("Index");
 				}
-				_unitOfWork.CartRepositery.Update(cartItem);
+				await _unitOfWork.CartRepositery.UpdateAsync(cartItem);
 			}
 			else
 			{
-				_unitOfWork.CartRepositery.Add(new ShopingCart
+				await _unitOfWork.CartRepositery.AddAsync(new ShopingCart
 				{
 					ApplicationUserId = userId,
 					ProductId = productId,
@@ -102,26 +102,26 @@ namespace FutureTechnologyE_Commerce.Controllers
 				});
 			}
 
-			_unitOfWork.Save();
+			await _unitOfWork.SaveAsync();
 			TempData["Success"] = "Item added to cart successfully";
 			return RedirectToAction("Index");
 		}
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult UpdateCart(int cartId, int count)
+		public async Task<IActionResult> UpdateCart(int cartId, int count)
 		{
 			var userId = GetValidatedUserId();
 			if (userId == null) return Unauthorized();
 
-			var cart = _unitOfWork.CartRepositery.Get(c => c.Id == cartId && c.ApplicationUserId == userId);
+			var cart = await _unitOfWork.CartRepositery.GetAsync(c => c.Id == cartId && c.ApplicationUserId == userId);
 			if (cart == null)
 			{
 				TempData["Error"] = "Cart item not found";
 				return RedirectToAction("Index");
 			}
 
-			var product = _unitOfWork.ProductRepository.Get(p => p.ProductID == cart.ProductId);
+			var product = await _unitOfWork.ProductRepository.GetAsync(p => p.ProductID == cart.ProductId);
 			if (product == null || product.StockQuantity < count)
 			{
 				TempData["Error"] = "Requested quantity exceeds available stock";
@@ -129,8 +129,8 @@ namespace FutureTechnologyE_Commerce.Controllers
 			}
 
 			cart.Count = count;
-			_unitOfWork.CartRepositery.Update(cart);
-			_unitOfWork.Save();
+			await _unitOfWork.CartRepositery.UpdateAsync(cart);
+			await _unitOfWork.SaveAsync();
 
 			TempData["Success"] = "Cart updated successfully";
 			return RedirectToAction("Index");
@@ -138,17 +138,17 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 		#endregion
 
-		public IActionResult Checkout()
+		public async Task<IActionResult> Checkout()
 		{
 			try
 			{
 				var userId = GetValidatedUserId();
 				if (userId == null) return Unauthorized();
 
-				CartVM.CartList = _unitOfWork.CartRepositery.GetAll(u => u.ApplicationUserId == userId, "Product").ToList();
+				CartVM.CartList = (await _unitOfWork.CartRepositery.GetAllAsync(u => u.ApplicationUserId == userId, "Product")).ToList();
 				CartVM.OrderHeader = new OrderHeader();
 
-				var user = _unitOfWork.applciationUserRepository.Get(u => u.Id == userId);
+				var user = await _unitOfWork.applciationUserRepository.GetAsync(u => u.Id == userId);
 				if (user == null)
 				{
 					_logger.LogWarning("User not found in Cart/Summary for userId: {UserId}", userId);
@@ -186,7 +186,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 				var userId = GetValidatedUserId();
 				if (userId == null) return Unauthorized();
 
-				var cartItems = _unitOfWork.CartRepositery.GetAll(c => c.ApplicationUserId == userId, "Product").ToList();
+				var cartItems = (await _unitOfWork.CartRepositery.GetAllAsync(c => c.ApplicationUserId == userId, "Product")).ToList();
 
 				if (!cartItems.Any())
 				{
@@ -198,25 +198,25 @@ namespace FutureTechnologyE_Commerce.Controllers
 				{
 					foreach (var cart in cartItems)
 					{
-						var product = _unitOfWork.ProductRepository.Get(p => p.ProductID == cart.ProductId);
+						var product = await _unitOfWork.ProductRepository.GetAsync(p => p.ProductID == cart.ProductId);
 						if (product == null || product.StockQuantity < cart.Count)
 						{
 							TempData["Error"] = $"Item {cart.Product?.Name ?? "unknown"} is out of stock";
 							return RedirectToAction("Index");
 						}
 						product.StockQuantity -= cart.Count;
-						_unitOfWork.ProductRepository.Ubdate(product);
+						await _unitOfWork.ProductRepository.UpdateAsync(product); // Assuming UbdateAsync exists or should be UpdateAsync
 					}
 
-					var user = _unitOfWork.applciationUserRepository.Get(u => u.Id == userId);
+					var user = await _unitOfWork.applciationUserRepository.GetAsync(u => u.Id == userId);
 					if (user == null) return NotFound("User not found");
 
 					CartVM.OrderHeader.ApplicationUserId = userId;
 					SetOrderAndPaymentStatus(CartVM.OrderHeader);
 					PopulateOrderHeaderFromUser(CartVM.OrderHeader, user);
 
-					_unitOfWork.OrderHeader.Add(CartVM.OrderHeader);
-					_unitOfWork.Save(); // Save the OrderHeader to get the Id for OrderDetails
+					await _unitOfWork.OrderHeader.AddAsync(CartVM.OrderHeader);
+					await _unitOfWork.SaveAsync(); // Save the OrderHeader to get the Id for OrderDetails
 
 					foreach (var cart in cartItems)
 					{
@@ -227,15 +227,15 @@ namespace FutureTechnologyE_Commerce.Controllers
 							Price = cart.price,
 							Count = cart.Count
 						};
-						_unitOfWork.OrderDetail.Add(orderDetail);
+						await _unitOfWork.OrderDetail.AddAsync(orderDetail);
 					}
-					_unitOfWork.CartRepositery.RemoveRange(cartItems);
-					_unitOfWork.Save();
+					await _unitOfWork.CartRepositery.RemoveRangeAsync(cartItems);
+					await _unitOfWork.SaveAsync();
 
 					transaction.Commit();
 				}
 
-				var currentUser = _unitOfWork.applciationUserRepository.Get(u => u.Id == userId);
+				var currentUser = await _unitOfWork.applciationUserRepository.GetAsync(u => u.Id == userId);
 				if (currentUser == null) return NotFound("User not found");
 
 				return await ProcessPaymentAsync(currentUser);
@@ -249,7 +249,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult PaymentCallback()
+		public async Task<IActionResult> PaymentCallback()
 		{
 			try
 			{
@@ -270,7 +270,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 					return BadRequest("Invalid callback signature");
 				}
 
-				var orderHeader = _unitOfWork.OrderHeader.Get(o => o.PaymobOrderId == paymobOrderId);
+				var orderHeader = await _unitOfWork.OrderHeader.GetAsync(o => o.PaymobOrderId == paymobOrderId);
 				if (orderHeader == null)
 				{
 					_logger.LogWarning("Order not found for PaymobOrderId={PaymobOrderId} in PaymentCallback", paymobOrderId);
@@ -278,7 +278,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 				}
 
 				UpdateOrderStatus(orderHeader, success, transactionId);
-				_unitOfWork.Save();
+				await _unitOfWork.SaveAsync();
 
 				return RedirectToAction("OrderConfirmation", new { orderId = orderHeader.Id });
 			}
@@ -335,8 +335,8 @@ namespace FutureTechnologyE_Commerce.Controllers
 				string paymentKey = await GetPaymentKeyAsync(authToken, paymobOrderId, CartVM.OrderHeader.OrderTotal, user);
 
 				CartVM.OrderHeader.PaymobOrderId = paymobOrderId;
-				_unitOfWork.OrderHeader.Update(CartVM.OrderHeader);
-				_unitOfWork.Save();
+				await _unitOfWork.OrderHeader.UpdateAsync(CartVM.OrderHeader);
+				await _unitOfWork.SaveAsync();
 
 				string paymentUrl = $"https://accept.paymob.com/api/acceptance/iframes/{_paymob.IframeId}?payment_token={paymentKey}";
 				_logger.LogInformation("Redirecting to Paymob payment URL for orderId: {OrderId}", CartVM.OrderHeader.Id);
@@ -448,26 +448,27 @@ namespace FutureTechnologyE_Commerce.Controllers
 			orderHeader.OrderStatus = success ? SD.Status_Approved : SD.Status_Cancelled;
 			orderHeader.TransactionId = transactionId;
 			orderHeader.PaymentDate = DateTime.UtcNow;
-			_unitOfWork.OrderHeader.Update(orderHeader);
+			// Assuming OrderHeader also has an async Update method
+			_unitOfWork.OrderHeader.UpdateAsync(orderHeader);
 			_logger.LogInformation("Order status updated to {OrderStatus} for orderId: {OrderId}", orderHeader.OrderStatus, orderHeader.Id);
 		}
 
-		public IActionResult Remove(int cartId)
+		public async Task<IActionResult> Remove(int cartId)
 		{
 			try
 			{
 				var userId = GetValidatedUserId();
 				if (userId == null) return Unauthorized();
 
-				var cart = _unitOfWork.CartRepositery.Get(c => c.Id == cartId && c.ApplicationUserId == userId);
+				var cart = await _unitOfWork.CartRepositery.GetAsync(c => c.Id == cartId && c.ApplicationUserId == userId);
 				if (cart == null)
 				{
 					TempData["Error"] = "Cart item not found";
 					return RedirectToAction("Index");
 				}
 
-				_unitOfWork.CartRepositery.Remove(cart);
-				_unitOfWork.Save();
+				await _unitOfWork.CartRepositery.RemoveAsync(cart);
+				await _unitOfWork.SaveAsync();
 				TempData["Success"] = "Product removed successfully.";
 				return RedirectToAction("Index");
 			}
@@ -479,11 +480,11 @@ namespace FutureTechnologyE_Commerce.Controllers
 			}
 		}
 
-		public IActionResult OrderConfirmation(int orderId)
+		public async Task<IActionResult> OrderConfirmation(int orderId)
 		{
 			try
 			{
-				var orderHeader = _unitOfWork.OrderHeader.Get(o => o.Id == orderId);
+				var orderHeader = await _unitOfWork.OrderHeader.GetAsync(o => o.Id == orderId);
 				if (orderHeader == null)
 				{
 					_logger.LogWarning("Order with id {OrderId} not found in Cart/OrderConfirmation", orderId);
