@@ -85,3 +85,15 @@ body {
     visibility: hidden;
 }
 
+/* Add this to your CSS */
+.icon-text-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+    .icon-text-link .small {
+        font-size: 0.875rem; /* 14px */
+        line-height: 1;
+    }
