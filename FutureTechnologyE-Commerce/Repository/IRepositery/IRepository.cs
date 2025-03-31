@@ -10,19 +10,15 @@ namespace FutureTechnologyE_Commerce.Repository.IRepository
 {
 	public interface IRepository<T> where T : class
 	{
-		IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null,
-								  string? includeProperties = null);
+		Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null,
+									   string? includeProperties = null);
 
-		public T Get(Expression<Func<T, bool>> filter, params string[] includeProperties);
+		Task<T?> GetAsync(Expression<Func<T, bool>> filter, params string[] includeProperties);
 
+		Task AddAsync(T entity);
 
+		Task RemoveAsync(T entity);
 
-        void Add(T entity);
-
-		void Remove(T entity);
-
-		void RemoveRange(IEnumerable<T> entity);
-
-
+		Task RemoveRangeAsync(IEnumerable<T> entity);
 	}
 }
