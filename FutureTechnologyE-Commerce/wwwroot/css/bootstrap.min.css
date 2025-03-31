@@ -210,6 +210,21 @@ body {
     -webkit-tap-highlight-color: transparent
 }
 
+/* Full-width curved line styling */
+.curved-line {
+    position: inherit;
+    background: #1125ab;
+    padding: 0.5rem 15px;
+    border-top-left-radius: 2rem;
+    border-top-right-radius: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    z-index: 1;
+    border-bottom-left-radius: 2rem;
+    border-bottom-right-radius: 2rem;
+    margin-bottom: 2%;
+}
+
+
 hr {
     margin: 1rem 0;
     color: inherit;
@@ -225,7 +240,12 @@ hr {
     line-height: 1.2;
     color: var(--bs-heading-color)
 }
-
+h3-title {
+    line-height: 1.2;
+    color: white;
+    font-size: 1.5rem;
+    padding-top: 1rem;
+}
 .h1, h1 {
     font-size: calc(1.325rem + .9vw)
 }
@@ -5532,6 +5552,11 @@ textarea.form-control-lg {
         opacity: var(--bs-btn-close-disabled-opacity)
     }
 
+
+
+
+
+
 .btn-close-white {
     filter: var(--bs-btn-close-white-filter)
 }
@@ -8743,6 +8768,12 @@ textarea.form-control-lg {
 .text-primary {
     --bs-text-opacity: 1;
     color: rgba(var(--bs-primary-rgb),var(--bs-text-opacity)) !important
+}
+.Mtext-primary {
+    --bs-text-opacity: 1;
+    color: white;
+    font-size: larger;
+    padding-top: 1rem;
 }
 
 .text-secondary {

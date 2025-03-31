@@ -4,107 +4,111 @@
     ViewData["Title"] = "Home Page";
 }
 
-<!-- Promotional Carousel -->
-<div id="promoCarousel" class="carousel slide" data-bs-ride="carousel">
-    <div class="carousel-inner rounded-3 overflow-hidden">
-        <div class="carousel-item active">
-            <img src="/images/ASUS TUF Gaming F15 Gaming Laptop.jpeg" class="d-block w-100" alt="Laptop Deal" loading="lazy">
-            <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded-3 p-3">
-                <h5 class="text-white">Big Savings on Laptops</h5>
-                <p class="text-white">Up to 40% off select models</p>
+
+
+<!-- Best Selling Products Section -->
+<section class="py-4 py-md-5">
+    <div class="container ">
+        <!-- Full-width curved header line -->
+        <div class="curved-line">
+            <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
+                <h3-title class="fw-bold mb-0">Best Selling Products</h3-title>
+                <a href="#" class="text-decoration-none Mtext-primary d-none d-md-inline">
+                    View All <i class="bi bi-arrow-right"></i>
+                </a>
             </div>
         </div>
-        <!-- Additional carousel items -->
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#promoCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#promoCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    </button>
-</div>
 
-<!-- Product Grid Section -->
-<section class="py-5">
-    <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold">Best Selling Products</h3>
-            <a href="#" class="text-decoration-none text-primary">View All <i class="bi bi-arrow-right"></i></a>
-        </div>
-        <div class="row g-4">
-            @foreach (var product in Model.Products)
-            {
-                <div class="col-lg-3 col-md-4 col-sm-6">
-                    <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden transition-transform hover:scale-105">
-                        <picture>
-                            <source srcset="@product.ImageUrl?.Replace(".jpg", ".avif")" type="image/avif">
-                            <source srcset="@product.ImageUrl" type="image/jpeg">
-                            <img src="@product.ImageUrl"
-                                 class="card-img-top object-fit-cover aspect-ratio-4-3"
-                                 alt="@product.Name"
-                                 loading="lazy"
-                                 onerror="this.src='/images/placeholder.avif'">
-                        </picture>
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title fw-semibold text-truncate-2 mb-2">@product.Name</h5>
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
-                                    <span class="text-primary fw-bold fs-5">@product.Price.ToString("C")</span>
-                                    <del class="text-muted small ms-2">@((product.Price * 1.2m).ToString("C"))</del>
-                                </div>
-                                <span class="badge @(product.StockQuantity > 0 ? "bg-success" : "bg-danger") rounded-pill">
-                                    @(product.StockQuantity > 0 ? "In Stock" : "Sold Out")
-                                </span>
-                            </div>
-                            <div class="d-grid gap-2 mt-auto">
-                                <a asp-action="Details" asp-route-id="@product.ProductID"
-                                   class="btn btn-outline-primary rounded-pill">
-                                    View Details
-                                </a>
-                                <form asp-controller="Cart" asp-action="AddToCart" method="post">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="productId" value="@product.ProductID" />
-
-                                    <div class="d-grid gap-3">
-                                        <button type="submit"
-                                                class="btn btn-lg btn-primary rounded-pill"
-                                        @(product.StockQuantity == 0 ? "disabled" : "")>
-                                            Add to Cart <i class="bi bi-cart-plus ms-2"></i>
-                                        </button>
-                                        <a href="#" class="btn btn-outline-secondary rounded-pill">
-                                            Wishlist <i class="bi bi-heart"></i>
-                                        </a>
+        <!-- Contained product grid -->
+        <div class="product-container">
+            <div class="row g-3 g-md-4">
+                
+                @foreach (var product in Model.Products)
+                {
+                    <div class="col-6 col-md-4 col-lg-3">
+                        <div class="card h-100 shadow-sm rounded-3 overflow-hidden">
+                            <picture>
+                                <source srcset="@product.ImageUrl?.Replace(".jpg", ".avif")" type="image/avif">
+                                <source srcset="@product.ImageUrl" type="image/jpeg">
+                                <img src="@product.ImageUrl"
+                                     class="card-img-top object-fit-cover"
+                                     style="aspect-ratio: 4/3;"
+                                     alt="@product.Name"
+                                     loading="lazy"
+                                     onerror="this.src='/images/placeholder.avif'">
+                            </picture>
+                            <div class="card-body d-flex flex-column px-3 pb-3">
+                                <h5 class="card-title fw-semibold text-truncate-2 mb-2">@product.Name</h5>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span class="text-primary fw-bold fs-5">@product.Price.ToString("C")</span>
+                                        <del class="text-muted small ms-2 d-none d-md-inline">@((product.Price * 1.2m).ToString("C"))</del>
                                     </div>
-                                </form>
+                                    <span class="badge @(product.StockQuantity > 0 ? "bg-success" : "bg-danger") rounded-pill">
+                                        @(product.StockQuantity > 0 ? "In Stock" : "Sold Out")
+                                    </span>
+                                </div>
+                                <div class="d-grid gap-2 mt-auto">
+                                    <a asp-action="Details" asp-route-id="@product.ProductID"
+                                       class="btn btn-outline-primary rounded-pill btn-sm">
+                                        View Details
+                                    </a>
+                                    <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="productId" value="@product.ProductID" />
+                                        <div class="d-grid gap-2">
+                                            <button type="submit"
+                                                    class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center"
+                                            @(product.StockQuantity == 0 ? "disabled" : "")>
+                                                <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
+                                                <span class="btn-text">Add to Cart</span> <i class="bi bi-cart-plus ms-2"></i>
+                                            </button>
+                                            <a href="#" class="btn btn-outline-secondary rounded-pill btn-sm d-flex align-items-center">
+                                                <i class="bi bi-heart me-2"></i> Wishlist
+                                            </a>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
+            <div class="text-center mt-4 d-md-none">
+                <a href="#" class="btn btn-outline-primary rounded-pill">View All Products</a>
+            </div>
         </div>
     </div>
 </section>
 
 <!-- Laptops Section -->
-<section id="laptops" class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold">Laptops</h3>
-        <a href="#" class="text-decoration-none text-primary">View All <i class="bi bi-arrow-right"></i></a>
+<section id="laptops" class="py-4 py-md-5">
+    <div class="container">
+        <!-- Full-width curved header line -->
+        <div class="curved-line">
+            <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
+                <h3-title class="fw-bold mb-0">Laptops</h3-title>
+                <a href="#" class="text-decoration-none Mtext-primary d-none d-md-inline">
+                    View All <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Contained product grid -->
+        <div class="product-container">
+            <div class="row g-3 g-md-4">
+                <!-- Add laptop products here following the same pattern -->
+            </div>
+            <div class="text-center mt-4 d-md-none">
+                <a href="#" class="btn btn-outline-primary rounded-pill">View All Laptops</a>
+            </div>
+        </div>
     </div>
-    <!-- Product grid similar to Best Selling section -->
 </section>
-
-<!-- Promotion Section -->
-
-@* <section class="bg-primary bg-gradient text-white py-5">
-    <div class="container text-center">
-        <h2 class="display-6 fw-bold">Free Shipping on Orders Over $50</h2>
-        <p class="lead">Fast delivery across the country</p>
-    </div>
-</section> *@
 
 @section Scripts {
     <script>
+        // Existing JavaScript code remains unchanged
         document.addEventListener('DOMContentLoaded', function () {
             const addToCartForms = document.querySelectorAll('.add-to-cart-form');
             const cartCount = document.querySelector('.cart-count');
@@ -113,12 +117,11 @@
                 form.addEventListener('submit', async function (e) {
                     e.preventDefault();
 
-                    const button = this.querySelector('.add-to-cart-btn');
+                    const button = this.querySelector('button[type="submit"]');
                     const spinner = button.querySelector('.spinner-border');
                     const buttonText = button.querySelector('.btn-text');
-                    const productId = this.dataset.productId;
+                    const productId = this.querySelector('input[name="productId"]').value;
 
-                    // Disable button and show spinner
                     button.disabled = true;
                     spinner.classList.remove('d-none');
                     buttonText.textContent = 'Adding...';
