@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
-using Microsoft.Extensions.Logging; // Added for logging
+using Microsoft.Extensions.Logging;
+using System.Threading.Tasks; // Added for Task
 
 namespace FutureTechnologyE_Commerce.Controllers
 {
@@ -13,26 +14,26 @@ namespace FutureTechnologyE_Commerce.Controllers
 	public class CategoryController : Controller
 	{
 		private readonly IUnitOfWork _unitOfWork;
-		private readonly ILogger<CategoryController> _logger; // Added logger
+		private readonly ILogger<CategoryController> _logger;
 
-		public CategoryController(IUnitOfWork unitOfWork, ILogger<CategoryController> logger) // Added logger to constructor
+		public CategoryController(IUnitOfWork unitOfWork, ILogger<CategoryController> logger)
 		{
 			_unitOfWork = unitOfWork;
 			_logger = logger;
 		}
 
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
 			try
 			{
-				var categories = _unitOfWork.CategoryRepository.GetAll().ToList();
+				var categories = (await _unitOfWork.CategoryRepository.GetAllAsync()).ToList();
 				return View(categories);
 			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Error occurred while fetching categories in Index action.");
-				TempData["Error"] = "An error occurred while loading categories. Please try again."; // User-friendly error
-				return View(new List<Category>()); // Return an empty list or redirect to an error page.  Important to return a view.
+				TempData["Error"] = "An error occurred while loading categories. Please try again.";
+				return View(new List<Category>());
 			}
 		}
 
@@ -43,30 +44,30 @@ namespace FutureTechnologyE_Commerce.Controllers
 		}
 
 		[HttpPost]
-		[ValidateAntiForgeryToken] // Prevents cross-site request forgery
-		public IActionResult Create(Category category)
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Create(Category category)
 		{
 			try
 			{
 				if (ModelState.IsValid)
 				{
-					_unitOfWork.CategoryRepository.Add(category);
-					_unitOfWork.Save();
-					TempData["Success"] = "Category created successfully"; // Consistent message
+					await _unitOfWork.CategoryRepository.AddAsync(category);
+					await _unitOfWork.SaveAsync();
+					TempData["Success"] = "Category created successfully";
 					return RedirectToAction(nameof(Index));
 				}
-				return View(category); // Return view with model if validation fails
+				return View(category);
 			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Error occurred while creating a category.");
 				TempData["Error"] = "An error occurred while creating the category. Please try again.";
-				return View(category); // Stay on the Create page and show the error
+				return View(category);
 			}
 		}
 
 		[HttpGet]
-		public IActionResult Edit(int? id) // Make id nullable
+		public async Task<IActionResult> Edit(int? id)
 		{
 			if (id == null || id <= 0)
 			{
@@ -76,7 +77,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 			try
 			{
-				var category = _unitOfWork.CategoryRepository.Get(e => e.CategoryID == id);
+				var category = await _unitOfWork.CategoryRepository.GetAsync(e => e.CategoryID == id);
 				if (category == null)
 				{
 					_logger.LogWarning("Category with id {Id} not found.", id);
@@ -88,31 +89,22 @@ namespace FutureTechnologyE_Commerce.Controllers
 			{
 				_logger.LogError(ex, "Error occurred while fetching category with id {Id} for editing.", id);
 				TempData["Error"] = "An error occurred while retrieving the category. Please try again.";
-				return RedirectToAction(nameof(Index)); // Redirect to index on error.
+				return RedirectToAction(nameof(Index));
 			}
 		}
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public IActionResult Edit(Category category)
+		public async Task<IActionResult> Edit(Category category)
 		{
 			try
 			{
 				if (ModelState.IsValid)
 				{
-					var categoryIndb = _unitOfWork.CategoryRepository.Get(c => c.CategoryID == category.CategoryID);
-					if (categoryIndb != null)
-					{
-						categoryIndb.Name = category.Name;
-						_unitOfWork.Save();
-						TempData["Success"] = "Category updated successfully";
-						return RedirectToAction(nameof(Index));
-					}
-					else
-					{
-						_logger.LogWarning("Category with id {Id} not found for updating.", category.CategoryID);
-						return NotFound(); // Explicitly handle the case where the category doesn't exist
-					}
+					await _unitOfWork.CategoryRepository.UpdateAsync(category);
+					await _unitOfWork.SaveAsync();
+					TempData["Success"] = "Category updated successfully";
+					return RedirectToAction(nameof(Index));
 				}
 				return View(category);
 			}
@@ -125,7 +117,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 		}
 
 		[HttpGet]
-		public IActionResult Delete(int? id) // Make id nullable
+		public async Task<IActionResult> Delete(int? id)
 		{
 			if (id == null || id <= 0)
 			{
@@ -134,13 +126,13 @@ namespace FutureTechnologyE_Commerce.Controllers
 			}
 			try
 			{
-				var category = _unitOfWork.CategoryRepository.Get(c => c.CategoryID == id);
+				var category = await _unitOfWork.CategoryRepository.GetAsync(c => c.CategoryID == id);
 				if (category == null)
 				{
 					_logger.LogWarning("Category with id {Id} not found for deletion.", id);
 					return NotFound();
 				}
-				return View(category); // Return the confirmation view
+				return View(category);
 			}
 			catch (Exception ex)
 			{
@@ -153,7 +145,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 		[HttpPost, ActionName("Delete")]
 		[ValidateAntiForgeryToken]
-		public IActionResult DeleteConfirmed(int? id) // Make id nullable
+		public async Task<IActionResult> DeleteConfirmed(int? id)
 		{
 			if (id == null || id <= 0)
 			{
@@ -163,11 +155,11 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 			try
 			{
-				var categoryIndb = _unitOfWork.CategoryRepository.Get(c => c.CategoryID == id);
+				var categoryIndb = await _unitOfWork.CategoryRepository.GetAsync(c => c.CategoryID == id);
 				if (categoryIndb != null)
 				{
-					_unitOfWork.CategoryRepository.Remove(categoryIndb);
-					_unitOfWork.Save();
+					await _unitOfWork.CategoryRepository.RemoveAsync(categoryIndb);
+					await _unitOfWork.SaveAsync();
 					TempData["Success"] = "Category deleted successfully";
 					return RedirectToAction(nameof(Index));
 				}
@@ -181,9 +173,8 @@ namespace FutureTechnologyE_Commerce.Controllers
 			{
 				_logger.LogError(ex, "Error occurred while deleting category with id {Id}.", id);
 				TempData["Error"] = "An error occurred while deleting the category. Please try again.";
-				return RedirectToAction(nameof(Index)); // Redirect, as the original view is gone.
+				return RedirectToAction(nameof(Index));
 			}
 		}
 	}
 }
-

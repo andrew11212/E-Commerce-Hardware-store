@@ -5,6 +5,6 @@ namespace FutureTechnologyE_Commerce.Repository.IRepositery
 {
 	public interface IlaptopRepository:IRepository<Laptop>
 	{
-		public void Update(Laptop laptop);
+		public Task UpdateAsync(Laptop laptop);
 	}
 }

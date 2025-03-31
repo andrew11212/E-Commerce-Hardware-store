@@ -9,6 +9,6 @@ namespace FutureTechnologyE_Commerce.Repository.IRepository
 {
 	public interface IProductRepository : IRepository<Product>
 	{
-		void Ubdate(Product product);
+		Task UpdateAsync(Product product);
 	}
 }

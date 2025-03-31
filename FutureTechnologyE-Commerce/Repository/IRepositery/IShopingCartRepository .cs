@@ -10,7 +10,7 @@ namespace FutureTechnologyE_Commerce.Repository.IRepository
 {
     public interface IShopingCartRepositery : IRepository<ShopingCart>
 	{
-		void Update(ShopingCart shopingCart);
+		Task UpdateAsync(ShopingCart shopingCart);
 
 	}
 }

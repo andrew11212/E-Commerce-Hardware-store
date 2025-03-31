@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace FutureTechnologyE_Commerce.Repository
 {
@@ -18,9 +19,12 @@ namespace FutureTechnologyE_Commerce.Repository
 		{
 			this.context = context;
 		}
-		public void Ubdate(Product product)
+		public async Task UpdateAsync(Product product)
 		{
-			context.Update(product);
+			context.Attach(product);
+			context.Entry(product).State = EntityState.Modified;
+			// The actual saving to the database will be done in the UnitOfWork
+			await Task.CompletedTask;
 		}
 
 	}

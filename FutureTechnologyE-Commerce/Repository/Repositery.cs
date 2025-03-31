@@ -24,13 +24,15 @@ namespace FutureTechnologyE_Commerce.Repository
 			//Categories = Dbset;
 		}
 
-		public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null,
-								  string? includeProperties = null)
+		public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null,
+											string? includeProperties = null)
 		{
 			IQueryable<T> query = Set;
 
 			if (filter != null)
+			{
 				query = query.Where(filter);
+			}
 
 			if (includeProperties != null)
 			{
@@ -40,34 +42,32 @@ namespace FutureTechnologyE_Commerce.Repository
 				}
 			}
 
-			return query.ToList();
+			return await query.ToListAsync();
 		}
 
-        public T Get(Expression<Func<T, bool>> filter, params string[] includeProperties)
-        {
-            IQueryable<T> query = Set;
-            foreach (var property in includeProperties)
-            {
-                query = query.Include(property).AsNoTracking();
-            }
-            return query.FirstOrDefault(filter);
-        }
-
-        public void Add(T entity)
+		public async Task<T?> GetAsync(Expression<Func<T, bool>> filter, params string[] includeProperties)
 		{
-			Set.Add(entity);
+			IQueryable<T> query = Set;
+			foreach (var property in includeProperties)
+			{
+				query = query.Include(property).AsNoTracking();
+			}
+			return await query.FirstOrDefaultAsync(filter);
 		}
 
-		public void Remove(T entity)
+		public async Task AddAsync(T entity)
+		{
+			await Set.AddAsync(entity);
+		}
+
+		public async Task RemoveAsync(T entity)
 		{
 			Set.Remove(entity);
 		}
 
-		public void RemoveRange(IEnumerable<T> entity)
+		public async Task RemoveRangeAsync(IEnumerable<T> entity)
 		{
 			Set.RemoveRange(entity);
 		}
-
-
 	}
 }

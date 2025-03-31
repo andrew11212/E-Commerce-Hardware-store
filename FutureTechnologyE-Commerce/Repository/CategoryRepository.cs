@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FutureTechnologyE_Commerce.Data;
 using FutureTechnologyE_Commerce.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace FutureTechnologyE_Commerce.Repository
 {
@@ -20,9 +21,12 @@ namespace FutureTechnologyE_Commerce.Repository
 		}
 
 
-		public void Update(Category category)
+		public async Task UpdateAsync(Category category)
 		{
-			context.Categories.Update(category);
+			context.Attach(category);
+			context.Entry(category).State = EntityState.Modified;
+			// The actual saving to the database will be done in the UnitOfWork
+			await Task.CompletedTask;
 		}
 
 	}
