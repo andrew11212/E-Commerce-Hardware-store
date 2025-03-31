@@ -176,7 +176,16 @@ namespace FutureTechnologyE_Commerce.Areas.Identity.Pages.Account
                         return LocalRedirect(returnUrl);
                     }
                 }
-                foreach (var error in result.Errors)
+				Input = new()
+				{
+					RoleList = _roleManager.Roles.Select(r => r.Name).Select(l => new SelectListItem
+					{
+						Text = l,
+						Value = l
+					}),
+
+				};
+				foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }

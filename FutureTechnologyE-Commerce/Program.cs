@@ -82,6 +82,20 @@ namespace FutureTechnologyE_Commerce
 				};
 			});
 
+			builder.Services.AddAuthentication()
+	.AddGoogle(googleOptions =>
+	{
+		googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+		googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+	})
+	// Add Facebook Authentication
+	.AddFacebook(facebookOptions =>
+	{
+		facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"];
+		facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
+		facebookOptions.AccessDeniedPath = "/Account/AccessDenied"; // Optional: Redirect path on access denied
+	});
+
 			var app = builder.Build();
 
 			// Configure the HTTP request pipeline.
