@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title> FutureTechnology</title>
+    <title>@ViewData["Title"] - FutureTechnology</title>
     <link href="~/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
@@ -18,7 +18,7 @@
         }
 
         .top-brand {
-            background-color: #0b60b6;
+            background-color: #177fe9;
             padding: 1rem;
         }
 
@@ -64,6 +64,11 @@
             padding: 2rem 0;
         }
 
+        .wishlist-icon {
+            position: relative;
+            cursor: pointer;
+        }
+
         @@media (max-width: 768px) {
             .search-container {
                 width: 100%;
@@ -75,12 +80,58 @@
 <body>
     <!-- Brand Header -->
     <div class="top-brand">
-        <div class="container text-center">
+        <div class="container d-flex justify-content-between align-items-center">
             <a class="navbar-brand" asp-controller="Home" asp-action="Index">
                 <b>Future Technology Store</b>
             </a>
+            <div class="d-flex gap-3 justify-content-center">
+                <!-- Facebook (Blue) -->
+                <a href="#"
+                   class="text-decoration-none"
+                   style="color: #181cf2;">
+                    <i class="bi bi-facebook fs-3"></i>
+                </a>
+
+                <!-- Instagram (Gradient) -->
+                <a href="#"
+                   class="text-decoration-none"
+                   style="color: #E1306C; /* Fallback */
+              background: linear-gradient(45deg, #E1306C, #F56040, #FCAF45, #FFDC80);
+              -webkit-background-clip: text;
+              color: transparent;">
+                    <i class="bi bi-instagram fs-3"></i>
+                </a>
+
+                <!-- YouTube (Red) -->
+                <a href="https://youtube.com/@@user-yasser1?si=Vzyksk7wFrVUyIdX"
+                   class="text-decoration-none"
+                   style="color: #FF0000;">
+                    <i class="bi bi-youtube fs-3"></i>
+                </a>
+
+                <!-- Twitter/X (Blue) -->
+                <a href="@@yasser elgendy"
+                   class="text-decoration-none"
+                   style="color: #1DA1F2;">
+                    <i class="bi bi-twitter fs-3"></i>
+                </a>
+            </div>
+            <partial name="_LoginPartial" />
+
+            <!-- Wishlist and Cart -->
+            <div class="d-flex align-items-center gap-3">
+                <a class="nav-link text-light " asp-controller="Wishlist" asp-action="Index">
+                    <i class="bi bi-heart fs-4 position-relative"></i>
+                   
+                </a>
+                <a class="nav-link text-light" asp-controller="Cart" asp-action="Index">
+                    <i class="bi bi-cart fs-4 position-relative">
+                       
+                    </i>
+                </a>
+            </div>
         </div>
-    </div> 
+    </div>
 
     <!-- Main Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
@@ -125,16 +176,9 @@
                     </button>
                 </form>
 
-                <!-- Authentication and Cart -->
-                <div class="d-flex align-items-center ms-3">
+                <!-- Mobile Authentication and Cart -->
+                <div class="d-flex align-items-center ms-3 d-lg-none">
                     <partial name="_LoginPartial" />
-                    <a class="nav-link text-light ms-3" asp-controller="Cart" asp-action="Index">
-                        <i class="bi bi-cart4 position-relative">
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                0
-                            </span>
-                        </i>
-                    </a>
                 </div>
             </div>
         </div>
@@ -173,18 +217,13 @@
                 <div class="col-md-3">
                     <h5 class="fw-bold">Newsletter</h5>
                     <div class="input-group mb-3">
-                        <input type="email" class="form-control" placeholder="Your email">
-                        <button class="btn btn-primary" type="button">Subscribe</button>
+                        <input type="email" class="form-control" placeholder="<Yasser_elg_Sh2010@yahoo.com">
                     </div>
-                    <div class="d-flex gap-3 justify-content-center">
-                        <a href="#" class="text-dark"><i class="bi bi-facebook fs-3"></i></a>
-                        <a href="#" class="text-dark"><i class="bi bi-instagram fs-3"></i></a>
-                        <a href="#" class="text-dark"><i class="bi bi-twitter fs-3"></i></a>
-                    </div>
+                    
                 </div>
             </div>
             <hr class="my-4">
-            <p class="text-center text-muted mb-7">&copy; 2025 FutureTechnologyE_Commerce</p>
+            <p class="text-center text-muted mb-0">&copy; 2025 FutureTechnologyE_Commerce</p>
         </div>
     </footer>
 

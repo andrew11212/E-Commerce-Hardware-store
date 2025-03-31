@@ -5,9 +5,11 @@ using FutureTechnologyE_Commerce.Repository.IRepository;
 using FutureTechnologyE_Commerce.Utility;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Globalization;
 using System.Threading.RateLimiting;
 
 namespace FutureTechnologyE_Commerce
@@ -17,9 +19,11 @@ namespace FutureTechnologyE_Commerce
 		public static void Main(string[] args)
 		{
 			var builder = WebApplication.CreateBuilder(args);
+            // In Program.cs
+           
 
-			// Configure logging
-			builder.Logging.ClearProviders();
+            // Configure logging
+            builder.Logging.ClearProviders();
 			builder.Logging.AddConsole();
 			builder.Logging.AddDebug();
 			builder.Logging.SetMinimumLevel(LogLevel.Information);
