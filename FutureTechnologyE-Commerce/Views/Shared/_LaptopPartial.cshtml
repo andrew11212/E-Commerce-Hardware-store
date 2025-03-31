@@ -1,4 +1,4 @@
-﻿@model List<Laptop>
+﻿@model FutureTechnologyE_Commerce.Models.ViewModels.HomeIndexViewModel
     <section class="py-5">
         <!-- Full-Width Title Block -->
         <div class="w-100 bg-light py-3">
@@ -12,7 +12,7 @@
             </div>
         </div>
 
-        @foreach (var laptop in Model)
+        @foreach (var laptop in Model.Laptops)
         {
             <div class="col-lg-3 col-md-4 col-sm-6">
                 <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden transition-transform hover:scale-105">
