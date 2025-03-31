@@ -2,6 +2,7 @@
 using FutureTechnologyE_Commerce.Models;
 using FutureTechnologyE_Commerce.Repository.IRepositery;
 using FutureTechnologyE_Commerce.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace FutureTechnologyE_Commerce.Repository
 {
@@ -13,9 +14,12 @@ namespace FutureTechnologyE_Commerce.Repository
 		{
 			this.context = context;
 		}
-		public void Update(Laptop laptop)
+		public async Task UpdateAsync(Laptop laptop)
 		{
-			context.Laptops.Update(laptop);
+			context.Attach(laptop);
+			context.Entry(laptop).State = EntityState.Modified;
+			// The actual saving to the database will be done in the UnitOfWork
+			await Task.CompletedTask;
 		}
 	}
 }

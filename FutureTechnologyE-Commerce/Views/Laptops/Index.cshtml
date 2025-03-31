@@ -1,11 +1,11 @@
-﻿@model IEnumerable<Laptop>
+﻿@model List<Laptop>
 
 @{
     ViewData["Title"] = "Laptops";
 }
 
 <!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<!--<nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <ul class="navbar-nav mx-auto">
             <li class="nav-item">
@@ -31,18 +31,17 @@
             </li>
         </ul>
     </div>
-</nav>
+</nav>-->
 
 <!-- Main Content Section -->
 <div class="container mt-4">
     <div class="row">
         <div class="col-12 d-flex justify-content-between align-items-center mb-3">
             <h1 class="text-dark">Laptop</h1>
-            <a href="@Url.Action("Index", "Laptop")" class="text-primary text-uppercase">VIEW ALL</a>
+            <a href="@Url.Action("Index", "Laptops")" class="text-primary text-uppercase">VIEW ALL</a>
         </div>
     </div>
 
-    <!-- Product Carousel -->
     <div class="swiper product-swiper">
         <div class="swiper-wrapper">
             @foreach (var laptop in Model)
@@ -79,20 +78,6 @@
     </div>
 </div>
 
-<!-- Contact Buttons -->
-<div class="position-fixed bottom-0 end-0 m-3 d-flex flex-column align-items-end">
-    <a href="tel:+1234567890" class="btn btn-success rounded-circle d-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
-        <svg class="bi bi-telephone" width="24" height="24" fill="white">
-            <path d="M3.5 1a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-7zm1 3h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4.5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" />
-        </svg>
-    </a>
-    <a href="#" class="btn btn-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-        <svg class="bi bi-chat" width="24" height="24" fill="white">
-            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-            <path d="M5.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 2.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 2.5a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3z" />
-        </svg>
-    </a>
-</div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>

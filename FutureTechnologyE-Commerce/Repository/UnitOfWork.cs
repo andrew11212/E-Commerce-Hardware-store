@@ -47,9 +47,9 @@ namespace FutureTechnologyE_Commerce.Repository
             ProductTypeRepository = new ProductTypeRepository(context);
 			LaptopRepository = new LaptopRepository(context);
         }
-		public void Save()
+		public async Task SaveAsync()
 		{
-			context.SaveChanges();
+			await context.SaveChangesAsync();
 		}
 
 		public void Dispose()

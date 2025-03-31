@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace FutureTechnologyE_Commerce.Repository
 {
@@ -20,9 +21,12 @@ namespace FutureTechnologyE_Commerce.Repository
 		}
 
 
-		public void Update(OrderHeader orderHeader)
+		public async Task UpdateAsync(OrderHeader orderHeader)
 		{
-			context.orderHeaders.Update(orderHeader);
+			context.Attach(orderHeader);
+			context.Entry(orderHeader).State = EntityState.Modified;
+			// The actual saving to the database will be done in the UnitOfWork
+			await Task.CompletedTask;
 		}
 
 	}
