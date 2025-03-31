@@ -1,5 +1,6 @@
 ﻿using FutureTechnologyE_Commerce.Models;
 using FutureTechnologyE_Commerce.Repository.IRepositery;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace FutureTechnologyE_Commerce.Repository.IRepository
 {
-	public interface IUnitOfWork
+	public interface IUnitOfWork:IDisposable
 	{
         public ICategoryRepository CategoryRepository { get; }
         public IProductRepository ProductRepository { get; }
@@ -21,6 +22,8 @@ namespace FutureTechnologyE_Commerce.Repository.IRepository
 		public IApplciationUserRepository applciationUserRepository { get; }
 		public IOrderHeaderRepository OrderHeader { get; }
 		public IOrderDetailRepository OrderDetail { get; }
+
+		IDbContextTransaction BeginTransaction(); // Add this line
 		void Save();
 	}
 }
