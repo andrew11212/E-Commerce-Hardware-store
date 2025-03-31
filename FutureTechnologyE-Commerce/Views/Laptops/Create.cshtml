@@ -1,85 +1,195 @@
-﻿@model FutureTechnologyE_Commerce.Models.Laptop
+﻿@model FutureTechnologyE_Commerce.Models.ViewModels.LaptopViewModel
 
-@{
-    ViewData["Title"] = "Create";
-}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-dark bg-gradient text-white rounded-top-4">
+                    <h3 class="mb-0">@($"{(Model.Laptop.ProductID != 0 ? "Update" : "Create")} Laptop")</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-controller="Laptops" asp-action="Create" method="post" enctype="multipart/form-data" class="row g-3">
+                        @Html.AntiForgeryToken()
 
-<h1>Create</h1>
+                        @if (Model.Laptop.ProductID != 0)
+                        {
+                            <input type="hidden" asp-for="Laptop.ProductID" />
+                            <input type="hidden" asp-for="Laptop.ImageUrl" />
+                        }
 
-<h4>Laptop</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Processor" class="control-label"></label>
-                <input asp-for="Processor" class="form-control" />
-                <span asp-validation-for="Processor" class="text-danger"></span>
+                        <!-- Product Name -->
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input asp-for="Laptop.Name" class="form-control border-0 shadow-sm" placeholder="Product Name" />
+                                <label asp-for="Laptop.Name" class="form-label"></label>
+                                <span asp-validation-for="Laptop.Name" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <textarea asp-for="Laptop.Description" class="form-control border-0 shadow-sm" placeholder="Description" style="height: 150px"></textarea>
+                                <label asp-for="Laptop.Description" class="form-label"></label>
+                                <span asp-validation-for="Laptop.Description" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Pricing & Stock -->
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="Laptop.Price" class="form-control border-0 shadow-sm" placeholder="Price" type="number" step="0.01" />
+                                <label asp-for="Laptop.Price" class="form-label"></label>
+                                <span asp-validation-for="Laptop.Price" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="Laptop.StockQuantity" class="form-control border-0 shadow-sm" placeholder="Stock Quantity" type="number" />
+                                <label asp-for="Laptop.StockQuantity" class="form-label"></label>
+                                <span asp-validation-for="Laptop.StockQuantity" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Technical Specifications -->
+                        <div class="col-12">
+                            <h5 class="text-muted mb-3">Technical Specifications</h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input asp-for="Laptop.Processor" class="form-control border-0 shadow-sm" placeholder="Processor" />
+                                        <label asp-for="Laptop.Processor" class="form-label"></label>
+                                        <span asp-validation-for="Laptop.Processor" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input asp-for="Laptop.RAM" class="form-control border-0 shadow-sm" placeholder="RAM" />
+                                        <label asp-for="Laptop.RAM" class="form-label"></label>
+                                        <span asp-validation-for="Laptop.RAM" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        <input asp-for="Laptop.Storage" class="form-control border-0 shadow-sm" placeholder="Storage" />
+                                        <label asp-for="Laptop.Storage" class="form-label"></label>
+                                        <span asp-validation-for="Laptop.Storage" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="Laptop.ScreenSize" class="form-control border-0 shadow-sm" placeholder="Screen Size" type="number" step="0.1" />
+                                        <label asp-for="Laptop.ScreenSize" class="form-label"></label>
+                                        <span asp-validation-for="Laptop.ScreenSize" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="Laptop.GraphicsCard" class="form-control border-0 shadow-sm" placeholder="Graphics Card" />
+                                        <label asp-for="Laptop.GraphicsCard" class="form-label"></label>
+                                        <span asp-validation-for="Laptop.GraphicsCard" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Relationships -->
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <select asp-for="Laptop.CategoryID" asp-items="Model.CategoryList" class="form-select border-0 shadow-sm">
+                                    <option value="">Select Category</option>
+                                </select>
+                                <label asp-for="Laptop.CategoryID" class="form-label"></label>
+                                <span asp-validation-for="Laptop.CategoryID" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <select asp-for="Laptop.BrandID" asp-items="Model.BrandList" class="form-select border-0 shadow-sm">
+                                    <option value="">Select Brand</option>
+                                </select>
+                                <label asp-for="Laptop.BrandID" class="form-label"></label>
+                                <span asp-validation-for="Laptop.BrandID" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <select asp-for="Laptop.ProductTypeID" asp-items="Model.ProductTypeList" class="form-select border-0 shadow-sm">
+                                    <option value="">Select Type</option>
+                                </select>
+                                <label asp-for="Laptop.ProductTypeID" class="form-label"></label>
+                                <span asp-validation-for="Laptop.ProductTypeID" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Image Upload -->
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input type="file" name="file" class="form-control border-0 shadow-sm" accept="image/*" onchange="previewImage(event)" />
+                                <label asp-for="Laptop.ImageUrl" class="form-label"></label>
+                            </div>
+                            <div class="mt-3">
+                                <img id="imagePreview" src="@Model.Laptop.ImageUrl" class="img-thumbnail rounded-3" style="max-height: 200px; display: none;" />
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="col-12 d-flex justify-content-between">
+                            <a asp-controller="Laptop" asp-action="Index" class="btn btn-lg btn-secondary rounded-pill px-4">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-lg btn-primary rounded-pill px-4">
+                                <i class="bi bi-save"></i> @($"{(Model.Laptop.ProductID != 0 ? "Update" : "Create")} Laptop")
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="RAM" class="control-label"></label>
-                <input asp-for="RAM" class="form-control" />
-                <span asp-validation-for="RAM" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Storage" class="control-label"></label>
-                <input asp-for="Storage" class="form-control" />
-                <span asp-validation-for="Storage" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ScreenSize" class="control-label"></label>
-                <input asp-for="ScreenSize" class="form-control" />
-                <span asp-validation-for="ScreenSize" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GraphicsCard" class="control-label"></label>
-                <input asp-for="GraphicsCard" class="form-control" />
-                <span asp-validation-for="GraphicsCard" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CategoryID" class="control-label"></label>
-                <select asp-for="CategoryID" class ="form-control" asp-items="ViewBag.CategoryID"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="BrandID" class="control-label"></label>
-                <select asp-for="BrandID" class ="form-control" asp-items="ViewBag.BrandID"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="StockQuantity" class="control-label"></label>
-                <input asp-for="StockQuantity" class="form-control" />
-                <span asp-validation-for="StockQuantity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ProductTypeID" class="control-label"></label>
-                <select asp-for="ProductTypeID" class ="form-control" asp-items="ViewBag.ProductTypeID"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
+    <script>
+        // Image preview handler
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function () {
+                const preview = document.getElementById('imagePreview');
+                preview.src = reader.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        // Initialize TinyMCE
+        tinymce.init({
+            selector: '#Laptop_Description',
+            plugins: 'ai code codesample emoticons image link lists media table',
+            toolbar: 'undo redo | blocks | bold italic underline | align | numlist bullist | image media | table | code',
+            image_title: true,
+            automatic_uploads: true,
+            file_picker_types: 'image',
+            file_picker_callback: (cb, value, meta) => {
+                const input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('accept', 'image/*');
+                input.onchange = function () {
+                    const file = this.files[0];
+                    const reader = new FileReader();
+                    reader.onload = function () {
+                        const id = 'blobid' + (new Date()).getTime();
+                        const blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                        const base64 = reader.result.split(',')[1];
+                        const blobInfo = blobCache.create(id, file, base64);
+                        blobCache.add(blobInfo);
+                        cb(blobInfo.blobUri(), { title: file.name });
+                    };
+                    reader.readAsDataURL(file);
+                };
+                input.click();
+            }
+        });
+    </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

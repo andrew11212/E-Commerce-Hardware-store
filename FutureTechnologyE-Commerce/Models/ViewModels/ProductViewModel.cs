@@ -8,7 +8,7 @@ namespace FutureTechnologyE_Commerce.Models.ViewModels
 		public Product Product { get; set; }
 		[ValidateNever]
 
-
+		public Laptop Laptop { get; set; }
 		
 		public IEnumerable<SelectListItem> CategoryList { get; set; } = default!;
         [ValidateNever]
