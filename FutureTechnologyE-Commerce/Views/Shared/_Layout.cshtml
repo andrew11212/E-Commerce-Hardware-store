@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 
     <style>
@@ -21,8 +21,8 @@
         }
 
         .top-brand {
-            background-color: #177fe9;
-            padding: 1rem;
+            background-color: #1125ab;
+            padding: 1rem 0;
         }
 
         .navbar-brand {
@@ -31,6 +31,7 @@
             color: white !important;
             font-size: xx-large;
             text-transform: uppercase;
+            transition: font-size 0.3s;
         }
 
         .nav-link {
@@ -48,6 +49,7 @@
             position: relative;
             width: 100%;
             max-width: 400px;
+            transition: all 0.3s;
         }
 
         .search-btn {
@@ -55,6 +57,7 @@
             border: 2px solid var(--primary);
             background: transparent;
             color: var(--primary);
+            transition: all 0.3s;
         }
 
             .search-btn:hover {
@@ -72,63 +75,114 @@
             cursor: pointer;
         }
 
-        @@media (max-width: 768px) {
+        @@media (max-width: 992px) {
+            .navbar-brand {
+                font-size: large;
+            }
+
+            .top-brand .container {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1rem;
+            }
+
             .search-container {
                 width: 100%;
+                order: 2;
                 margin-top: 1rem;
+            }
+
+            .navbar-collapse {
+                flex-basis: 100%;
+                order: 1;
+            }
+
+            .social-icons {
+                justify-content: center !important;
+            }
+
+            .nav-item.dropdown {
+                text-align: center;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .search-container input {
+                width: 100%;
+            }
+
+            .search-btn {
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+
+            .footer .col-md-3 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+
+            .footer input[type="email"] {
+                width: 100%;
+            }
+
+            .top-brand .container {
+                padding: 0 1rem;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .navbar-brand {
+                font-size: medium;
+            }
+
+            .top-brand {
+                padding: 0.5rem 0;
+            }
+
+            .footer .input-group {
+                flex-direction: column;
+            }
+
+            .footer .form-control {
+                margin-bottom: 0.5rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="top-brand">
-        <div class="container d-flex justify-content-between align-items-center">
+        <div class="container d-flex flex-wrap justify-content-between align-items-center">
             <a class="navbar-brand" asp-controller="Home" asp-action="Index">
                 <b>Future Technology Store</b>
             </a>
-            <div class="d-flex gap-3 justify-content-center">
-                <!-- Facebook (Blue) -->
-                <a href="#"
-                   class="text-decoration-none"
-                   style="color: #181cf2;">
+
+            <div class="d-flex gap-3 social-icons">
+                <a href="#" class="text-decoration-none" style="color: #181cf2;">
                     <i class="bi bi-facebook fs-3"></i>
                 </a>
-
-                <!-- Instagram (Gradient) -->
-                <a href="#"
-                   class="text-decoration-none"
-                   style="color: #E1306C; /* Fallback */
-              background: linear-gradient(45deg, #E1306C, #F56040, #FCAF45, #FFDC80);
-              -webkit-background-clip: text;
-              color: transparent;">
+                <a href="#" class="text-decoration-none"
+                   style="background: linear-gradient(45deg, #E1306C, #F56040, #FCAF45, #FFDC80);
+                          -webkit-background-clip: text;
+                          color: transparent;">
                     <i class="bi bi-instagram fs-3"></i>
                 </a>
-
-                <!-- YouTube (Red) -->
                 <a href="https://youtube.com/@@user-yasser1?si=Vzyksk7wFrVUyIdX"
-                   class="text-decoration-none"
-                   style="color: #FF0000;">
+                   class="text-decoration-none" style="color: #FF0000;">
                     <i class="bi bi-youtube fs-3"></i>
                 </a>
-
-                <!-- Twitter/X (Blue) -->
-                <a href="@@yasser elgendy"
-                   class="text-decoration-none"
-                   style="color: #1DA1F2;">
+                <a href="@@yasser elgendy" class="text-decoration-none" style="color: #1DA1F2;">
                     <i class="bi bi-twitter fs-3"></i>
                 </a>
             </div>
-            <partial name="_LoginPartial" />
 
-            <!-- Wishlist and Cart -->
             <div class="d-flex align-items-center gap-3">
                 <a class="nav-link text-light " asp-controller="Wishlist" asp-action="Index">
                     <i class="bi bi-heart fs-4 position-relative"></i>
-
+                   
                 </a>
                 <a class="nav-link text-light" asp-controller="Cart" asp-action="Index">
                     <i class="bi bi-cart fs-4 position-relative">
-
+                       
                     </i>
                 </a>
             </div>
@@ -140,6 +194,7 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
@@ -180,7 +235,6 @@
                     </button>
                 </form>
 
-                <!-- Authentication and Cart -->
                 <div class="d-flex align-items-center ms-3">
                     <partial name="_LoginPartial" />
                 </div>
@@ -218,11 +272,11 @@
                     </ul>
                 </div>
                 <div class="col-md-3">
-                    <h5 class="fw-bold">Newsletter</h5>
+                    <h5 class="fw-bold">Our Email</h5>
                     <div class="input-group mb-3">
-                        <input type="email" class="form-control" placeholder="<Yasser_elg_Sh2010@yahoo.com">
+                        <input type="email" class="form-control" placeholder="Yasser_elg_Sh2010@yahoo.com">
                     </div>
-
+                    
                 </div>
             </div>
             <hr class="my-4">
@@ -234,7 +288,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
