@@ -21,7 +21,7 @@ namespace FutureTechnologyE_Commerce.Repository.IRepository
 
 		void Remove(T entity);
 
-		void RemoveRamge(IEnumerable<T> entity);
+		void RemoveRange(IEnumerable<T> entity);
 
 
 	}

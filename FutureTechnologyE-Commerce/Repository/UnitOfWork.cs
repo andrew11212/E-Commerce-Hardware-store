@@ -2,7 +2,7 @@
 using FutureTechnologyE_Commerce.Models;
 using FutureTechnologyE_Commerce.Repository.IRepositery;
 using FutureTechnologyE_Commerce.Repository.IRepository;
-
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,5 +52,14 @@ namespace FutureTechnologyE_Commerce.Repository
 			context.SaveChanges();
 		}
 
+		public void Dispose()
+		{
+			context.Dispose();
+		}
+
+		public IDbContextTransaction BeginTransaction() // Implement this method
+		{
+			return context.Database.BeginTransaction();
+		}
 	}
 }

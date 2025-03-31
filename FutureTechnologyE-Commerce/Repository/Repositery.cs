@@ -36,7 +36,7 @@ namespace FutureTechnologyE_Commerce.Repository
 			{
 				foreach (var property in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
 				{
-					query = query.Include(property.Trim());
+					query = query.Include(property.Trim()).AsNoTracking();
 				}
 			}
 
@@ -48,7 +48,7 @@ namespace FutureTechnologyE_Commerce.Repository
             IQueryable<T> query = Set;
             foreach (var property in includeProperties)
             {
-                query = query.Include(property);
+                query = query.Include(property).AsNoTracking();
             }
             return query.FirstOrDefault(filter);
         }
@@ -63,7 +63,7 @@ namespace FutureTechnologyE_Commerce.Repository
 			Set.Remove(entity);
 		}
 
-		public void RemoveRamge(IEnumerable<T> entity)
+		public void RemoveRange(IEnumerable<T> entity)
 		{
 			Set.RemoveRange(entity);
 		}

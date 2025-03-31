@@ -1,87 +1,88 @@
 ﻿@model CartViewModel
 @Html.AntiForgeryToken()
-<form method="post" class="cart-form">
-    <div class="container my-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-9">
-                <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
-                    <!-- Header -->
-                    <div class="card-header bg-light bg-gradient text-primary py-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="m-0 fw-bold">Shopping Cart</h4>
-                            <a asp-controller="Home" asp-action="Index"
-                               class="btn btn-outline-primary btn-sm rounded-pill px-3 d-none d-md-inline">
-                                Continue Shopping
-                            </a>
-                        </div>
-                    </div>
 
-                    <!-- Mobile Header -->
-                    <div class="d-md-none p-3 border-bottom">
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-9">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <!-- Card Header -->
+                <div class="card-header bg-primary text-p py-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 fw-bold text-light">Your Shopping Cart</h4>
                         <a asp-controller="Home" asp-action="Index"
-                           class="btn btn-outline-primary w-100 rounded-pill mb-3">
+                           class="btn btn-outline-secondary btn-sm rounded-pill px-4 d-none d-md-inline">
                             Continue Shopping
                         </a>
                     </div>
+                </div>
 
-                    <!-- Cart Items -->
-                    <div class="list-group list-group-flush">
-                        @foreach (var item in Model.CartList)
-                        {
-                            <div class="list-group-item px-0">
-                                <div class="row g-3 align-items-center">
-                                    <!-- Image -->
-                                    <div class="col-3 col-md-2">
+                <!-- Mobile Header -->
+                <div class="d-md-none p-3 border-bottom bg-white">
+                    <a asp-controller="Home" asp-action="Index"
+                       class="btn btn-outline-p w-100 rounded-pill mb-3">
+                        Continue Shopping
+                    </a>
+                </div>
+
+                <!-- Cart Items List -->
+                <div class="list-group list-group-flush">
+                    @foreach (var item in Model.CartList)
+                    {
+                        <div class="list-group-item px-3 px-md-4">
+                            <div class="row align-items-center gy-3">
+                                <!-- Product Image -->
+                                <div class="col-4 col-md-3">
+                                    <div class="ratio ratio-1x1">
                                         <img src="@item.Product.ImageUrl"
-                                             class="img-fluid rounded-3"
-                                             style="aspect-ratio: 1/1; object-fit: cover;">
-                                    </div>
-
-                                    <!-- Product Details -->
-                                    <div class="col-9 col-md-5">
-                                        <h6 class="mb-1 text-truncate">@item.Product.Description</h6>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="text-muted small">@item.Product.Price.ToString("c")</span>
-                                            <span class="badge bg-secondary">Qty: @item.Count</span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Quantity Controls -->
-                                    <div class="col-12 col-md-5 text-end">
-                                        <a asp-action="Remove" asp-route-cartId="@item.Id"
-                                           class="btn btn-link text-danger ms-5 p-0">
-                                            <i class="bi bi-trash3-fill"></i>
-                                        </a>
+                                             class="img-fluid rounded-3 object-fit-cover w-100 h-100"
+                                             alt="@item.Product.Description">
                                     </div>
                                 </div>
-                            </div>
-                        }
-                    </div>
 
-                    <!-- Order Summary -->
-                    <div class="card-footer bg-transparent border-0">
-                        <div class="row g-3">
-                            <div class="col-12 col-md-6">
-                                <div class="input-group rounded">
-                                    <input type="text" class="form-control border-primary"
-                                           placeholder="Coupon code">
-                                    <button class="btn btn-outline-primary rounded-end"
-                                            type="button">
-                                        Apply
-                                    </button>
+                                <!-- Product Details -->
+                                <div class="col-8 col-md-5">
+                                    <h6 class="mb-1 text-truncate">@item.Product.Description</h6>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="text-primary fw-bold">@item.Product.Price.ToString("c")</span>
+                                        <span class="badge bg-secondary-opacity">Qty: @item.Count</span>
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="col-12 col-md-4 text-end">
+                                    <a asp-action="Remove" asp-route-cartId="@item.Id"
+                                       class="btn btn-outline-danger btn-sm rounded-circle"
+                                       data-bs-toggle="tooltip" data-bs-title="Remove item">
+                                        <i class="bi bi-trash3"></i>
+                                    </a>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-6">
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-lg btn-primary rounded-pill">
-                                        Checkout - @Model.OrderHeader.OrderTotal.ToString("c")
-                                    </button>
-                                </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Order Summary -->
+                <div class="card-footer bg-white border-0">
+                    <div class="row g-3 g-md-4">
+                        <div class="col-12 col-md-6">
+                            <div class="input-group">
+                                <input type="text" class="form-control border-primary rounded-start-pill"
+                                       placeholder="Coupon code">
+                                <button class="btn btn-outline-primary rounded-end-pill"
+                                        type="button">
+                                    Apply Coupon
+                                </button>
                             </div>
+                        </div>
+                        <div class="col-12 col-md-6 text-end">
+                            <a asp-action="Checkout" class="btn btn-lg btn-primary w-100 rounded-pill py-3">
+                                Checkout Now - @Model.OrderHeader.OrderTotal.ToString("c")
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</form>
+</div>
+

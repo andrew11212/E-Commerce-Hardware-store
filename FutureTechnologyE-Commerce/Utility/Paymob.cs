@@ -9,6 +9,8 @@
 		public string CallbackUrl { get; set; } = string.Empty;
 		public string ApiKey { get; set; } = string.Empty;
 		public string MerchantId { get; set; } = string.Empty;
+		public string HmacSecret { get; set; } = string.Empty;
+
 
 	}
 }
