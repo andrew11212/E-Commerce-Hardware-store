@@ -20,12 +20,12 @@
                         <!-- Personal Information -->
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label asp-for="OrderHeader.first_name" class="form-label fw-bold"></label>
+                                <label asp-for="OrderHeader.first_name" class="form-label fw-bold text-capitalize "></label>
                                 <input asp-for="OrderHeader.first_name" class="form-control form-control-lg" required>
                                 <span asp-validation-for="OrderHeader.first_name" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="OrderHeader.last_name" class="form-label fw-bold"></label>
+                                <label asp-for="OrderHeader.last_name" class="form-label fw-bold text-capitalize"></label>
                                 <input asp-for="OrderHeader.last_name" class="form-control form-control-lg" required>
                                 <span asp-validation-for="OrderHeader.last_name" class="text-danger"></span>
                             </div>
@@ -34,12 +34,12 @@
                         <!-- Contact Information -->
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label asp-for="OrderHeader.email" class="form-label fw-bold"></label>
+                                <label asp-for="OrderHeader.email" class="form-label fw-bold text-capitalize "></label>
                                 <input asp-for="OrderHeader.email" type="email" class="form-control form-control-lg" required>
                                 <span asp-validation-for="OrderHeader.email" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="OrderHeader.phone_number" class="form-label fw-bold"></label>
+                                <label asp-for="OrderHeader.phone_number" class="form-label fw-bold text-capitalize "></label>
                                 <input asp-for="OrderHeader.phone_number" class="form-control form-control-lg" required>
                                 <span asp-validation-for="OrderHeader.phone_number" class="text-danger"></span>
                             </div>
@@ -48,22 +48,22 @@
                         <!-- Address Information -->
                         <div class="row g-3 mb-4">
                             <div class="col-12">
-                                <label asp-for="OrderHeader.street" class="form-label fw-bold"></label>
+                                <label asp-for="OrderHeader.street" class="form-label  fw-bold text-capitalize"></label>
                                 <input asp-for="OrderHeader.street" class="form-control form-control-lg" required>
                                 <span asp-validation-for="OrderHeader.street" class="text-danger"></span>
                             </div>
                             <div class="col-md-4">
-                                <label asp-for="OrderHeader.building" class="form-label fw-bold"></label>
+                                <label asp-for="OrderHeader.building" class="form-label  fw-bold text-capitalize"></label>
                                 <input asp-for="OrderHeader.building" class="form-control form-control-lg">
                                 <span asp-validation-for="OrderHeader.building" class="text-danger"></span>
                             </div>
                             <div class="col-md-4">
-                                <label asp-for="OrderHeader.floor" class="form-label fw-bold"></label>
+                                <label asp-for="OrderHeader.floor" class="form-label  fw-bold text-capitalize"></label>
                                 <input asp-for="OrderHeader.floor" class="form-control form-control-lg">
                                 <span asp-validation-for="OrderHeader.floor" class="text-danger"></span>
                             </div>
                             <div class="col-md-4">
-                                <label asp-for="OrderHeader.state" class="form-label fw-bold"></label>
+                                <label asp-for="OrderHeader.state" class="form-label  fw-bold text-capitalize"></label>
                                 <input asp-for="OrderHeader.state" class="form-control form-control-lg" required>
                                 <span asp-validation-for="OrderHeader.state" class="text-danger"></span>
                             </div>
@@ -72,7 +72,7 @@
                         <!-- Order Summary -->
                         <div class="card rounded-3 border-0 shadow-sm mb-4">
                             <div class="card-body p-4">
-                                <h5 class="mb-3 fw-bold">Order Summary</h5>
+                                <h5 class="mb-3  fw-bold text-capitalize">Order Summary</h5>
                                 <div class="d-flex justify-content-between mb-2">
                                     <span>Subtotal</span>
                                     <span>@Model.OrderHeader.OrderTotal.ToString("C")</span>
@@ -82,7 +82,7 @@
                                     <span>Free</span>
                                 </div>
                                 <hr class="my-3">
-                                <div class="d-flex justify-content-between fw-bold">
+                                <div class="d-flex justify-content-between  fw-bold text-capitalize">
                                     <span>Total</span>
                                     <span>@Model.OrderHeader.OrderTotal.ToString("C")</span>
                                 </div>
