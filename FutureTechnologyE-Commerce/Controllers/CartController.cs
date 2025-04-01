@@ -48,7 +48,6 @@ namespace FutureTechnologyE_Commerce.Controllers
 			try
 			{
 				var userId = GetValidatedUserId();
-				if (userId == null) return Unauthorized();
 
 				CartVM.CartList = (await _unitOfWork.CartRepositery.GetAllAsync(c => c.ApplicationUserId == userId, "Product")).ToList();
 				CartVM.OrderHeader = new OrderHeader();
@@ -66,30 +65,34 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 		#region Cart Operations
 
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> AddToCart(int productId, int count = 1)
+		private async Task<(bool Success, string ErrorMessage)> AddItemToCartInternal(string userId, int productId, int count)
 		{
-			var userId = GetValidatedUserId();
-			if (userId == null) return Unauthorized();
+			if (string.IsNullOrEmpty(userId))
+			{
+				// This shouldn't happen if called after [Authorize]
+				return (false, "User not identified.");
+			}
 
 			var product = await _unitOfWork.ProductRepository.GetAsync(p => p.ProductID == productId);
-			if (product == null || product.StockQuantity < count)
+			if (product == null)
 			{
-				TempData["Error"] = "Product is unavailable or insufficient stock";
-				return RedirectToAction("Index", "Home");
+				return (false, "Product not found.");
+			}
+			if (product.StockQuantity < count)
+			{
+				return (false, "Insufficient stock for initial add.");
 			}
 
 			var cartItem = await _unitOfWork.CartRepositery.GetAsync(c => c.ApplicationUserId == userId && c.ProductId == productId);
 
 			if (cartItem != null)
 			{
-				cartItem.Count += count;
-				if (product.StockQuantity < cartItem.Count)
+				// Check stock before adding to existing count
+				if (product.StockQuantity < cartItem.Count + count)
 				{
-					TempData["Error"] = "Requested quantity exceeds available stock";
-					return RedirectToAction("Index");
+					return (false, "Requested quantity exceeds available stock.");
 				}
+				cartItem.Count += count;
 				await _unitOfWork.CartRepositery.UpdateAsync(cartItem);
 			}
 			else
@@ -103,16 +106,55 @@ namespace FutureTechnologyE_Commerce.Controllers
 			}
 
 			await _unitOfWork.SaveAsync();
-			TempData["Success"] = "Item added to cart successfully";
+			return (true, null); // Success
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		[Authorize]
+		public async Task<IActionResult> AddToCart(int productId, int count = 1)
+		{
+			var userId = GetValidatedUserId();
+			var (success, errorMessage) = await AddItemToCartInternal(userId, productId, count);
+
+			if (success)
+			{
+				TempData["Success"] = "Item added to cart successfully";
+			}
+			else
+			{
+				TempData["Error"] = errorMessage ?? "Could not add item to cart.";
+			}
+			return RedirectToAction("Index"); 
+		}
+
+		[HttpGet]
+		public async Task<IActionResult> RequestAddToCartAfterLogin(int productId, int count = 1)
+		{
+			var userId = GetValidatedUserId();
+			var (success, errorMessage) = await AddItemToCartInternal(userId, productId, count);
+
+			if (success)
+			{
+				TempData["Success"] = "Item added to cart successfully after login.";
+			}
+			else
+			{
+				TempData["Error"] = errorMessage ?? "Could not add item to cart after login.";
+				// Optional: Redirect back to product page if add fails?
+				// return RedirectToAction("Details", "Product", new { id = productId });
+			}
+
+			// Always redirect to Cart Index from this flow
 			return RedirectToAction("Index");
 		}
+
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> UpdateCart(int cartId, int count)
 		{
 			var userId = GetValidatedUserId();
-			if (userId == null) return Unauthorized();
 
 			var cart = await _unitOfWork.CartRepositery.GetAsync(c => c.Id == cartId && c.ApplicationUserId == userId);
 			if (cart == null)

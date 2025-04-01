@@ -1,4 +1,7 @@
-﻿@model Product
+﻿
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@model Product
 @{
     ViewData["Title"] = "Details";
     // Formatting helper function for EGP currency
@@ -40,23 +43,35 @@
                         </span>
                     </p>
                 </div>
+                @if (SignInManager.IsSignedIn(User)) // Or @if (User.Identity.IsAuthenticated)
+                {
+                    <!-- Add to Cart Form -->
+                    <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="productId" value="@Model.ProductID" />
 
-                <!-- Add to Cart Form -->
-                <form asp-controller="Cart" asp-action="AddToCart" method="post">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="productId" value="@Model.ProductID" />
+                        <div class="d-grid gap-3">
+                            <button type="submit"
+                                    class="btn btn-lg btn-primary rounded-pill"
+                                    @(Model.StockQuantity == 0 ? "disabled" : "")>
+                                Add to Cart <i class="bi bi-cart-plus ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                }
+                else
+                {
+                    // --- User is LOGGED OUT: Use the GET link ---
+            <a asp-controller="Cart" asp-action="RequestAddToCartAfterLogin"
+               asp-route-productId="@Model.ProductID"
+               class="btn btn-lg btn-primary rounded-pill">
+                Add to Cart <i class="bi bi-cart-plus ms-2"></i>
+            </a>
+                    @* This link will trigger [Authorize] on RequestAddToCartAfterLogin,
+            redirecting to Login with ReturnUrl pointing here. After login,
+            RequestAddToCartAfterLogin runs, adds the item, and redirects to Cart/Index *@
+                }
 
-                    <div class="d-grid gap-3">
-                        <button type="submit"
-                                class="btn btn-lg btn-primary rounded-pill"
-                                @(Model.StockQuantity == 0 ? "disabled" : "")>
-                            Add to Cart <i class="bi bi-cart-plus ms-2"></i>
-                        </button>
-                        <a href="#" class="btn btn-outline-secondary rounded-pill">
-                            Wishlist <i class="bi bi-heart"></i>
-                        </a>
-                    </div>
-                </form>
             </div>
         </div>
 
