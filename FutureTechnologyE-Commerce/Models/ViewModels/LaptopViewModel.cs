@@ -5,8 +5,8 @@ namespace FutureTechnologyE_Commerce.Models.ViewModels
 {
 	public class LaptopViewModel
 	{
-        [ValidateNever]
-        public Laptop Laptop { get; set; }
+		[ValidateNever]
+		public Laptop Laptop { get; set; } = default!;
 		[ValidateNever]
 		public IEnumerable<SelectListItem> CategoryList { get; set; } = default!;
 		[ValidateNever]
