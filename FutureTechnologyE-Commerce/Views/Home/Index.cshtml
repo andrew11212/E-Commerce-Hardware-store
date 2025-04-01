@@ -1,98 +1,102 @@
-﻿
-@using Microsoft.AspNetCore.Identity
+﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
+
 @using FutureTechnologyE_Commerce.Models.ViewModels
 @model HomeIndexViewModel
 @{
     ViewData["Title"] = "Home Page";
 }
 
-
-
 <!-- Best Selling Products Section -->
-<section class="py-4 py-md-5">
-    <div class="container ">
-        <!-- Full-width curved header line -->
+<section class="py-4 py-md-5 ">
+    <div class="container">
         <div class="curved-line">
             <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
-                <h3-title class="fw-bold mb-0">Best Selling Products</h3-title>
-                <a asp-action="GetAllProducts" asp-controller="Home" class="text-decoration-none Mtext-primary d-none d-md-inline">
+                <h3-title class=" fw-bold mb-0">Best Selling Products</h3-title>
+                <a asp-action="GetAllProducts" asp-controller="Home"
+                   class="text-decoration-none Mtext-primary d-none d-md-inline">
                     View All <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
         </div>
 
-        <!-- Contained product grid -->
-        <div class="product-container">
-            <div class="row g-3 g-md-4">
+        <!-- Carousel Container -->
+        <div class="position-relative">
+            <!-- Navigation Arrows -->
+            <button class="carousel-arrow prev-arrow d-none d-md-flex">
+                <i class="bi bi-chevron-left fs-1 text-primary"></i>
+            </button>
+            <button class="carousel-arrow next-arrow d-none d-md-flex">
+                <i class="bi bi-chevron-right fs-1 text-primary"></i>
+            </button>
 
-                @foreach (var product in Model.Products)
-                {
-                    <div class="col-6 col-md-4 col-lg-3">
-                        <div class="card h-100 shadow-sm rounded-3 overflow-hidden">
-                            <picture>
-                                <source srcset="@product.ImageUrl" type="image/jpeg">
-                                <img src="@product.ImageUrl"
-                                     class="card-img-top object-fit-cover"
-                                     style="aspect-ratio: 4/3;"
-                                     alt="@product.Name"
-                                     loading="lazy"
-                                     onerror="this.src='/images/placeholder.avif'">
-                            </picture>
-                            <div class="card-body d-flex flex-column px-3 pb-3">
-                                <h5 class="card-title fw-semibold text-truncate-2 mb-2">@product.Name</h5>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div>
-                                        <span class="text-primary fw-bold fs-5">@product.Price.ToString("C")</span>
-                                        <del class="text-muted small ms-2 d-none d-md-inline">@((product.Price * 1.2m).ToString("C"))</del>
+            <!-- Scroll Container -->
+            <div class="scroll-container">
+                <div class="d-flex flex-nowrap">
+                    @foreach (var product in Model.Products)
+                    {
+                        <div class="product-card mx-2 mb-3" style="min-width: 22%;">
+                            <div class="card h-100 border-0 shadow-sm rounded-3">
+                                <picture>
+                                    <source srcset="@product.ImageUrl" type="image/webp">
+                                    <img src="@product.ImageUrl"
+                                         class="card-img-top object-fit-cover"
+                                         style="aspect-ratio: 4/3;"
+                                         alt="@product.Name"
+                                         loading="lazy"
+                                         onerror="this.src='/images/placeholder.avif'">
+                                </picture>
+                                <div class="card-body d-flex flex-column px-3 pb-3">
+                                    <h5 class="card-title fw-semibold text-truncate-2 mb-2">@product.Name</h5>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div>
+                                            <span class="text-primary fw-bold fs-5">@product.Price.ToString("C")</span>
+                                            <del class="text-muted small ms-2 d-none d-md-inline">@((product.Price * 1.2m).ToString("C"))</del>
+                                        </div>
+                                        <span class="badge bg-@(product.StockQuantity > 0 ? "success" : "danger") rounded-pill">
+                                            @(product.StockQuantity > 0 ? "In Stock" : "Sold Out")
+                                        </span>
                                     </div>
-                                    <span class="badge @(product.StockQuantity > 0 ? "bg-success" : "bg-danger") rounded-pill">
-                                        @(product.StockQuantity > 0 ? "In Stock" : "Sold Out")
-                                    </span>
-                                </div>
-                                <div class="d-grid gap-2 mt-auto">
-                                    <a asp-action="Details" asp-route-id="@product.ProductID"
-                                       class="btn btn-outline-primary rounded-pill btn-sm">
-                                        View Details
-                                    </a>
-                                    @if (SignInManager.IsSignedIn(User)) // Or @if (User.Identity.IsAuthenticated)
-                                    {
-                                        <form asp-controller="Cart" asp-action="AddToCart" method="post">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="productId" value="@product.ProductID" />
-                                            <div class="d-grid gap-2">
-                                                <button type="submit"
-                                                        class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center"
-                                                        @(product.StockQuantity == 0 ? "disabled" : "")>
-                                                    <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
-                                                    <span class="btn-text">Add to Cart</span> <i class="bi bi-cart-plus ms-2"></i>
-                                                </button>
-                                                <a href="#" class="btn btn-outline-secondary rounded-pill btn-sm d-flex align-items-center">
-                                                    <i class="bi bi-heart me-2"></i> Wishlist
-                                                </a>
-                                            </div>
-                                        </form>
-                                    }
-                                    else
-                                    {
-                                        // --- User is LOGGED OUT: Use the GET link ---
-                                <a asp-controller="Cart" asp-action="RequestAddToCartAfterLogin"
-                                   asp-route-productId="@product.ProductID"
-                                   class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center">
-                                    <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
-                                    <span class="btn-text">Add to Cart</span> <i class="bi bi-cart-plus ms-2"></i>
+                                    <div class="d-grid gap-2 mt-auto">
+                                        <a asp-action="Details" asp-route-id="@product.ProductID"
+                                           class="btn btn-outline-primary rounded-pill btn-sm">
+                                            View Details
+                                        </a>
+                                        @if (SignInManager.IsSignedIn(User)) // Or @if (User.Identity.IsAuthenticated)
+                                        {
+                                            <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="productId" value="@product.ProductID" />
+                                                <div class="d-grid gap-2">
+                                                    <button type="submit"
+                                                            class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center"
+                                                    @(product.StockQuantity == 0 ? "disabled" : "")>
+                                                        <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
+                                                        <span class="btn-text">Add to Cart</span> <i class="bi bi-cart-plus ms-2"></i>
+                                                    </button>
+                                                    <a href="#" class="btn btn-outline-secondary rounded-pill btn-sm d-flex align-items-center">
+                                                        <i class="bi bi-heart me-2"></i> Wishlist
+                                                    </a>
+                                                </div>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            // --- User is LOGGED OUT: Use the GET link ---
+                                            <a asp-controller="Cart" asp-action="RequestAddToCartAfterLogin"
+                                               asp-route-productId="@product.ProductID"
+                                               class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center">
+                                                <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
+                                                <span class="btn-text">Add to Cart</span> <i class="bi bi-cart-plus ms-2"></i>
 
-                                </a>
-                                    }
-
+                                            </a>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                }
-            </div>
-            <div class="text-center mt-4 d-md-none">
-                <a asp-action="GetAllProducts" asp-controller="Home" class="btn btn-outline-primary rounded-pill">View All Products</a>
+                    }
+                </div>
             </div>
         </div>
     </div>
@@ -123,74 +127,93 @@
     </div>
 </section>
 
-@section Scripts {
-    <script>
-        // Existing JavaScript code remains unchanged
-        document.addEventListener('DOMContentLoaded', function () {
-            const addToCartForms = document.querySelectorAll('.add-to-cart-form');
-            const cartCount = document.querySelector('.cart-count');
+<style>
+    /* Carousel Styles */
+    .product-card {
+        flex: 0 0 calc(22% - 1rem);
+        max-width: calc(22% - 1rem);
+        margin: 0 0.5rem;
+        transition: transform 0.3s;
+    }
 
-            addToCartForms.forEach(form => {
-                form.addEventListener('submit', async function (e) {
-                    e.preventDefault();
+    .scroll-container {
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        padding: 1rem 0;
+    }
 
-                    const button = this.querySelector('button[type="submit"]');
-                    const spinner = button.querySelector('.spinner-border');
-                    const buttonText = button.querySelector('.btn-text');
-                    const productId = this.querySelector('input[name="productId"]').value;
+        .scroll-container::-webkit-scrollbar {
+            display: none;
+        }
 
-                    button.disabled = true;
-                    spinner.classList.remove('d-none');
-                    buttonText.textContent = 'Adding...';
+    .carousel-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid #0d6efd;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        z-index: 2;
+        transition: all 0.3s;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
 
-                    try {
-                        const response = await fetch('/Cart/AddToCart', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                            },
-                            body: JSON.stringify({ productId })
-                        });
+        .carousel-arrow:hover {
+            background: #0d6efd;
+            color: white;
+            transform: translateY(-50%) scale(1.1);
+        }
 
-                        if (response.ok) {
-                            const data = await response.json();
-                            cartCount.textContent = data.cartCount;
-                            showSuccess(button);
-                        } else {
-                            throw new Error('Error adding to cart');
-                        }
-                    } catch (error) {
-                        console.error(error);
-                        showError(button);
-                    }
-                });
+    .prev-arrow {
+        left: -25px;
+    }
+
+    .next-arrow {
+        right: -25px;
+    }
+
+    /* Responsive Behavior */
+    @@media (max-width: 992px) {
+        .product-card {
+            flex: 0 0 calc(48% - 1rem);
+            max-width: calc(48% - 1rem);
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .product-card {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        .carousel-arrow {
+            display: none !important;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const scrollContainer = document.querySelector('.scroll-container');
+        const prevArrow = document.querySelector('.prev-arrow');
+        const nextArrow = document.querySelector('.next-arrow');
+
+        nextArrow.addEventListener('click', () => {
+            scrollContainer.scrollBy({
+                left: scrollContainer.offsetWidth * 0.8,
+                behavior: 'smooth'
             });
-
-            function showSuccess(button) {
-                const originalText = button.querySelector('.btn-text').textContent;
-                button.classList.add('btn-success');
-                button.querySelector('.btn-text').textContent = 'Added ✓';
-
-                setTimeout(() => {
-                    button.disabled = false;
-                    button.querySelector('.spinner-border').classList.add('d-none');
-                    button.querySelector('.btn-text').textContent = originalText;
-                    button.classList.remove('btn-success');
-                }, 2000);
-            }
-
-            function showError(button) {
-                button.classList.add('btn-danger');
-                button.querySelector('.btn-text').textContent = 'Error!';
-
-                setTimeout(() => {
-                    button.disabled = false;
-                    button.querySelector('.spinner-border').classList.add('d-none');
-                    button.querySelector('.btn-text').textContent = 'Add to Cart';
-                    button.classList.remove('btn-danger');
-                }, 2000);
-            }
         });
-    </script>
-}
+
+        prevArrow.addEventListener('click', () => {
+            scrollContainer.scrollBy({
+                left: -scrollContainer.offsetWidth * 0.8,
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
