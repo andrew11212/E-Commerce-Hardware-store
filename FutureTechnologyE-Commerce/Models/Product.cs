@@ -12,7 +12,6 @@ namespace FutureTechnologyE_Commerce.Models
 		[Required]
 		[StringLength(255)]
 		public string Name { get; set; } = string.Empty;
-
 		public string? Description { get; set; }
 
 		[Required]
@@ -22,6 +21,7 @@ namespace FutureTechnologyE_Commerce.Models
 		[ForeignKey("Category")]
 		public int CategoryID { get; set; }
 
+		public bool IsBestseller { get; set; } = false;
 		[ForeignKey("Brand")]
 		public int BrandID { get; set; }
 
