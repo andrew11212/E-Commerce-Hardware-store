@@ -15,7 +15,7 @@ function loadDataTable() {
             {
                 "data": "price",
                 "render": function (data) {
-                    return '$' + data.toFixed(2);
+                    return '$' + parseFloat(data).toFixed(2);
                 }
             },
             { "data": "categoryName" },
@@ -23,15 +23,21 @@ function loadDataTable() {
             { "data": "productTypeName" },
             { "data": "stockQuantity" },
             {
+                "data": "isBestseller",
+                "render": function (data, type, row) {
+                    return data ? '<span class="badge bg-success">Yes</span>' : '<span class="badge bg-secondary">No</span>';
+                }
+            },
+            {
                 "data": "productID",
                 "render": function (data) {
                     return `
-                        <div class="btn-group">
-                            <a href="/Product/Ubsert/${data}" class="btn btn-primary">
-                                <i class="bi bi-pencil-square"></i>
+                        <div class="btn-group" role="group">
+                            <a href="/Product/Ubsert/${data}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-pencil-square"></i> Edit
                             </a>
-                            <button onclick="Delete(${data})" class="btn btn-danger">
-                                <i class="bi bi-trash-fill"></i>
+                            <button onclick="Delete(${data})" class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash-fill"></i> Delete
                             </button>
                         </div>
                     `;
@@ -39,7 +45,16 @@ function loadDataTable() {
             }
         ],
         "responsive": true,
-        "autoWidth": false
+        "autoWidth": false,
+        "language": {
+            "emptyTable": "No products found."
+        },
+        "columnDefs": [ // Move actions column to the end
+            {
+                "targets": -1,
+                "orderable": false // Disable sorting for the actions column
+            }
+        ]
     });
 }
 

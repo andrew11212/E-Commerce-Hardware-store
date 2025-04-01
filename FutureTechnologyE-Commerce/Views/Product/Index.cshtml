@@ -4,21 +4,18 @@
     ViewBag.Title = "Product List";
 }
 
-
-<div class="col-12 d-flex justify-content-end  ">
+<div class="col-12 d-flex justify-content-end mb-3">
     <a asp-controller="Product" asp-action="Ubsert" class="btn btn-primary shadow-sm">
         <i class="bi bi-patch-plus"></i> Create New Product
     </a>
 </div>
-<div class="card shadow border-0 mt-2 mb-5">
-    <div class="row  pb-0">
-    </div>
+
+<div class="card shadow border-0">
     <div class="card-header bg-secondary text-light text-center">
         <h2 class="m-0">Products</h2>
     </div>
     <div class="card-body">
-
-        <table id="myTable" class="table table-hover table-striped table-lg  table-borderless text-center align-middle  " width="100%">
+        <table id="myTable" class="table table-hover table-striped table-bordered text-center align-middle" width="100%">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -28,12 +25,16 @@
                     <th>Brand</th>
                     <th>Type</th>
                     <th>Stock</th>
+                    <th>Best Seller</th>
                     <th>Actions</th>
                 </tr>
+            </thead>
+            <tbody>
+            </tbody>
         </table>
     </div>
 </div>
-@section Scripts{
+
+@section Scripts {
     <script src="~/js/Product.js"></script>
 }
-   

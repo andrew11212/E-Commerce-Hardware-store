@@ -4,10 +4,10 @@ using FutureTechnologyE_Commerce.Repository.IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Microsoft.Extensions.Logging; // Make sure this is included
-using System.Threading.Tasks; // Added for Task
+using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 using System.Linq;
-using Microsoft.EntityFrameworkCore; // Make sure this is included
+using Microsoft.EntityFrameworkCore;
 
 namespace FutureTechnologyE_Commerce.Controllers
 {
@@ -22,12 +22,10 @@ namespace FutureTechnologyE_Commerce.Controllers
 			_unitOfWork = unitOfWork;
 		}
 
-		public async Task<IActionResult> Index(int pageNumber = 1, string searchString = "")
+		public async Task<IActionResult> Index( string searchString = "")
 		{
-			// Get queryable products with related entities
 			var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand,ProductType");
 
-			// Apply search filter if searchString is provided
 			if (!string.IsNullOrEmpty(searchString))
 			{
 				searchString = searchString.Trim().ToLower();
@@ -35,24 +33,13 @@ namespace FutureTechnologyE_Commerce.Controllers
 										 (p.Brand != null && p.Brand.Name.ToLower().Contains(searchString)));
 			}
 
-			// Pagination settings
-			int pageSize = 4;
-			int totalCount = await query.CountAsync();
-			var products = await query
-				.Skip((pageNumber - 1) * pageSize)
-				.Take(pageSize)
-				.ToListAsync();
 
-			// Populate view model
 			var viewModel = new HomeIndexViewModel
 			{
-				Products = products, // Paginated list only
-				PageNumber = pageNumber,
-				PageSize = pageSize,
-				TotalCount = totalCount,
+				Products = (await _unitOfWork.ProductRepository.GetAllAsync(c=>c.IsBestseller, includeProperties: "Category,Brand,ProductType")), // Use the paginated list
 				SearchString = searchString,
 				Laptops = (await _unitOfWork.LaptopRepository.GetAllAsync(null, includeProperties: "Category,Brand,ProductType"))
-					.Take(5) // Optional: limit to 5 laptops for performance
+					.Take(5)
 					.ToList()
 			};
 
@@ -63,7 +50,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 		{
 			var product = await _unitOfWork.ProductRepository.GetAsync(
 				p => p.ProductID == id,
-				"Category",   // Separate navigation properties
+				"Category",
 				"Brand",
 				"ProductType"
 			);
@@ -73,7 +60,6 @@ namespace FutureTechnologyE_Commerce.Controllers
 				return NotFound();
 			}
 
-			// Get related products
 			var relatedProducts = (await _unitOfWork.ProductRepository
 				.GetAllAsync(p => p.CategoryID == product.CategoryID &&
 									 p.ProductID != product.ProductID,
@@ -86,81 +72,71 @@ namespace FutureTechnologyE_Commerce.Controllers
 			return View(product);
 		}
 
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> AddToCart(int productId, int quantity)
+		public async Task<IActionResult> GetAllProducts(int pageNumber = 1, string searchString = "")
 		{
-			// Input validation
-			if (quantity <= 0)
+			var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand,ProductType");
+
+			if (!string.IsNullOrEmpty(searchString))
 			{
-				TempData["error"] = "Quantity must be at least 1";
-				return RedirectToAction(nameof(Details), new { id = productId });
+				searchString = searchString.Trim().ToLower();
+				query = query.Where(c => c.Brand.Name.ToLower().Contains(searchString) || c.Name.ToLower().Contains(searchString));
 			}
 
-			var product = await _unitOfWork.ProductRepository.GetAsync(p => p.ProductID == productId);
-			if (product == null)
-			{
-				TempData["error"] = "Product not found";
-				return RedirectToAction(nameof(Index));
-			}
+			int pageSize = 4;
+			int totalCount = await query.CountAsync();
+			var products = await query
+				.Skip((pageNumber - 1) * pageSize)
+				.Take(pageSize)
+				.ToListAsync();
 
-			// Authentication check
-			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			if (string.IsNullOrEmpty(userId))
-			{
-				TempData["error"] = "Please login to add items to cart";
-				return RedirectToAction("Login", "Account");
-			}
-
-			// Cart operations
-			var cartItem = await _unitOfWork.CartRepositery
-				.GetAsync(c => c.ApplicationUserId == userId && c.ProductId == productId);
-
-			if (cartItem != null)
-			{
-				cartItem.Count += quantity;
-				await _unitOfWork.CartRepositery.UpdateAsync(cartItem);
-			}
-			else
-			{
-				var newCartItem = new ShopingCart
-				{
-					ApplicationUserId = userId,
-					ProductId = productId,
-					Count = quantity
-				};
-				await _unitOfWork.CartRepositery.AddAsync(newCartItem);
-			}
-
-			await _unitOfWork.SaveAsync();
-			TempData["success"] = "Item added to cart successfully";
-			return RedirectToAction(nameof(Details), new { id = productId });
-		}
-		public async Task<IActionResult> GetAllProducts()
-		{
 			var viewModel = new HomeIndexViewModel
 			{
-				// Get all products, including laptops
-				Products = (await _unitOfWork.ProductRepository.GetAllAsync(null, includeProperties: "Category,Brand,ProductType")).ToList(),
+				SearchString = searchString,
+				Products = products,
+				PageNumber = pageNumber,
+				PageSize = pageSize,
+				TotalCount = totalCount,
 			};
 			return View(viewModel);
 		}
-		public async Task<IActionResult> GetAllLaptops ()
+
+		public async Task<IActionResult> GetAllLaptops(int pageNumber = 1, string searchString = "")
 		{
+			var query = _unitOfWork.LaptopRepository.GetQueryable(includeProperties: "Category,Brand,ProductType");
+
+			if (!string.IsNullOrEmpty(searchString))
+			{
+				searchString = searchString.Trim().ToLower();
+				query = query.Where(c => c.Brand.Name.ToLower().Contains(searchString) || c.Name.ToLower().Contains(searchString));
+			}
+
+			int pageSize = 4;
+			int totalCount = await query.CountAsync();
+			var laptops = await query
+				.Skip((pageNumber - 1) * pageSize)
+				.Take(pageSize)
+				.ToListAsync();
+
 			var viewModel = new HomeIndexViewModel
 			{
-				Laptops = (await _unitOfWork.LaptopRepository.GetAllAsync(null, includeProperties: "Category,Brand,ProductType")).ToList(),
+				SearchString = searchString,
+				PageNumber = pageNumber,
+				PageSize = pageSize,
+				TotalCount = totalCount,
+				Laptops = laptops,
 			};
 			return View(viewModel);
 		}
+
 		public IActionResult Privacy()
 		{
 			return View();
 		}
-        [AllowAnonymous]
-        public IActionResult Error()
-        {
-            return View();
-        }
-    }
+
+		[AllowAnonymous]
+		public IActionResult Error()
+		{
+			return View();
+		}
+	}
 }
