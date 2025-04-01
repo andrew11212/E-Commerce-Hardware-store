@@ -1,26 +1,29 @@
 ﻿@model FutureTechnologyE_Commerce.Models.ViewModels.HomeIndexViewModel
 
 @{
-    ViewData["Title"] = "All Products";
+    ViewData["Title"] = "All Laptops";
+
 }
 
 <div class="container my-5">
     <div class="row g-4">
-        <div class="curved-line">
-            <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
-                <h3-title class=" fw-bold mb-0">Best Selling Products</h3-title>
-            </div>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+            <h1 class="display-6 fw-bold mb-3 mb-md-0">@ViewData["Title"]</h1>
+            <form asp-action="GetAllProducts" method="get" class="d-flex">
+                <input type="text" name="searchString" value="@Model.SearchString"
+                       class="form-control me-2" placeholder="Search products..." />
+                <button type="submit" class="btn btn-outline-primary">Search</button>
+            </form>
         </div>
-    
+
         @foreach (var item in Model.Products)
         {
             <div class="col-12 col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-                    <!-- Product Image -->
+                <div class="card h-100 border-0 shadow rounded-3 overflow-hidden">
                     <div class="position-relative">
                         <img src="@item.ImageUrl"
                              class="card-img-top img-fluid object-fit-cover"
-                             style="aspect-ratio: 16/9"
+                             style="aspect-ratio: 16/9; object-position: center"
                              alt="@item.Name">
 
                         <div class="position-absolute top-0 end-0 m-3">
@@ -28,75 +31,95 @@
                             <span class="badge bg-secondary">@item.Brand.Name</span>
                         </div>
                     </div>
-                    <div class="mb-3 small text-dark">
-                        <div><strong>Processor:</strong> @item.Price</div>
-                        <div><strong>RAM:</strong> @item.StockQuantity</div>
-                    </div>
-                    <!-- Product Details -->
+
                     <div class="card-body d-flex flex-column">
-                        <h5 class="card-title fw-bold text-truncate">@item.Name</h5>
+                        <h5 class="card-title fw-bold text-truncate-2">@item.Name</h5>
                         <p class="card-text text-muted small mb-2">@item.ProductType.Name</p>
                         <div class="d-flex justify-content-between align-items-center mt-auto">
-                            @*<div>
-                    <span class="h5 text-primary fw-bold">@item.Price.ToString("C")</span>
-                    @if (item.Discount > 0)
-                    {
-                        <span class="text-danger ms-2">
-                            <del>@((item.Price * 1.2m).ToString("C"))</del>
-                        </span>
-                    }
-                </div>*@
+                            <div>
+                                <span class="h5 text-primary fw-bold">@item.Price.ToString("C")</span>
+                            </div>
 
-                            <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                            <form asp-controller="Cart" asp-action="AddToCart" method="post" class="addToCartForm">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="productId" value="@item.ProductID" />
-                                <div class="d-grid gap-2">
-                                    <button type="submit"
-                                            class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center"
-                                            @(item.StockQuantity == 0 ? "disabled" : "")>
-                                        <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
-                                        <span class="btn-text">Add to Cart</span> <i class="bi bi-cart-plus ms-2"></i>
-                                    </button>
-                                    
-                                </div>
+                                <button type="submit" class="btn btn-primary btn-sm rounded-pill"
+                                        @(item.StockQuantity == 0 ? "disabled" : "")>
+                                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                    Add to Cart <i class="bi bi-cart-plus ms-2"></i>
+                                </button>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
         }
+
+        <!-- Pagination Controls -->
+        <div class="pagination mt-4 d-flex justify-content-center flex-wrap gap-2">
+            @{
+                int totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+            }
+            @if (Model.PageNumber > 1)
+            {
+                <a asp-action="Index" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-searchString="@Model.SearchString" class="btn btn-outline-primary">Previous</a>
+            }
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <a asp-action="Index" asp-route-pageNumber="@i" asp-route-searchString="@Model.SearchString"
+                   class="btn btn-outline-primary @(i == Model.PageNumber ? "active" : "")">@i</a>
+            }
+            @if (Model.PageNumber < totalPages)
+            {
+                <a asp-action="GetAllProducts" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-searchString="@Model.SearchString" class="btn btn-outline-primary">Next</a>
+            }
+        </div>
     </div>
 </div>
 
 <style>
     .card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
 
-    .object-fit-cover {
-        object-fit: cover;
+    .text-truncate-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
-    .badge {
-        font-size: 0.8rem;
-        font-weight: 500;
-        padding: 0.3rem 0.6rem;
-        border-radius: 12px;
-        text-transform: uppercase;
+    .addToCartForm {
+        transition: opacity 0.2s;
     }
+
+        .addToCartForm.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
 
     @@media (max-width: 768px) {
-        .card {
-            border-radius: 16px;
-        }
-
         .card-title {
             font-size: 1.1rem;
         }
     }
 </style>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.addToCartForm').forEach(form => {
+            form.addEventListener('submit', function () {
+                const btn = this.querySelector('button');
+                const spinner = btn.querySelector('.spinner-border');
+                btn.classList.add('disabled');
+                spinner.classList.remove('d-none');
+                this.classList.add('loading');
+            });
+        });
+    </script>
+}

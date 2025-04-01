@@ -162,7 +162,9 @@ namespace FutureTechnologyE_Commerce.Controllers
 					categoryName = p.Category?.Name ?? "N/A",
 					brandName = p.Brand?.Name ?? "N/A",
 					productTypeName = p.ProductType?.Name ?? "N/A",
-					stockQuantity = p.StockQuantity
+					stockQuantity = p.StockQuantity,
+					isBestseller =p.IsBestseller
+
 				}).ToList();
 
 				// Return JSON with data and total count
