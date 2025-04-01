@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks; // Added for Task
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering; // Added for SelectList
 
 namespace FutureTechnologyE_Commerce.Controllers
 {
@@ -38,9 +39,20 @@ namespace FutureTechnologyE_Commerce.Controllers
 		}
 
 		[HttpGet]
-		public IActionResult Create()
+		public async Task<IActionResult> Create()
 		{
-			return View();
+			try
+			{
+				var parentCategories = await _unitOfWork.CategoryRepository.GetAllAsync();
+				ViewBag.ParentCategoryID = new SelectList(parentCategories, "CategoryID", "Name");
+				return View();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error occurred while preparing Create view.");
+				TempData["Error"] = "An error occurred while preparing the create form. Please try again.";
+				return RedirectToAction(nameof(Index));
+			}
 		}
 
 		[HttpPost]
@@ -56,12 +68,16 @@ namespace FutureTechnologyE_Commerce.Controllers
 					TempData["Success"] = "Category created successfully";
 					return RedirectToAction(nameof(Index));
 				}
+				var parentCategories = await _unitOfWork.CategoryRepository.GetAllAsync();
+				ViewBag.ParentCategoryID = new SelectList(parentCategories, "CategoryID", "Name");
 				return View(category);
 			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Error occurred while creating a category.");
 				TempData["Error"] = "An error occurred while creating the category. Please try again.";
+				var parentCategories = await _unitOfWork.CategoryRepository.GetAllAsync();
+				ViewBag.ParentCategoryID = new SelectList(parentCategories, "CategoryID", "Name");
 				return View(category);
 			}
 		}
@@ -83,6 +99,10 @@ namespace FutureTechnologyE_Commerce.Controllers
 					_logger.LogWarning("Category with id {Id} not found.", id);
 					return NotFound();
 				}
+
+				var parentCategories = await _unitOfWork.CategoryRepository.GetAllAsync();
+				ViewBag.ParentCategoryID = new SelectList(parentCategories, "CategoryID", "Name", category.ParentCategoryID);
+
 				return View(category);
 			}
 			catch (Exception ex)
@@ -106,12 +126,16 @@ namespace FutureTechnologyE_Commerce.Controllers
 					TempData["Success"] = "Category updated successfully";
 					return RedirectToAction(nameof(Index));
 				}
+				var parentCategories = await _unitOfWork.CategoryRepository.GetAllAsync();
+				ViewBag.ParentCategoryID = new SelectList(parentCategories, "CategoryID", "Name", category.ParentCategoryID);
 				return View(category);
 			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Error occurred while updating category with id {Id}.", category.CategoryID);
 				TempData["Error"] = "An error occurred while updating the category. Please try again.";
+				var parentCategories = await _unitOfWork.CategoryRepository.GetAllAsync();
+				ViewBag.ParentCategoryID = new SelectList(parentCategories, "CategoryID", "Name", category.ParentCategoryID);
 				return View(category);
 			}
 		}

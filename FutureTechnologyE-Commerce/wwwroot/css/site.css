@@ -80,11 +80,73 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(220, 53, 69, 0.15);
+    }
+
+.dl-horizontal dt {
+    width: 160px;
+}
+
+.dl-horizontal dd {
+    margin-left: 180px;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .dl-horizontal dt {
+        float: none;
+        width: auto;
+        text-align: left;
+    }
+    .form-control:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 0.25rem rgba(255,193,7,0.25);
+    }
+
+    .form-select:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 0.25rem rgba(255,193,7,0.25);
+    }
+
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+    .dl-horizontal dd {
+        margin-left: 0;
+    }
+}
 .add-to-cart-form button[disabled] .btn-text {
     visibility: hidden;
 }
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.25rem rgba(0,123,255,0.25);
+}
 
+.form-select:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.25rem rgba(0,123,255,0.25);
+}
+
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
 /* Add this to your CSS */
 .icon-text-link {
     display: flex;
@@ -102,4 +164,44 @@ body {
 {
     margin-left: 2rem;
     margin-right: 0.5rem;
+}
+
+.table-responsive {
+    min-height: 300px;
+}
+
+.table-hover > tbody > tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.btn-group .btn {
+    transition: transform 0.2s ease;
+}
+
+    .btn-group .btn:hover {
+        transform: scale(1.05);
+    }
+
+@media (max-width: 768px) {
+    .table thead {
+        display: none;
+    }
+
+    .table td {
+        display: block;
+        text-align: right;
+        padding: 1rem 1.5rem !important;
+    }
+
+        .table td::before {
+            content: attr(data-label);
+            float: left;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #6c757d;
+        }
+
+        .table td:last-child {
+            border-bottom: none;
+        }
 }

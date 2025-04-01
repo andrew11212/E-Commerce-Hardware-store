@@ -1,34 +1,61 @@
 ﻿@model FutureTechnologyE_Commerce.Models.Category
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Category";
 }
 
-<h1>Create</h1>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-header bg-white border-bottom-0">
+                    <h3 class="fw-bold text-primary mb-0">New Category</h3>
+                    <small class="text-muted">Please fill in category details</small>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-<h4>Category</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                        <div class="form-floating mb-3">
+                            <input asp-for="Name" class="form-control" placeholder="Category name" required>
+                            <label asp-for="Name" class="form-label"></label>
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <select asp-for="ParentCategoryID" class="form-select"
+                                    asp-items="ViewBag.ParentCategoryID" placeholder="Parent category">
+                                <option value="">None</option>
+                            </select>
+                            <label asp-for="ParentCategoryID" class="form-label"></label>
+                            <span asp-validation-for="ParentCategoryID" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-lg btn-primary rounded-pill">
+                                <i class="bi bi-plus-circle me-2"></i>Create Category
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill">
+                                <i class="bi bi-arrow-left me-2"></i>Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="ParentCategoryID" class="control-label"></label>
-                <select asp-for="ParentCategoryID" class ="form-control" asp-items="ViewBag.ParentCategoryID"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
+    
+@section Scripts {
+    <script>
+        // Add smooth transitions to form elements
+        document.querySelectorAll('.form-control, .form-select').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.closest('.form-floating').classList.add('focused');
+            });
+            input.addEventListener('blur', () => {
+                input.closest('.form-floating').classList.remove('focused');
+            });
+        });
+    </script>
+}
