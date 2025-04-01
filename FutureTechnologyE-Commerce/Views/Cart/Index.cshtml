@@ -36,12 +36,13 @@
                                         <img src="@item.Product.ImageUrl"
                                              class="img-fluid rounded-3 object-fit-cover w-100 h-100"
                                              alt="@item.Product.Description">
+                                            
                                     </div>
                                 </div>
 
                                 <!-- Product Details -->
                                 <div class="col-8 col-md-5">
-                                    <h6 class="mb-1 text-truncate">@item.Product.Description</h6>
+                                    <h6 class="mb-1 text-truncate">@item.Product.Name</h6>
                                     <div class="d-flex align-items-center gap-2">
                                         <span class="text-primary fw-bold">@item.Product.Price.ToString("c")</span>
                                         <span class="badge bg-secondary-opacity">Qty: @item.Count</span>

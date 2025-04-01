@@ -103,3 +103,26 @@ body {
     margin-left: 2rem;
     margin-right: 0.5rem;
 }
+/*language */
+html[lang="ar"] {
+    direction: rtl;
+}
+
+    html[lang="ar"] .navbar-brand {
+        margin-left: auto;
+    }
+
+    html[lang="ar"] .search-container {
+        margin-left: auto;
+    }
+
+    html[lang="ar"] .carousel-caption {
+        left: auto;
+        right: 20px;
+        text-align: right;
+    }
+
+    html[lang="ar"] .carousel-indicators {
+        left: auto;
+        right: 50%;
+    }
