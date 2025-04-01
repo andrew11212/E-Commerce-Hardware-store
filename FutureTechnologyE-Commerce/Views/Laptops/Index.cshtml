@@ -24,7 +24,7 @@
                 <td>@item.Processor</td>
                 <td>@item.RAM</td>
                 <td>@item.Storage</td>
-                <td>@item.ScreenSize"</td>
+                <td>@item.ScreenSize</td>
                 <td>@item.GraphicsCard</td>
                 <td>
                     <form asp-action="Delete" asp-route-id="@item.ProductID" method="post" style="display:inline;">
@@ -33,11 +33,7 @@
                             Delete
                         </button>
                     </form>
-                    <form asp-action="Edit" asp-route-id="@item.ProductID" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-primary btn-sm">
-                            Edit
-                        </button>
-                    </form>
+                    <a asp-action="Edit" asp-route-id="@item.ProductID" class="btn btn-primary btn-sm">Edit</a>
                 </td>
             </tr>
         }
