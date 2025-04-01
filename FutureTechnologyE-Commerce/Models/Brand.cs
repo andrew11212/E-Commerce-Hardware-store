@@ -11,8 +11,7 @@ namespace FutureTechnologyE_Commerce.Models
 		[Required]
 		[StringLength(100)]
 		public string Name { get; set; }
-
-		[ValidateNever] 
+		[ValidateNever]
 		public virtual ICollection<Product> Products { get; set; }
 	}
 }
