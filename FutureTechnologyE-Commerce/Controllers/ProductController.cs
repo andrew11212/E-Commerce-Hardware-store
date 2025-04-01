@@ -125,25 +125,48 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 		#region API CALLS
 		[HttpGet]
-		public async Task<IActionResult> GetAll()
+		public async Task<IActionResult> GetAll(
+			[FromQuery] int pageNumber = 1,
+			[FromQuery] int pageSize = 10,
+			[FromQuery] string searchString = "")
 		{
 			try
 			{
-				var products = (await _unitOfWork.ProductRepository.GetAllAsync(
-					includeProperties: "Category,Brand,ProductType"
-				)).Select(p => new
+				// Get the base query with related data
+				var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand,ProductType");
+
+				// Apply search filter if searchString is provided
+				if (!string.IsNullOrEmpty(searchString))
+				{
+					searchString = searchString.Trim().ToLower();
+					query = query.Where(p => p.Name.ToLower().Contains(searchString) ||
+											p.Description.ToLower().Contains(searchString));
+				}
+
+				// Calculate total count for pagination
+				int totalCount = await query.CountAsync();
+
+				// Apply paging
+				var products = await query
+					.Skip((pageNumber - 1) * pageSize)
+					.Take(pageSize)
+					.ToListAsync();
+
+				// Project the results into the desired format
+				var data = products.Select(p => new
 				{
 					productID = p.ProductID,
 					name = p.Name,
 					description = p.Description,
 					price = p.Price,
-					categoryName = p.Category?.Name ?? "N/A", // Handle nulls
+					categoryName = p.Category?.Name ?? "N/A",
 					brandName = p.Brand?.Name ?? "N/A",
 					productTypeName = p.ProductType?.Name ?? "N/A",
 					stockQuantity = p.StockQuantity
 				}).ToList();
 
-				return Json(new { data = products });
+				// Return JSON with data and total count
+				return Json(new { data = data, totalCount = totalCount });
 			}
 			catch (Exception ex)
 			{

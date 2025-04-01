@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging; // Make sure this is included
 using System.Threading.Tasks; // Added for Task
-using System.Linq; // Make sure this is included
+using System.Linq;
+using Microsoft.EntityFrameworkCore; // Make sure this is included
 
 namespace FutureTechnologyE_Commerce.Controllers
 {
@@ -21,16 +22,40 @@ namespace FutureTechnologyE_Commerce.Controllers
 			_unitOfWork = unitOfWork;
 		}
 
-		public async Task<IActionResult> Index()
+		public async Task<IActionResult> Index(int pageNumber = 1, string searchString = "")
 		{
+			// Get queryable products with related entities
+			var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand,ProductType");
+
+			// Apply search filter if searchString is provided
+			if (!string.IsNullOrEmpty(searchString))
+			{
+				searchString = searchString.Trim().ToLower();
+				query = query.Where(p => p.Name.ToLower().Contains(searchString) ||
+										 (p.Brand != null && p.Brand.Name.ToLower().Contains(searchString)));
+			}
+
+			// Pagination settings
+			int pageSize = 4;
+			int totalCount = await query.CountAsync();
+			var products = await query
+				.Skip((pageNumber - 1) * pageSize)
+				.Take(pageSize)
+				.ToListAsync();
+
+			// Populate view model
 			var viewModel = new HomeIndexViewModel
 			{
-				// Get all products, including laptops
-				Products = (await _unitOfWork.ProductRepository.GetAllAsync(null, includeProperties: "Category,Brand,ProductType")).ToList(),
-
-				// Get only Laptops.  This assumes you have a way to filter for laptops, such as by ProductType or Category.
-				Laptops = (await _unitOfWork.LaptopRepository.GetAllAsync(null, includeProperties: "Category,Brand,ProductType")).ToList(),
+				Products = products, // Paginated list only
+				PageNumber = pageNumber,
+				PageSize = pageSize,
+				TotalCount = totalCount,
+				SearchString = searchString,
+				Laptops = (await _unitOfWork.LaptopRepository.GetAllAsync(null, includeProperties: "Category,Brand,ProductType"))
+					.Take(5) // Optional: limit to 5 laptops for performance
+					.ToList()
 			};
+
 			return View(viewModel);
 		}
 
