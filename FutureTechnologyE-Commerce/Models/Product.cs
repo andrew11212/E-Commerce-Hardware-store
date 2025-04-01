@@ -25,7 +25,7 @@ namespace FutureTechnologyE_Commerce.Models
 		[ForeignKey("Brand")]
 		public int BrandID { get; set; }
 
-		[Required]
+		[Required (ErrorMessage ="Add stock")]
 		public int StockQuantity { get; set; }
 
 		[ForeignKey("ProductType")]

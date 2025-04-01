@@ -97,8 +97,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Create(LaptopViewModel laptopVM, IFormFile? file)
 		{
-			try
-			{
+			
 				if (ModelState.IsValid)
 				{
 					if (file != null && file.Length > 0)
@@ -129,18 +128,11 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 				return View(laptopVM); // Return the ViewModel, not just Laptop
 			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error in Laptops Create POST action.");
-				return View("Error");
-			}
-		}
-
+		
 		// GET: Laptops/Edit/5
 		public async Task<IActionResult> Edit(int? id)
 		{
-			try
-			{
+			
 				if (id == null)
 				{
 					return NotFound();
@@ -151,34 +143,18 @@ namespace FutureTechnologyE_Commerce.Controllers
 				{
 					return NotFound();
 				}
-				LaptopViewModel laptopVM = new()
-				{
-					Laptop = laptop,
-					CategoryList = (await _unitOfWork.CategoryRepository.GetAllAsync()).Select(c =>
-						new SelectListItem { Text = c.Name, Value = c.CategoryID.ToString() }).ToList(),
-					BrandList = (await _unitOfWork.BrandRepository.GetAllAsync()).Select(b =>
-						new SelectListItem { Text = b.Name, Value = b.BrandID.ToString() }).ToList(),
-					ProductTypeList = (await _unitOfWork.ProductTypeRepository.GetAllAsync()).Select(pt =>
-						new SelectListItem { Text = pt.Name, Value = pt.ProductTypeID.ToString() }).ToList()
-				};
 
-				return View(laptopVM);
+				return View(laptop);
 			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error in Laptops Edit action with id: {id}.", id);
-				return View("Error");
-			}
-		}
 
 		// POST: Laptops/Edit/5
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, LaptopViewModel laptopVM, IFormFile file)
+		public async Task<IActionResult> Edit(int id, Laptop laptop, IFormFile file)
 		{
 			try
 			{
-				if (id != laptopVM.Laptop.ProductID)
+				if (id != laptop.ProductID)
 				{
 					return NotFound();
 				}
@@ -190,9 +166,9 @@ namespace FutureTechnologyE_Commerce.Controllers
 						string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
 						string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", "products", fileName);
 
-						if (!string.IsNullOrEmpty(laptopVM.Laptop.ImageUrl))
+						if (!string.IsNullOrEmpty(laptop.ImageUrl))
 						{
-							string oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, laptopVM.Laptop.ImageUrl.TrimStart('/'));
+							string oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, laptop.ImageUrl.TrimStart('/'));
 							if (System.IO.File.Exists(oldImagePath))
 							{
 								System.IO.File.Delete(oldImagePath);
@@ -204,21 +180,13 @@ namespace FutureTechnologyE_Commerce.Controllers
 							await file.CopyToAsync(fileStream);
 						}
 
-						laptopVM.Laptop.ImageUrl = "/images/products/" + fileName;
+						laptop.ImageUrl = "/images/products/" + fileName;
 					}
-					await _unitOfWork.LaptopRepository.UpdateAsync(laptopVM.Laptop);
+					await _unitOfWork.LaptopRepository.UpdateAsync(laptop);
 					await _unitOfWork.SaveAsync();
 					return RedirectToAction(nameof(Index));
 				}
-
-				laptopVM.CategoryList = (await _unitOfWork.CategoryRepository.GetAllAsync()).Select(c =>
-						new SelectListItem { Text = c.Name, Value = c.CategoryID.ToString() }).ToList();
-				laptopVM.BrandList = (await _unitOfWork.BrandRepository.GetAllAsync()).Select(b =>
-					new SelectListItem { Text = b.Name, Value = b.BrandID.ToString() }).ToList();
-				laptopVM.ProductTypeList = (await _unitOfWork.ProductTypeRepository.GetAllAsync()).Select(pt =>
-					new SelectListItem { Text = pt.Name, Value = pt.ProductTypeID.ToString() }).ToList();
-
-				return View(laptopVM);
+				return View(laptop);
 			}
 			catch (Exception ex)
 			{

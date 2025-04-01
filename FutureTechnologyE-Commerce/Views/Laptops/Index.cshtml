@@ -1,101 +1,45 @@
-﻿@model List<Laptop>
+﻿@model IEnumerable<FutureTechnologyE_Commerce.Models.Laptop>
 
-@{
-    ViewData["Title"] = "Laptops";
-}
+<h2>Laptops</h2>
 
-<!-- Navigation Bar -->
-<!--<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <ul class="navbar-nav mx-auto">
-            <li class="nav-item">
-                <a class="nav-link @Html.Raw(ViewBag.CurrentCategory == "Airpods" ? "active" : "")" href="@Url.Action("Index", "Laptop", new { category = "Airpods" })">AIRPODS</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link @Html.Raw(ViewBag.CurrentCategory == "Laptop" ? "active" : "")" href="@Url.Action("Index", "Laptop", new { category = "Laptop" })">LAPTOP</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link @Html.Raw(ViewBag.CurrentCategory == "Smartwatch" ? "active" : "")" href="@Url.Action("Index", "Laptop", new { category = "Smartwatch" })">SMARTWATCH</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link @Html.Raw(ViewBag.CurrentCategory == "Headphones" ? "active" : "")" href="@Url.Action("Index", "Laptop", new { category = "Headphones" })">HEADPHONES</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link @Html.Raw(ViewBag.CurrentCategory == "CasesCovers" ? "active" : "")" href="@Url.Action("Index", "Laptop", new { category = "CasesCovers" })">CASES & COVERS</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link @Html.Raw(ViewBag.CurrentCategory == "Bags" ? "active" : "")" href="@Url.Action("Index", "Laptop", new { category = "Bags" })">BAGS</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link @Html.Raw(ViewBag.CurrentCategory == "CablesConnectors" ? "active" : "")" href="@Url.Action("Index", "Laptop", new { category = "CablesConnectors" })">CABLES & CONNECTORS</a>
-            </li>
-        </ul>
-    </div>
-</nav>-->
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New Laptop</a>
+</p>
 
-<!-- Main Content Section -->
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-12 d-flex justify-content-between align-items-center mb-3">
-            <h1 class="text-dark">Laptop</h1>
-            <a href="@Url.Action("Index", "Laptops")" class="text-primary text-uppercase">VIEW ALL</a>
-        </div>
-    </div>
-
-    <div class="swiper product-swiper">
-        <div class="swiper-wrapper">
-            @foreach (var laptop in Model)
-            {
-                <div class="swiper-slide">
-                    <div class="card product-card shadow-sm">
-                        <div class="card-body text-left">
-                            <img src="@($"images/{laptop.Name.Replace(" ", "").ToLower()}.jpg")" alt="@laptop.Name" class="img-fluid mb-3" style="max-height: 200px; object-fit: contain;">
-                            @if (laptop == Model.First())
-                            {
-                                <button class="btn btn-outline-primary btn-sm quick-view position-absolute" style="top: 10px; left: 10px;">
-                                    QUICK VIEW <svg class="bi bi-search" width="16" height="16" fill="currentColor">
-                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                                    </svg>
-                                </button>
-                            }
-                            <h5 class="card-title text-dark mt-2">@laptop.Name</h5>
-                            <p class="card-text text-muted">
-                                @laptop.Processor - @laptop.RAM - @laptop.Storage - @laptop.ScreenSize FHD
-                                @if (!string.IsNullOrEmpty(laptop.GraphicsCard))
-                                {
-                                    <span> - @laptop.GraphicsCard</span>
-                                }
-                            </p>
-                            <p class="card-text text-dark fw-bold">@laptop.Price.ToString("N2") EGP</p>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-        <!-- Swiper Navigation Buttons -->
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
-    </div>
-</div>
-
-
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const swiper = new Swiper('.product-swiper', {
-                slidesPerView: 5,
-                spaceBetween: 20,
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-                breakpoints: {
-                    320: { slidesPerView: 1 },
-                    768: { slidesPerView: 3 },
-                    1024: { slidesPerView: 5 },
-                },
-            });
-        });
-    </script>
-}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Processor</th>
+            <th>RAM</th>
+            <th>Storage</th>
+            <th>Screen Size</th>
+            <th>Graphics Card</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Processor</td>
+                <td>@item.RAM</td>
+                <td>@item.Storage</td>
+                <td>@item.ScreenSize"</td>
+                <td>@item.GraphicsCard</td>
+                <td>
+                    <form asp-action="Delete" asp-route-id="@item.ProductID" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this laptop?');">
+                            Delete
+                        </button>
+                    </form>
+                    <form asp-action="Edit" asp-route-id="@item.ProductID" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            Edit
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -13,9 +13,10 @@
 
     <style>
 
+
         /* Contact Bar Base Styles */
         .contact-bar {
-            background-color: #0219f9;
+            background-color: #030a53;
             color: white;
             padding: 0.75rem 0;
             font-size: 0.875rem;
@@ -246,6 +247,11 @@
                 margin-bottom: 0.5rem;
             }
         }
+
+
+
+
+
     </style>
 
 </head>
@@ -258,16 +264,6 @@
                 <span><i class="bi bi-telephone me-2"></i>+1 800 123 4567</span>
                 <span><i class="bi bi-envelope me-2"></i>Yasser_elg_Sh2010@yahoo.com</span>
             </div>
-        </div>
-    </div>
-
-    <!-- Top Brand Section -->
-    <div class="top-brand">
-        <div class="container d-flex flex-wrap justify-content-between align-items-center">
-            <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-                <b>Future Technology Store</b>
-            </a>
-
             <div class="d-flex gap-3 social-icons">
                 <a href="#" class="text-decoration-none" style="color: #181cf2;">
                     <i class="bi bi-facebook fs-3"></i>
@@ -286,7 +282,24 @@
                     <i class="bi bi-twitter fs-3"></i>
                 </a>
             </div>
+        </div>
 
+
+    </div>
+
+    <!-- Top Brand Section -->
+    <div class="top-brand">
+        <div class="container d-flex flex-wrap justify-content-between align-items-center">
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                <b>Future Technology Store</b>
+            </a>
+            <form asp-controller="Search" asp-action="Index" method="get" class="d-flex search-container">
+                <input name="query" class="form-control me-2" type="search" placeholder="Search products...">
+                <button class="btn search-btn" type="submit">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+          
             <div class="d-flex align-items-center gap-3">
                 <a class="nav-link text-light icon-text-link" asp-controller="Wishlist" asp-action="Index">
                     <i class="bi bi-heart fs-4"></i>
@@ -346,12 +359,7 @@
                     </li>
                 </ul>
 
-                <form asp-controller="Search" asp-action="Index" method="get" class="d-flex search-container">
-                    <input name="query" class="form-control me-2" type="search" placeholder="Search products...">
-                    <button class="btn search-btn" type="submit">
-                        <i class="bi bi-search"></i>
-                    </button>
-                </form>
+                
 
                 <div class="d-flex align-items-center ms-3">
                     <partial name="_LoginPartial" />

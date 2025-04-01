@@ -132,5 +132,10 @@ namespace FutureTechnologyE_Commerce.Controllers
 		{
 			return View();
 		}
-	}
+        [AllowAnonymous]
+        public IActionResult Error()
+        {
+            return View();
+        }
+    }
 }

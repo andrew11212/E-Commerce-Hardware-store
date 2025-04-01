@@ -19,7 +19,8 @@ namespace FutureTechnologyE_Commerce.Repository
 		{
 			this.context = context;
 		}
-		public async Task UpdateAsync(Product product)
+
+        public async Task UpdateAsync(Product product)
 		{
 			context.Attach(product);
 			context.Entry(product).State = EntityState.Modified;
