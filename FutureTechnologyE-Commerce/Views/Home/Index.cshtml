@@ -1,4 +1,7 @@
-﻿@using FutureTechnologyE_Commerce.Models.ViewModels
+﻿
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@using FutureTechnologyE_Commerce.Models.ViewModels
 @model HomeIndexViewModel
 @{
     ViewData["Title"] = "Home Page";
@@ -13,7 +16,7 @@
         <div class="curved-line">
             <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
                 <h3-title class="fw-bold mb-0">Best Selling Products</h3-title>
-                <a   asp-action="GetAllProducts" asp-controller="Home" class="text-decoration-none Mtext-primary d-none d-md-inline">
+                <a asp-action="GetAllProducts" asp-controller="Home" class="text-decoration-none Mtext-primary d-none d-md-inline">
                     View All <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
@@ -22,7 +25,7 @@
         <!-- Contained product grid -->
         <div class="product-container">
             <div class="row g-3 g-md-4">
-                
+
                 @foreach (var product in Model.Products)
                 {
                     <div class="col-6 col-md-4 col-lg-3">
@@ -52,21 +55,36 @@
                                        class="btn btn-outline-primary rounded-pill btn-sm">
                                         View Details
                                     </a>
-                                    <form asp-controller="Cart" asp-action="AddToCart" method="post">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="productId" value="@product.ProductID" />
-                                        <div class="d-grid gap-2">
-                                            <button type="submit"
-                                                    class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center"
-                                            @(product.StockQuantity == 0 ? "disabled" : "")>
-                                                <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
-                                                <span class="btn-text">Add to Cart</span> <i class="bi bi-cart-plus ms-2"></i>
-                                            </button>
-                                            <a href="#" class="btn btn-outline-secondary rounded-pill btn-sm d-flex align-items-center">
-                                                <i class="bi bi-heart me-2"></i> Wishlist
-                                            </a>
-                                        </div>
-                                    </form>
+                                    @if (SignInManager.IsSignedIn(User)) // Or @if (User.Identity.IsAuthenticated)
+                                    {
+                                        <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="productId" value="@product.ProductID" />
+                                            <div class="d-grid gap-2">
+                                                <button type="submit"
+                                                        class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center"
+                                                        @(product.StockQuantity == 0 ? "disabled" : "")>
+                                                    <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
+                                                    <span class="btn-text">Add to Cart</span> <i class="bi bi-cart-plus ms-2"></i>
+                                                </button>
+                                                <a href="#" class="btn btn-outline-secondary rounded-pill btn-sm d-flex align-items-center">
+                                                    <i class="bi bi-heart me-2"></i> Wishlist
+                                                </a>
+                                            </div>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        // --- User is LOGGED OUT: Use the GET link ---
+                                <a asp-controller="Cart" asp-action="RequestAddToCartAfterLogin"
+                                   asp-route-productId="@product.ProductID"
+                                   class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center">
+                                    <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
+                                    <span class="btn-text">Add to Cart</span> <i class="bi bi-cart-plus ms-2"></i>
+
+                                </a>
+                                    }
+
                                 </div>
                             </div>
                         </div>
@@ -99,7 +117,7 @@
                 <!-- Add laptop products here following the same pattern -->
             </div>
             <div class="text-center mt-4 d-md-none">
-                <a    asp-action="GetAllLaptops" asp-controller="Home"class="btn btn-outline-primary rounded-pill">View All Laptops</a>
+                <a asp-action="GetAllLaptops" asp-controller="Home" class="btn btn-outline-primary rounded-pill">View All Laptops</a>
             </div>
         </div>
     </div>
