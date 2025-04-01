@@ -66,21 +66,27 @@
             </div>
         }
 
-        <nav aria-label="Page navigation" class="mt-4">
-            <ul class="pagination justify-content-center">
-                @for (int i = 1; i <= Math.Ceiling((double)Model.TotalCount / Model.PageSize); i++)
-                {
-                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                        <a class="page-link"
-                           asp-action="GetAllLaptops"
-                           asp-route-pageNumber="@i"
-                           asp-route-searchString="@Model.SearchString">
-                            @i
-                        </a>
-                    </li>
-                }
-            </ul>
-        </nav>
+    <nav aria-label="Page navigation" class="mt-4">
+        <!-- Pagination Controls -->
+        <div class="pagination mt-4 d-flex justify-content-center flex-wrap gap-2">
+            @{
+                int totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+            }
+            @if (Model.PageNumber > 1)
+            {
+                <a asp-action="GetAllLaptops" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-searchString="@Model.SearchString" class="btn btn-outline-primary">Previous</a>
+            }
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <a asp-action="GetAllLaptops" asp-route-pageNumber="@i" asp-route-searchString="@Model.SearchString"
+                   class="btn btn-outline-primary @(i == Model.PageNumber ? "active" : "")">@i</a>
+            }
+            @if (Model.PageNumber < totalPages)
+            {
+                <a asp-action="GetAllLaptops" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-searchString="@Model.SearchString" class="btn btn-outline-primary">Next</a>
+            }
+        </div>
+    </nav>
     </div>
 </div>
 
