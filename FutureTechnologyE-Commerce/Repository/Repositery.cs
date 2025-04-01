@@ -64,7 +64,18 @@ namespace FutureTechnologyE_Commerce.Repository
 		{
 			Set.Remove(entity);
 		}
-
+		public IQueryable<T> GetQueryable(string includeProperties = null)
+		{
+			IQueryable<T> query = Set;
+			if (!string.IsNullOrEmpty(includeProperties))
+			{
+				foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+				{
+					query = query.Include(includeProp);
+				}
+			}
+			return query;
+		}
 		public async Task RemoveRangeAsync(IEnumerable<T> entity)
 		{
 			Set.RemoveRange(entity);
