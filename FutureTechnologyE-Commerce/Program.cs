@@ -19,8 +19,6 @@ namespace FutureTechnologyE_Commerce
 		public static void Main(string[] args)
 		{
 			var builder = WebApplication.CreateBuilder(args);
-            // In Program.cs
-           
 
             // Configure logging
             builder.Logging.ClearProviders();
@@ -28,7 +26,6 @@ namespace FutureTechnologyE_Commerce
 			builder.Logging.AddDebug();
 			builder.Logging.SetMinimumLevel(LogLevel.Information);
 
-			// Add services to the container.
 			builder.Services.AddControllersWithViews();
 			builder.Services.AddDbContext<ApplicationDbContext>(options => options
 				.UseSqlServer(builder.Configuration.GetConnectionString("DefualtConnection")));
@@ -97,9 +94,15 @@ namespace FutureTechnologyE_Commerce
 	});
 
 			var app = builder.Build();
+            var supportedCultures = new[] { "en-US", "ar-EG" };
+            var localizationOptions = new RequestLocalizationOptions()
+                .SetDefaultCulture(supportedCultures[0])
+                .AddSupportedCultures(supportedCultures)
+                .AddSupportedUICultures(supportedCultures);
 
-			// Configure the HTTP request pipeline.
-			if (!app.Environment.IsDevelopment())
+            app.UseRequestLocalization(localizationOptions);
+            // Configure the HTTP request pipeline.
+            if (!app.Environment.IsDevelopment())
 			{
 				app.UseExceptionHandler("/Home/Error");
 				app.UseHsts();

@@ -6,6 +6,12 @@
 
 <div class="container my-5">
     <div class="row g-4">
+        <div class="curved-line">
+            <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
+                <h3-title class=" fw-bold mb-0">Best Selling Products</h3-title>
+            </div>
+        </div>
+    
         @foreach (var item in Model.Products)
         {
             <div class="col-12 col-md-6 col-lg-4">
@@ -51,9 +57,7 @@
                                         <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
                                         <span class="btn-text">Add to Cart</span> <i class="bi bi-cart-plus ms-2"></i>
                                     </button>
-                                    <a href="#" class="btn btn-outline-secondary rounded-pill btn-sm d-flex align-items-center">
-                                        <i class="bi bi-heart me-2"></i> Wishlist
-                                    </a>
+                                    
                                 </div>
                             </form>
                         </div>

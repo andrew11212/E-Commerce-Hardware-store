@@ -97,3 +97,9 @@ body {
         font-size: 0.875rem; /* 14px */
         line-height: 1;
     }
+
+.mx-2_adjusted
+{
+    margin-left: 2rem;
+    margin-right: 0.5rem;
+}
