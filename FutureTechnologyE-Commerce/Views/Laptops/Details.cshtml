@@ -1,90 +1,137 @@
 ﻿@model FutureTechnologyE_Commerce.Models.Laptop
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Laptop Details";
 }
 
-<h1>Details</h1>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            <div class="card shadow border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-light position-relative">
+                    <div class="row g-0">
+                        <div class="col-md-5">
+                            <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : "/images/no-image.png")""
+                                 class="img-fluid object-fit-cover h-100 w-100"
+                                 style="aspect-ratio: 16/9; object-position: center"
+                                 alt="@Model.Name">
+                        </div>
+                        <div class="col-md-7 p-4">
+                            <h3 class="fw-bold mb-3">@Model.Name</h3>
+                            <div class="d-flex gap-3 mb-3">
+                                <span class="badge bg-primary">@Model.Brand?.Name</span>
+                                <span class="badge bg-secondary">@Model.Category?.Name</span>
+                            </div>
+                            <p class="text-muted mb-4">@Model.Description</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="text-primary fw-bold mb-0">@Model.Price.ToString("C")</h4>
+                                    <small class="text-success">In Stock: @Model.StockQuantity</small>
+                                </div>
+                                <div class="btn-group" role="group">
+                                    <a asp-action="Edit" asp-route-id="@Model.ProductID"
+                                       class="btn btn-warning rounded-pill">
+                                        <i class="bi bi-pencil-square me-2"></i>Edit
+                                    </a>
+                                    <a asp-action="Index" class="btn btn-outline-secondary rounded-pill">
+                                        <i class="bi bi-arrow-left me-2"></i>Back
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5 class="border-bottom pb-2 mb-4">Technical Specifications</h5>
+                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                        <div class="col">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-cpu fs-4 text-primary me-3"></i>
+                                <div>
+                                    <h6 class="mb-1">Processor</h6>
+                                    <p class="text-muted mb-0">@Model.Processor</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-memory fs-4 text-primary me-3"></i>
+                                <div>
+                                    <h6 class="mb-1">RAM</h6>
+                                    <p class="text-muted mb-0">@Model.RAM GB</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-hdd-stack fs-4 text-primary me-3"></i>
+                                <div>
+                                    <h6 class="mb-1">Storage</h6>
+                                    <p class="text-muted mb-0">@Model.Storage</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-display fs-4 text-primary me-3"></i>
+                                <div>
+                                    <h6 class="mb-1">Screen Size</h6>
+                                    <p class="text-muted mb-0">@Model.ScreenSize"</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-gpu-card fs-4 text-primary me-3"></i>
+                                <div>
+                                    <h6 class="mb-1">Graphics</h6>
+                                    <p class="text-muted mb-0">@Model.GraphicsCard</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <style>
+        .object-fit-cover {
+            object-fit: cover;
+        }
 
-<div>
-    <h4>Laptop</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Processor)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Processor)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RAM)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RAM)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Storage)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Storage)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ScreenSize)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ScreenSize)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.GraphicsCard)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.GraphicsCard)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StockQuantity)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StockQuantity)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Brand)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Brand.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProductType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProductType.Name)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.ProductID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+        .card-header {
+            min-height: 250px;
+        }
+
+        .bi {
+            flex-shrink: 0;
+        }
+
+        @@media (max-width: 768px) {
+            .card-header {
+                flex-direction: column !important;
+            }
+
+                .card-header img {
+                    width: 100%;
+                    height: 200px;
+                    object-position: center;
+                }
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // Add smooth image transition
+        document.querySelector('.card-header img').addEventListener('mouseover', function() {
+            this.style.transform = 'scale(1.05)';
+            this.style.transition = 'transform 0.3s ease';
+        });
+
+        document.querySelector('.card-header img').addEventListener('mouseout', function() {
+            this.style.transform = 'scale(1)';
+        });
+    </script>
+}

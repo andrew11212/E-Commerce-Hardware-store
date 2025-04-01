@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace FutureTechnologyE_Commerce.Models
 {
@@ -14,10 +15,15 @@ namespace FutureTechnologyE_Commerce.Models
 		public string Name { get; set; }
 
 		[ForeignKey("ParentCategory")]
-		public int? ParentCategoryID { get; set; }
+		[ValidateNever]
 
+		public int? ParentCategoryID { get; set; }
+		[ValidateNever]
 		public virtual Category ParentCategory { get; set; }
+		[ValidateNever]
+
 		public virtual ICollection<Category> Subcategories { get; set; }
+		[ValidateNever]
 		public virtual ICollection<Product> Products { get; set; }
 	}
 }
