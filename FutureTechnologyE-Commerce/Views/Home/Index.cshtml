@@ -17,31 +17,20 @@
         <!-- Slide 1 -->
         <div class="carousel-item active">
             <img src="/images/ASUS TUF Gaming F15 Gaming Laptop.jpeg" alt="Promotion 1" class="carousel-image">
-            <div class="carousel-caption">
-                <h3>Summer Sale</h3>
-                <p>Up to 50% off all items</p>
-                <a href="#" class="btn btn-primary">Shop Now</a>
-            </div>
+ 
         </div>
 
         <!-- Slide 2 -->
         <div class="carousel-item">
             <img src="/images/ASUS TUF GAMING F15.jpeg" alt="Promotion 2" class="carousel-image">
-            <div class="carousel-caption">
-                <h3>New Collection</h3>
-                <p>Discover our latest arrivals</p>
-                <a href="#" class="btn btn-primary">View Collection</a>
-            </div>
+           
         </div>
 
         <!-- Slide 3 -->
         <div class="carousel-item">
-            <img src="/images/Notebook ASUS TUF Gaming A15 FA506NCR NVIDIA RTX 3050 AMD Ryzen 7 7435HS 8Gb Ram 512Gb SSD Linux KeepOS Tela 15,6_ FHD Nível IPS 144Hz Black - HN089.jpeg" alt="Promotion 3" class="carousel-image">
-            <div class="carousel-caption">
-                <h3>Free Shipping</h3>
-                <p>On all orders over $50</p>
-                <a href="#" class="btn btn-primary">Learn More</a>
+            <img src="/images/Pc Portable Gamer ASUS TUF F15 _ 15_6″ _ Intel i7 _ RTX 4060 _ 8 Go Ram.jpeg"
             </div>
+
         </div>
     </div>
 
@@ -58,7 +47,7 @@
     <div class="container">
         <div class="curved-line">
             <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
-                <h3-title class=" fw-bold mb-0">Best Selling Products</h3-title>
+                <h3-title class="  fw-bold text-uppercase  mb-0">Best Selling Products</h3-title>
                 <a asp-action="GetAllProducts" asp-controller="Home"
                    class="text-decoration-none Mtext-primary d-none d-md-inline">
                     View All <i class="bi bi-arrow-right"></i>
@@ -96,8 +85,9 @@
                                     <h5 class="card-title fw-semibold text-truncate-2 mb-2">@product.Name</h5>
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <div>
-                                            <span class="text-primary fw-bold fs-5">@product.Price.ToString("C")</span>
-                                            <del class="text-muted small ms-2 d-none d-md-inline">@((product.Price * 1.2m) )</del>
+                                            <!-- In both product and laptop sections -->
+                                            <span class="text-primary  fw-bold text-uppercase  fs-5">@product.Price.ToString("N0") EGP</span>
+                                            <del class="text-muted small ms-2 d-none d-md-inline">@((product.Price * 1.2m).ToString("N0")) EGP</del>
                                         </div>
                                         <span class="badge bg-@(product.StockQuantity > 0 ? "success" : "danger") rounded-pill">
                                             @(product.StockQuantity > 0 ? "In Stock" : "Sold Out")
@@ -151,7 +141,7 @@
     <div class="container">
         <div class="curved-line">
         <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
-            <h3-title class="fw-bold mb-0">Laptops</h3-title>
+            <h3-title class=" fw-bold text-uppercase  mb-0">Laptops</h3-title>
             <a asp-action="GetAllLaptops" asp-controller="Home"
                class="text-decoration-none Mtext-primary d-none d-md-inline">
                 View All <i class="bi bi-arrow-right"></i>
@@ -159,7 +149,7 @@
             </div>
         </div>
 
-        <!-- Carousel Container -->
+        <!-- LAPTOP Carousel Container -->
         <div class="position-relative">
             <button class="carousel-arrow prev-arrow-laptops d-none d-md-flex">
                 <i class="bi bi-chevron-left fs-1 text-primary"></i>
@@ -187,8 +177,9 @@
                                     <h5 class="card-title fw-semibold text-truncate-2 mb-2">@laptop.Name</h5>
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <div>
-                                            <span class="text-primary fw-bold fs-5">@laptop.Price </span>
-                                            <del class="text-muted small ms-2 d-none d-md-inline">@((laptop.Price * 1.2m).ToString("C"))</del>
+                                            <!-- In both product and laptop sections -->
+                                            <span class="text-primary  fw-bold text-uppercase  fs-5">@laptop.Price.ToString("N0") EGP</span>
+                                            <del class="text-muted small ms-2 d-none d-md-inline">@((laptop.Price * 1.2m).ToString("N0")) EGP</del>
                                         </div>
                                         <span class="badge bg-@(laptop.StockQuantity > 0 ? "success" : "danger") rounded-pill">
                                             @(laptop.StockQuantity > 0 ? "In Stock" : "Sold Out")
@@ -233,6 +224,37 @@
         </div>
     </div>
 </section>
+
+
+<section id="Storage" class="py-4 py-md-5 ">
+    <div class="container">
+        <div class="curved-line">
+            <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
+                <h3-title class=" fw-bold text-uppercase  mb-0">Storage</h3-title>
+                <a asp-action="GetAllLaptops" asp-controller="Home"
+                   class="text-decoration-none Mtext-primary d-none d-md-inline">
+                    View All <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+        </section>
+
+
+<section id="Accessories" class="py-4 py-md-5 ">
+    <div class="container">
+        <div class="curved-line">
+            <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
+                <h3-title class="  fw-bold text-uppercase  text-uppercase mb-0">Accessories</h3-title>
+                <a asp-action="GetAllLaptops" asp-controller="Home"
+                   class="text-decoration-none Mtext-primary d-none d-md-inline">
+                    View All <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
 
  <style>
 /* Carousel Styles */
@@ -430,7 +452,43 @@
             });
         });
 
+        // Promotion Carousel
+        const promoInner = document.querySelector('.simple-carousel .carousel-inner');
+        const promoIndicators = document.querySelectorAll('.simple-carousel .indicator');
+        const prevPromo = document.querySelector('.prev-arrow-promo');
+        const nextPromo = document.querySelector('.next-arrow-promo');
+        let currentIndex = 0;
 
+        function updateCarousel() {
+            const offset = -currentIndex * 100;
+            promoInner.style.transform = `translateX(${offset}%)`;
+
+            promoIndicators.forEach(i => i.classList.remove('active'));
+            promoIndicators[currentIndex]?.classList.add('active');
+        }
+
+        promoIndicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                currentIndex = index;
+                updateCarousel();
+            });
+        });
+
+        prevPromo?.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + promoIndicators.length) % promoIndicators.length;
+            updateCarousel();
+        });
+
+        nextPromo?.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % promoIndicators.length;
+            updateCarousel();
+        });
+
+        // Auto-play
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % promoIndicators.length;
+            updateCarousel();
+        }, 5000);
 
     });
 </script>

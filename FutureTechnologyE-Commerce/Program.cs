@@ -6,10 +6,10 @@ using FutureTechnologyE_Commerce.Utility;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System.Globalization;
 using System.Threading.RateLimiting;
 
 namespace FutureTechnologyE_Commerce
@@ -29,7 +29,6 @@ namespace FutureTechnologyE_Commerce
 			builder.Services.AddControllersWithViews();
 			builder.Services.AddDbContext<ApplicationDbContext>(options => options
 				.UseSqlServer(builder.Configuration.GetConnectionString("DefualtConnection")));
-
 			builder.Services.Configure<Paymob>(builder.Configuration.GetSection("PayMob"));
 			builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 			{
