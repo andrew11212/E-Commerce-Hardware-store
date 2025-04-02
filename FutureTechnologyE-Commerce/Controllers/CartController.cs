@@ -52,7 +52,14 @@ namespace FutureTechnologyE_Commerce.Controllers
 				CartVM.CartList = (await _unitOfWork.CartRepositery.GetAllAsync(c => c.ApplicationUserId == userId, "Product")).ToList();
 				CartVM.OrderHeader = new OrderHeader();
 
-				CartVM.OrderHeader.OrderTotal = CartVM.CartList.Sum(cart => cart.price * cart.Count);
+				// Set the price for each cart item from its Product
+				foreach (var cart in CartVM.CartList)
+				{
+					cart.price = Math.Round((double)cart.Product.Price, 2);
+				}
+
+				// Calculate total with proper decimal handling for EGP
+				CartVM.OrderHeader.OrderTotal = Math.Round(CartVM.CartList.Sum(cart => cart.price * cart.Count), 2);
 				return View(CartVM);
 			}
 			catch (Exception ex)
@@ -197,6 +204,12 @@ namespace FutureTechnologyE_Commerce.Controllers
 					return NotFound("User not found");
 				}
 
+				// Set the price for each cart item
+				foreach (var cart in CartVM.CartList)
+				{
+					cart.price = Math.Round((double)cart.Product.Price, 2);
+				}
+
 				CartVM.OrderHeader.ApplicationUser = user;
 				CartVM.OrderHeader.first_name = SanitizeInput(user.first_name);
 				CartVM.OrderHeader.last_name = SanitizeInput(user.last_name);
@@ -207,7 +220,8 @@ namespace FutureTechnologyE_Commerce.Controllers
 				CartVM.OrderHeader.state = SanitizeInput(user.state);
 				CartVM.OrderHeader.floor = SanitizeInput(user.floor);
 
-				CartVM.OrderHeader.OrderTotal = CartVM.CartList.Sum(cart => cart.price * cart.Count);
+				// Calculate total with proper decimal handling for EGP
+				CartVM.OrderHeader.OrderTotal = Math.Round(CartVM.CartList.Sum(cart => cart.price * cart.Count), 2);
 				return View(CartVM);
 			}
 			catch (Exception ex)
@@ -234,6 +248,12 @@ namespace FutureTechnologyE_Commerce.Controllers
 				{
 					TempData["Error"] = "Your cart is empty";
 					return RedirectToAction("Index");
+				}
+
+				// Set the price for each cart item
+				foreach (var cart in cartItems)
+				{
+					cart.price = Math.Round((double)cart.Product.Price, 2);
 				}
 
 				using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction())
