@@ -8,6 +8,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering; // Added for SelectList
+using System.Collections.Generic;
 
 namespace FutureTechnologyE_Commerce.Controllers
 {
@@ -16,6 +17,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly ILogger<CategoryController> _logger;
+		private readonly List<string> _predefinedCategories = new List<string> { "Mouse", "Keyboard", "Mousepad", "Printer" };
 
 		public CategoryController(IUnitOfWork unitOfWork, ILogger<CategoryController> logger)
 		{
@@ -45,6 +47,10 @@ namespace FutureTechnologyE_Commerce.Controllers
 			{
 				var parentCategories = await _unitOfWork.CategoryRepository.GetAllAsync();
 				ViewBag.ParentCategoryID = new SelectList(parentCategories, "CategoryID", "Name");
+				
+				// Add predefined category suggestions
+				ViewBag.SuggestedCategories = new SelectList(_predefinedCategories);
+				
 				return View();
 			}
 			catch (Exception ex)
@@ -70,6 +76,10 @@ namespace FutureTechnologyE_Commerce.Controllers
 				}
 				var parentCategories = await _unitOfWork.CategoryRepository.GetAllAsync();
 				ViewBag.ParentCategoryID = new SelectList(parentCategories, "CategoryID", "Name");
+				
+				// Add predefined category suggestions
+				ViewBag.SuggestedCategories = new SelectList(_predefinedCategories);
+				
 				return View(category);
 			}
 			catch (Exception ex)
@@ -78,6 +88,10 @@ namespace FutureTechnologyE_Commerce.Controllers
 				TempData["Error"] = "An error occurred while creating the category. Please try again.";
 				var parentCategories = await _unitOfWork.CategoryRepository.GetAllAsync();
 				ViewBag.ParentCategoryID = new SelectList(parentCategories, "CategoryID", "Name");
+				
+				// Add predefined category suggestions
+				ViewBag.SuggestedCategories = new SelectList(_predefinedCategories);
+				
 				return View(category);
 			}
 		}
@@ -102,6 +116,9 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 				var parentCategories = await _unitOfWork.CategoryRepository.GetAllAsync();
 				ViewBag.ParentCategoryID = new SelectList(parentCategories, "CategoryID", "Name", category.ParentCategoryID);
+				
+				// Add predefined category suggestions
+				ViewBag.SuggestedCategories = new SelectList(_predefinedCategories);
 
 				return View(category);
 			}
@@ -128,6 +145,10 @@ namespace FutureTechnologyE_Commerce.Controllers
 				}
 				var parentCategories = await _unitOfWork.CategoryRepository.GetAllAsync();
 				ViewBag.ParentCategoryID = new SelectList(parentCategories, "CategoryID", "Name", category.ParentCategoryID);
+				
+				// Add predefined category suggestions
+				ViewBag.SuggestedCategories = new SelectList(_predefinedCategories);
+				
 				return View(category);
 			}
 			catch (Exception ex)
@@ -136,6 +157,10 @@ namespace FutureTechnologyE_Commerce.Controllers
 				TempData["Error"] = "An error occurred while updating the category. Please try again.";
 				var parentCategories = await _unitOfWork.CategoryRepository.GetAllAsync();
 				ViewBag.ParentCategoryID = new SelectList(parentCategories, "CategoryID", "Name", category.ParentCategoryID);
+				
+				// Add predefined category suggestions
+				ViewBag.SuggestedCategories = new SelectList(_predefinedCategories);
+				
 				return View(category);
 			}
 		}

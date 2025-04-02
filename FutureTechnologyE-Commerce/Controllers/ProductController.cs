@@ -28,6 +28,30 @@ namespace FutureTechnologyE_Commerce.Controllers
 			return View();
 		}
 
+		[AllowAnonymous]
+		public async Task<IActionResult> Details(int id)
+		{
+			var product = await _unitOfWork.ProductRepository.GetAsync(p => p.ProductID == id, "Category", "Brand");
+			
+			if (product == null)
+			{
+				return NotFound();
+			}
+			
+			// Get reviews for this product
+			var reviews = _unitOfWork.ReviewRepository.GetReviewsByProductId(id);
+			
+			// Calculate average rating
+			var averageRating = _unitOfWork.ReviewRepository.GetAverageRatingByProductId(id);
+			
+			// Pass data to the view
+			ViewBag.Reviews = reviews;
+			ViewBag.AverageRating = averageRating;
+			ViewBag.ProductId = id;
+			
+			return View(product);
+		}
+
 		[HttpGet]
 		public async Task<IActionResult> Ubsert(int? id)
 		{

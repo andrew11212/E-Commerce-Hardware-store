@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace FutureTechnologyE_Commerce.Controllers
 {
@@ -95,6 +96,9 @@ namespace FutureTechnologyE_Commerce.Controllers
 				.Take(pageSize)
 				.ToListAsync();
 
+			// Define the predefined category options
+			var categoryOptions = new List<string> { "Mouse", "Keyboard", "Mousepad", "Printer" };
+
 			var viewModel = new HomeIndexViewModel
 			{
 				SearchString = searchString,
@@ -103,8 +107,57 @@ namespace FutureTechnologyE_Commerce.Controllers
 				PageNumber = pageNumber,
 				PageSize = pageSize,
 				TotalCount = totalCount,
+				CategoryOptions = categoryOptions
 			};
 			return View(viewModel);
+		}
+
+		public async Task<IActionResult> GetFilteredProducts(int pageNumber = 1, string searchString = "", string categoryFilter = "")
+		{
+			// Define the predefined category options
+			var categoryOptions = new List<string> { "Mouse", "Keyboard", "Mousepad", "Printer" };
+			
+			// Prepare the query with includes
+			var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand");
+
+			// Apply search filter if provided
+			if (!string.IsNullOrEmpty(searchString))
+			{
+				searchString = searchString.Trim().ToLower();
+				query = query.Where(p => p.Name.ToLower().Contains(searchString) ||
+										 (p.Brand != null && p.Brand.Name.ToLower().Contains(searchString)));
+			}
+
+			// Apply category filter if it's valid
+			if (!string.IsNullOrEmpty(categoryFilter) && categoryOptions.Any(c => c.ToLower() == categoryFilter.ToLower()))
+			{
+				categoryFilter = categoryFilter.Trim();
+				
+				// Filter based on category name - case insensitive comparison
+				query = query.Where(p => p.Category.Name.ToLower().Contains(categoryFilter.ToLower()));
+			}
+
+			// Pagination setup
+			int pageSize = 4;
+			int totalCount = await query.CountAsync();
+			var filteredProducts = await query
+				.Skip((pageNumber - 1) * pageSize)
+				.Take(pageSize)
+				.ToListAsync();
+
+			// Prepare view model
+			var viewModel = new HomeIndexViewModel
+			{
+				SearchString = searchString,
+				Category = categoryFilter,
+				Products = filteredProducts,
+				PageNumber = pageNumber,
+				PageSize = pageSize,
+				TotalCount = totalCount,
+				CategoryOptions = categoryOptions
+			};
+			
+			return View("GetAllProducts", viewModel); // Reuse the GetAllProducts view
 		}
 
 		public async Task<IActionResult> GetAllAccessories(int pageNumber = 1, string searchString = "")
