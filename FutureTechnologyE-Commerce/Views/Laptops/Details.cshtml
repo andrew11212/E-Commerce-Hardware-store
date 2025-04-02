@@ -11,7 +11,7 @@
                 <div class="card-header bg-light position-relative">
                     <div class="row g-0">
                         <div class="col-md-5">
-                            <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : "/images/no-image.png")""
+                            <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : "/images/no-image.png")"
                                  class="img-fluid object-fit-cover h-100 w-100"
                                  style="aspect-ratio: 16/9; object-position: center"
                                  alt="@Model.Name">
@@ -29,11 +29,8 @@
                                     <small class="text-success">In Stock: @Model.StockQuantity</small>
                                 </div>
                                 <div class="btn-group" role="group">
-                                    <a asp-action="Edit" asp-route-id="@Model.ProductID"
-                                       class="btn btn-warning rounded-pill">
-                                        <i class="bi bi-pencil-square me-2"></i>Edit
-                                    </a>
-                                    <a asp-action="Index" class="btn btn-outline-secondary rounded-pill">
+                                
+                                    <a asp-action="Index" asp-controller="Home" class="btn btn-outline-secondary rounded-pill">
                                         <i class="bi bi-arrow-left me-2"></i>Back
                                     </a>
                                 </div>
