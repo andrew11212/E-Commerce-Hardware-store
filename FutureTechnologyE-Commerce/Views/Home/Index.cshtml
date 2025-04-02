@@ -7,246 +7,126 @@
     ViewData["Title"] = "Home Page";
 }
 
-
-
-
-
 <!-- Hero Carousel -->
-<div class="hero-carousel">
-    <div class="carousel-inner">
-        <!-- Slide 1 -->
-        <div class="carousel-item active">
-            <div class="carousel-content">
-                <img src="/images/ASUS TUF Gaming F15 Gaming Laptop.jpeg" alt="ASUS TUF Gaming F15"
-                    class="carousel-image">
-                <div class="carousel-overlay"></div>
-                <div class="carousel-caption">
-                    <h2>ASUS TUF Gaming F15</h2>
-                    <p class="mb-4">Experience unrivaled gaming performance with the latest technology</p>
-                    <a href="/Laptops/Details" class="btn btn-primary btn-lg rounded-pill">
-                        Explore Now <i class="bi bi-arrow-right ms-2"></i>
-                    </a>
+<div class="hero-carousel fade-in mb-5">
+    <div id="mainCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <!-- Slide 1 -->
+            <div class="carousel-item active">
+                <div class="carousel-content">
+                    <img src="/images/ASUS TUF Gaming F15 Gaming Laptop.jpeg" alt="ASUS TUF Gaming F15"
+                        class="carousel-image">
+                    <div class="carousel-overlay"></div>
+                    <div class="carousel-caption">
+                        <h2 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">ASUS TUF Gaming F15</h2>
+                        <p class="lead mb-4 animate__animated animate__fadeInUp">Experience unrivaled gaming performance with the latest technology</p>
+                        <a href="/Laptops/Details" class="btn btn-primary btn-lg animate__animated animate__fadeInUp">
+                            Explore Now <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2 -->
+            <div class="carousel-item">
+                <div class="carousel-content">
+                    <img src="/images/ASUS TUF GAMING F15.jpeg" alt="ASUS TUF Gaming Series" class="carousel-image">
+                    <div class="carousel-overlay"></div>
+                    <div class="carousel-caption">
+                        <h2 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">ASUS TUF Gaming Series</h2>
+                        <p class="lead mb-4 animate__animated animate__fadeInUp">Built for durability, designed for victory</p>
+                        <a href="/Laptops/Details" class="btn btn-primary btn-lg animate__animated animate__fadeInUp">
+                            Learn More <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="carousel-item">
+                <div class="carousel-content">
+                    <img src="/images/Pc Portable Gamer ASUS TUF F15 _ 15_6″ _ Intel i7 _ RTX 4060 _ 8 Go Ram.jpeg"
+                        alt="RTX 4060 Gaming Laptop" class="carousel-image">
+                    <div class="carousel-overlay"></div>
+                    <div class="carousel-caption">
+                        <h2 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">RTX 4060 Gaming Laptop</h2>
+                        <p class="lead mb-4 animate__animated animate__fadeInUp">Powered by NVIDIA RTX 4060 for ultimate gaming performance</p>
+                        <a href="/Laptops/Details" class="btn btn-primary btn-lg animate__animated animate__fadeInUp">
+                            Shop Now <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 2 -->
-        <div class="carousel-item">
-            <div class="carousel-content">
-                <img src="/images/ASUS TUF GAMING F15.jpeg" alt="ASUS TUF Gaming Series" class="carousel-image">
-                <div class="carousel-overlay"></div>
-                <div class="carousel-caption">
-                    <h2>ASUS TUF Gaming Series</h2>
-                    <p class="mb-4">Built for durability, designed for victory</p>
-                    <a href="/Laptops/Details" class="btn btn-primary btn-lg rounded-pill">
-                        Learn More <i class="bi bi-arrow-right ms-2"></i>
-                    </a>
-                </div>
-            </div>
+        <!-- Carousel Controls -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+
+        <!-- Carousel Indicators -->
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="0" class="active"></button>
+            <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="1"></button>
+            <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="2"></button>
         </div>
-
-        <!-- Slide 3 -->
-        <div class="carousel-item">
-            <div class="carousel-content">
-                <img src="/images/Pc Portable Gamer ASUS TUF F15 _ 15_6″ _ Intel i7 _ RTX 4060 _ 8 Go Ram.jpeg"
-                    alt="RTX 4060 Gaming Laptop" class="carousel-image">
-                <div class="carousel-overlay"></div>
-                <div class="carousel-caption">
-                    <h2>RTX 4060 Gaming Laptop</h2>
-                    <p class="mb-4">Powered by NVIDIA RTX 4060 for ultimate gaming performance</p>
-                    <a href="/Laptops/Details" class="btn btn-primary btn-lg rounded-pill">
-                        Shop Now <i class="bi bi-arrow-right ms-2"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Navigation Arrows -->
-    <button class="carousel-arrow prev-arrow-promo">
-        <i class="bi bi-chevron-left"></i>
-    </button>
-    <button class="carousel-arrow next-arrow-promo">
-        <i class="bi bi-chevron-right"></i>
-    </button>
-
-    <!-- Navigation Indicators -->
-    <div class="carousel-indicators">
-        <span class="indicator active" data-slide-to="0"></span>
-        <span class="indicator" data-slide-to="1"></span>
-        <span class="indicator" data-slide-to="2"></span>
     </div>
 </div>
 
 <!-- Best Selling Products Section -->
-<section class="py-4 py-md-5 ">
+<section class="products-section py-5 fade-in">
     <div class="container">
-        <div class="curved-line">
-            <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
-                <h3-title class="  fw-bold text-uppercase  mb-0">Best Selling Products</h3-title>
-                <a asp-action="GetAllProducts" asp-controller="Home"
-                    class="text-decoration-none Mtext-primary d-none d-md-inline">
-                    View All <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
+        <div class="section-header mb-4">
+            <h2 class="section-title">Best Selling Products</h2>
+            <a asp-action="GetAllProducts" asp-controller="Home" class="btn btn-outline-primary">
+                View All <i class="bi bi-arrow-right ms-2"></i>
+            </a>
         </div>
 
-        <!-- Carousel Container -->
-        <div class="position-relative">
-            <!-- Navigation Arrows -->
-            <button class="carousel-arrow prev-arrow d-none d-md-flex">
-                <i class="bi bi-chevron-left fs-1 text-primary"></i>
-            </button>
-            <button class="carousel-arrow next-arrow d-none d-md-flex">
-                <i class="bi bi-chevron-right fs-1 text-primary"></i>
-            </button>
-
-            <!-- Scroll Container -->
-            <div class="scroll-container">
-                <div class="d-flex flex-nowrap">
-                    @foreach (var product in Model.Products)
-                    {
-                        <div class="product-card mx-2_adjusted mb-3" style="min-width: 22%;">
-                            <div class="card h-100 border-0 shadow-sm rounded-3">
-                                <picture>
-                                    <source srcset="@product.ImageUrl" type="image/webp">
-                                    <img src="@product.ImageUrl" class="card-img-top object-fit-cover"
-                                        style="aspect-ratio: 4/3;" alt="@product.Name" loading="lazy"
+        <div class="products-carousel">
+            <div class="products-slick" data-nav="#products-slick-nav">
+                @foreach (var product in Model.Products)
+                {
+                    <div class="product-item">
+                        <div class="product-card h-100">
+                            <div class="card shadow-hover">
+                                <div class="card-img-wrapper">
+                                    <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name"
                                         onerror="this.src='/images/placeholder.avif'">
-                                </picture>
-                                <div class="card-body d-flex flex-column px-3 pb-3">
-                                    <h5 class="card-title fw-semibold text-truncate-2 mb-2">@product.Name</h5>
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <div>
-                                            <!-- In both product and laptop sections -->
-                                            <span
-                                                class="text-primary  fw-bold text-uppercase  fs-5">@product.Price.ToString("N0")
-                                                EGP</span>
-                                            <del class="text-muted small ms-2 d-none d-md-inline">@((product.Price *
-                                                                                            1.2m).ToString("N0")) EGP</del>
+                                    <div class="product-overlay">
+                                        <a asp-action="Details" asp-route-id="@product.ProductID" class="btn btn-light btn-sm">
+                                            View Details
+                                        </a>
                                     </div>
-                                    <span
-                                        class="badge bg-@(product.StockQuantity > 0 ? "success" : "danger") rounded-pill">
-                                        @(product.StockQuantity > 0 ? "In Stock" : "Sold Out")
-                                    </span>
+                                    @if (product.StockQuantity > 0)
+                                    {
+                                        <span class="badge bg-success position-absolute top-0 end-0 m-3">In Stock</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger position-absolute top-0 end-0 m-3">Sold Out</span>
+                                    }
                                 </div>
-                                <div class="d-grid gap-2 mt-auto">
-                                    <a asp-action="Details" asp-route-id="@product.ProductID"
-                                        class="btn btn-outline-primary rounded-pill btn-sm">
-                                        View Details
-                                    </a>
-                                    @if (SignInManager.IsSignedIn(User)) // Or @if (User.Identity.IsAuthenticated)
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title text-truncate-2">@product.Name</h5>
+                                    <div class="price-section mb-3">
+                                        <span class="current-price">@product.Price.ToString("N0") EGP</span>
+                                        <span class="original-price">@((product.Price * 1.2m).ToString("N0")) EGP</span>
+                                    </div>
+                                    <div class="mt-auto">
+                                        @if (SignInManager.IsSignedIn(User))
                                         {
-                                            <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                                            <form asp-controller="Cart" asp-action="AddToCart" method="post" class="add-to-cart-form">
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="productId" value="@product.ProductID" />
-                                                <div class="d-grid gap-2">
-                                                    <button type="submit"
-                                                        class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center"
-                                                        @(product.StockQuantity == 0 ? "disabled" : "")>
-                                                        <span class="spinner-border spinner-border-sm d-none me-2" role="status"
-                                                            aria-hidden="true"></span>
-                                                        <span class="btn-text">Add to Cart</span> <i
-                                                            class="bi bi-cart-plus ms-2"></i>
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        }
-                                        else
-                                        {
-                                            // --- User is LOGGED OUT: Use the GET link ---
-                                            <a asp-controller="Cart" asp-action="RequestAddToCartAfterLogin"
-                                                asp-route-productId="@product.ProductID"
-                                                class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center">
-                                                <span class="spinner-border spinner-border-sm d-none me-2" role="status"
-                                                    aria-hidden="true"></span>
-                                                <span class="btn-text">Add to Cart</span> <i class="bi bi-cart-plus ms-2"></i>
-
-                                            </a>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-<!-- Laptops Section -->
-<section id="laptops" class="py-4 py-md-5 ">
-    <div class="container">
-        <div class="curved-line">
-            <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
-                <h3-title class=" fw-bold text-uppercase  mb-0">Laptops</h3-title>
-                <a asp-action="GetAllLaptops" asp-controller="Home"
-                    class="text-decoration-none Mtext-primary d-none d-md-inline">
-                    View All <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-
-        <!-- LAPTOP Carousel Container -->
-        <div class="position-relative">
-            <button class="carousel-arrow prev-arrow-laptops d-none d-md-flex">
-                <i class="bi bi-chevron-left fs-1 text-primary"></i>
-            </button>
-            <button class="carousel-arrow next-arrow-laptops d-none d-md-flex">
-                <i class="bi bi-chevron-right fs-1 text-primary"></i>
-            </button>
-
-            <div class="scroll-container-laptops">
-                <div class="d-flex flex-nowrap">
-                    @foreach (var laptop in Model.Laptops)
-                    {
-                        <div class="product-card mx-2_adjusted mb-3" style="min-width: 22%;">
-                            <div class="card h-100 border-0 shadow-sm rounded-3">
-                                <picture>
-                                    <source srcset="@laptop.ImageUrl" type="image/webp">
-                                    <img src="@laptop.ImageUrl" class="card-img-top object-fit-cover"
-                                        style="aspect-ratio: 4/3;" alt="@laptop.Name" loading="lazy"
-                                        onerror="this.src='/images/placeholder.avif'">
-                                </picture>
-                                <div class="card-body d-flex flex-column px-3 pb-3">
-                                    <h5 class="card-title fw-semibold text-truncate-2 mb-2">@laptop.Name</h5>
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <div>
-                                            <!-- In both product and laptop sections -->
-                                            <span
-                                                class="text-primary  fw-bold text-uppercase  fs-5">@laptop.Price.ToString("N0")
-                                                EGP</span>
-                                            <del class="text-muted small ms-2 d-none d-md-inline">@((laptop.Price *
-                                                                                            1.2m).ToString("N0")) EGP</del>
-                                    </div>
-                                    <span
-                                        class="badge bg-@(laptop.StockQuantity > 0 ? "success" : "danger") rounded-pill">
-                                        @(laptop.StockQuantity > 0 ? "In Stock" : "Sold Out")
-                                    </span>
-                                </div>
-                                <div class="d-grid gap-2 mt-auto">
-                                    <a asp-controller="Laptops" asp-action="Details" asp-route-id="@laptop.ProductID"
-                                        class="btn btn-outline-primary rounded-pill btn-sm">
-                                        View Details
-                                    </a>
-                                    @* <a asp-controller="Laptops"
-                                           asp-action="Details"
-                                           asp-route-id="@laptop.ProductID"
-                                           class="btn btn-outline-primary rounded-pill btn-sm">
-                                            View Details
-                                        </a> *@
-                                    @if (SignInManager.IsSignedIn(User))
-                                        {
-                                            <form asp-controller="Cart" asp-action="AddToCart" method="post">
-                                                @Html.AntiForgeryToken()
-                                                <input type="hidden" name="productId" value="@laptop.ProductID" />
-                                                <button type="submit"
-                                                    class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center w-100"
-                                                    @(laptop.StockQuantity == 0 ? "disabled" : "")>
-                                                    <span class="spinner-border spinner-border-sm d-none me-2" role="status"
-                                                        aria-hidden="true"></span>
+                                                <button type="submit" class="btn btn-primary w-100"
+                                                    @(product.StockQuantity == 0 ? "disabled" : "")>
+                                                    <span class="spinner-border spinner-border-sm d-none" role="status"></span>
                                                     <span class="btn-text">Add to Cart</span>
                                                     <i class="bi bi-cart-plus ms-2"></i>
                                                 </button>
@@ -255,594 +135,415 @@
                                         else
                                         {
                                             <a asp-controller="Cart" asp-action="RequestAddToCartAfterLogin"
-                                                asp-route-productId="@laptop.ProductID"
-                                                class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center w-100">
-                                                <span class="spinner-border spinner-border-sm d-none me-2" role="status"
-                                                    aria-hidden="true"></span>
-                                                <span class="btn-text">Add to Cart</span>
-                                                <i class="bi bi-cart-plus ms-2"></i>
+                                                asp-route-productId="@product.ProductID" class="btn btn-primary w-100">
+                                                Add to Cart <i class="bi bi-cart-plus ms-2"></i>
                                             </a>
                                         }
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    }
-                </div>
+                    </div>
+                }
             </div>
+            <div id="products-slick-nav"></div>
         </div>
     </div>
 </section>
-
-
-<section id="Storage" class="py-4 py-md-5 ">
-    <div class="container">
-        <div class="curved-line">
-            <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
-                <h3-title class=" fw-bold text-uppercase  mb-0">Storage</h3-title>
-                <a asp-action="GetAllLaptops" asp-controller="Home"
-                    class="text-decoration-none Mtext-primary d-none d-md-inline">
-                    View All <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-<section id="Accessories" class="py-4 py-md-5 ">
-    <div class="container">
-        <div class="curved-line">
-            <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
-                <h3-title class="  fw-bold text-uppercase  text-uppercase mb-0">Accessories</h3-title>
-                <a asp-action="GetAllLaptops" asp-controller="Home"
-                    class="text-decoration-none Mtext-primary d-none d-md-inline">
-                    View All <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</section>
-
 
 <style>
-    /* Hero Carousel Styles */
     .hero-carousel {
-        position: relative;
-        width: 100%;
-        height: 80vh;
-        min-height: 600px;
-        overflow: hidden;
-    }
-
-    .carousel-inner {
-        position: relative;
-        width: 100%;
-        height: 100%;
-    }
-
-    .carousel-item {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        transition: opacity 0.6s ease-in-out;
-        display: none;
-    }
-
-    .carousel-item.active {
-        opacity: 1;
-        display: block;
+        margin-top: -1rem;
+        margin-bottom: 3rem;
     }
 
     .carousel-content {
         position: relative;
-        width: 100%;
-        height: 100%;
+        height: 600px;
+        overflow: hidden;
+        border-radius: 12px;
     }
 
     .carousel-image {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transform: scale(1.1);
+        transition: transform 6s ease-in-out;
+    }
+
+    .carousel-item.active .carousel-image {
+        transform: scale(1);
     }
 
     .carousel-overlay {
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(to right, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 100%);
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.3));
+        border-radius: 12px;
     }
 
     .carousel-caption {
-        position: absolute;
-        top: 50%;
-        left: 10%;
-        transform: translateY(-50%);
-        max-width: 600px;
-        color: white;
+        bottom: 20%;
         text-align: left;
-        z-index: 2;
+        max-width: 600px;
+        margin: 0 auto;
+        left: 10%;
+        right: 10%;
     }
 
     .carousel-caption h2 {
         font-size: 3.5rem;
         font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         margin-bottom: 1rem;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     }
 
-    .carousel-caption p {
-        font-size: 1.5rem;
+    .carousel-caption .lead {
+        font-size: 1.25rem;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         margin-bottom: 2rem;
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-    }
-
-    .carousel-arrow {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 50px;
-        height: 50px;
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        border-radius: 50%;
-        color: white;
-        font-size: 1.5rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        z-index: 3;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .carousel-arrow:hover {
-        background: rgba(255, 255, 255, 0.3);
-        transform: translateY(-50%) scale(1.1);
-    }
-
-    .prev-arrow-promo {
-        left: 30px;
-    }
-
-    .next-arrow-promo {
-        right: 30px;
     }
 
     .carousel-indicators {
-        position: absolute;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 12px;
-        z-index: 3;
+        bottom: 20px;
     }
 
-    .indicator {
-        width: 40px;
-        height: 4px;
-        background: rgba(255, 255, 255, 0.5);
-        cursor: pointer;
+    .carousel-indicators button {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin: 0 6px;
+        background-color: rgba(255,255,255,0.5);
+        border: none;
         transition: all 0.3s ease;
     }
 
-    .indicator.active {
-        background: white;
-        transform: scaleX(1.2);
+    .carousel-indicators button.active {
+        background-color: var(--primary-color);
+        transform: scale(1.2);
     }
 
-    /* Responsive adjustments */
-    @@media (max-width: 992px) {
-        .hero-carousel {
-            height: 70vh;
-            min-height: 500px;
-        }
-
-        .carousel-caption h2 {
-            font-size: 2.8rem;
-        }
-
-        .carousel-caption p {
-            font-size: 1.3rem;
-        }
-
-        .product-card {
-            flex: 0 0 calc(48% - 1rem);
-            max-width: calc(48% - 1rem);
-        }
+    /* Products Section */
+    .products-section {
+        padding: 4rem 0;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px var(--shadow-color);
     }
 
+    .products-carousel {
+        position: relative;
+        padding: 0 40px;
+        margin: 2rem 0;
+    }
+
+    .product-item {
+        padding: 15px;
+    }
+
+    .card-img-wrapper {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 4/3;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .card-img-top {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .product-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .card:hover .product-overlay {
+        opacity: 1;
+    }
+
+    .card:hover .card-img-top {
+        transform: scale(1.1);
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-color);
+    }
+
+    .price-section {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .current-price {
+        color: var(--text-color);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .original-price {
+        color: var(--text-muted);
+        text-decoration: line-through;
+        font-size: 0.9em;
+    }
+
+    .badge {
+        background-color: rgba(46, 204, 113, 0.8);
+        font-weight: 500;
+        padding: 0.5em 1em;
+        border-radius: 6px;
+        backdrop-filter: blur(4px);
+    }
+
+    .badge.bg-danger {
+        background-color: rgba(231, 76, 60, 0.8);
+    }
+
+    /* Slick Carousel Navigation */
+    .slick-prev, .slick-next {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+        box-shadow: 0 2px 5px var(--shadow-color);
+        z-index: 1;
+        transition: all 0.3s ease;
+    }
+
+    .slick-prev:hover, .slick-next:hover {
+        background: var(--primary-color);
+    }
+
+    .slick-prev:before, .slick-next:before {
+        color: var(--text-color);
+        opacity: 0.7;
+    }
+
+    .slick-prev:hover:before, .slick-next:hover:before {
+        color: white;
+        opacity: 1;
+    }
+
+    .slick-prev {
+        left: -20px;
+    }
+
+    .slick-next {
+        right: -20px;
+    }
+
+    /* Section Header */
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin: 0;
+    }
+
+    /* Responsive Styles */
     @@media (max-width: 768px) {
-        .hero-carousel {
-            height: 60vh;
-            min-height: 400px;
+        .carousel-content {
+            height: 400px;
         }
 
         .carousel-caption {
+            bottom: 10%;
             left: 5%;
             right: 5%;
         }
 
         .carousel-caption h2 {
-            font-size: 2.2rem;
+            font-size: 2rem;
         }
 
-        .carousel-caption p {
-            font-size: 1.1rem;
-        }
-
-        .carousel-arrow {
-            width: 40px;
-            height: 40px;
-            font-size: 1.2rem;
-        }
-
-        .indicator {
-            width: 30px;
-            height: 3px;
-        }
-
-        .carousel-image {
-            height: 300px;
-        }
-
-        .carousel-caption h3 {
-            font-size: 1.8rem;
-        }
-    }
-
-    @@media (max-width: 576px) {
-        .hero-carousel {
-            height: 50vh;
-            min-height: 350px;
-        }
-
-        .carousel-caption h2 {
-            font-size: 1.8rem;
-        }
-
-        .carousel-caption p {
+        .carousel-caption .lead {
             font-size: 1rem;
         }
 
-        .btn-lg {
-            padding: 0.5rem 1rem;
-            font-size: 1rem;
+        .section-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
         }
 
-        .product-card {
-            flex: 0 0 100%;
-            max-width: 100%;
+        .section-title {
+            font-size: 1.5rem;
         }
 
-        .carousel-arrow {
-            display: none !important;
-        }
-    }
-
-    /* Carousel Styles */
-    .product-card {
-        scroll-behavior: smooth;
-        min-width: 22%;
-        flex: 0 0 22%;
-        /* Add these properties */
-        transition: transform 0.3s;
-        scroll-snap-align: start;
-    }
-
-    .scroll-container,
-    .scroll-container-laptops {
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-        padding: 1rem 0;
-    }
-
-    .scroll-container::-webkit-scrollbar,
-    .scroll-container-laptops::-webkit-scrollbar {
-        display: none;
-    }
-
-    .carousel-arrow {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(255, 255, 255, 0.9);
-        border: 2px solid #0d6efd;
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
-        z-index: 2;
-        transition: all 0.3s;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .carousel-arrow:hover {
-        background: #0d6efd;
-        color: white;
-        transform: translateY(-50%) scale(1.1);
-    }
-
-    .prev-arrow {
-        left: -25px;
-    }
-
-    .next-arrow {
-        right: -25px;
-    }
-
-    .prev-arrow-laptops {
-        left: -25px;
-    }
-
-    .next-arrow-laptops {
-        right: -25px;
-    }
-
-    /* Responsive Behavior */
-    @@media (max-width: 992px) {
-        .product-card {
-            flex: 0 0 calc(48% - 1rem);
-            max-width: calc(48% - 1rem);
-        }
-    }
-
-    @@media (max-width: 576px) {
-        .product-card {
-            flex: 0 0 100%;
-            max-width: 100%;
+        .products-carousel {
+            padding: 0 20px;
         }
 
-        .carousel-arrow {
-            display: none !important;
-        }
-    }
-
-    .simple-carousel {
-        position: relative;
-        max-width: 1200px;
-        margin: 2rem auto;
-        overflow: hidden;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .carousel-inner {
-        display: flex;
-        transition: transform 0.5s ease-in-out;
-        position: relative;
-    }
-
-    .carousel-item {
-        min-width: 100%;
-        position: relative;
-        display: none;
-    }
-
-    .carousel-item.active {
-        display: block;
-    }
-
-    .carousel-image {
-        width: 100%;
-        height: 500px;
-        object-fit: cover;
-        border-radius: 15px;
-    }
-
-    .carousel-caption {
-        position: absolute;
-        bottom: 30px;
-        left: 30px;
-        color: white;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        max-width: 600px;
-    }
-
-    .carousel-caption h3 {
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin-bottom: 1rem;
-    }
-
-    .carousel-caption p {
-        font-size: 1.2rem;
-        margin-bottom: 0;
-    }
-
-    .carousel-arrow {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(255, 255, 255, 0.9);
-        border: none;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        color: #333;
-        transition: all 0.3s ease;
-        z-index: 10;
-    }
-
-    .carousel-arrow:hover {
-        background: #fff;
-        color: #0d6efd;
-        transform: translateY(-50%) scale(1.1);
-    }
-
-    .prev-arrow-promo {
-        left: 20px;
-    }
-
-    .next-arrow-promo {
-        right: 20px;
-    }
-
-    .carousel-indicators {
-        position: absolute;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 10px;
-        z-index: 10;
-    }
-
-    .indicator {
-        width: 12px;
-        height: 12px;
-        background: rgba(255, 255, 255, 0.5);
-        border-radius: 50%;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .indicator.active {
-        background: #fff;
-        transform: scale(1.2);
-    }
-
-    /* Responsive adjustments */
-    @@media (max-width: 768px) {
-        .carousel-image {
-            height: 300px;
+        .slick-prev {
+            left: -10px;
         }
 
-        .carousel-caption h3 {
-            font-size: 1.8rem;
-        }
-
-        .carousel-caption p {
-            font-size: 1rem;
-        }
-
-        .carousel-arrow {
-            width: 40px;
-            height: 40px;
-            font-size: 1.2rem;
+        .slick-next {
+            right: -10px;
         }
     }
 </style>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Hero Carousel Functionality
-        const heroCarousel = document.querySelector('.hero-carousel');
-        const heroItems = document.querySelectorAll('.hero-carousel .carousel-item');
-        const heroIndicators = document.querySelectorAll('.hero-carousel .indicator');
-        const prevHeroArrow = document.querySelector('.prev-arrow-promo');
-        const nextHeroArrow = document.querySelector('.next-arrow-promo');
-        let currentHeroIndex = 0;
-
-        function updateHeroCarousel() {
-            // Update items
-            heroItems.forEach((item, index) => {
-                item.classList.remove('active');
-                if (index === currentHeroIndex) {
-                    item.classList.add('active');
-                }
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Initialize Slick Carousel for products
+            $('.products-slick').slick({
+                slidesToShow: 4,
+                slidesToScroll: 1,
+                arrows: true,
+                dots: false,
+                infinite: true,
+                speed: 300,
+                autoplay: true,
+                autoplaySpeed: 3000,
+                responsive: [
+                    {
+                        breakpoint: 1200,
+                        settings: {
+                            slidesToShow: 3
+                        }
+                    },
+                    {
+                        breakpoint: 992,
+                        settings: {
+                            slidesToShow: 2
+                        }
+                    },
+                    {
+                        breakpoint: 576,
+                        settings: {
+                            slidesToShow: 1
+                        }
+                    }
+                ]
             });
 
-            // Update indicators
-            heroIndicators.forEach((indicator, index) => {
-                indicator.classList.remove('active');
-                if (index === currentHeroIndex) {
-                    indicator.classList.add('active');
-                }
+            // Initialize Bootstrap Carousel
+            var myCarousel = new bootstrap.Carousel(document.getElementById('mainCarousel'), {
+                interval: 5000,
+                wrap: true
             });
-        }
 
-        function nextHeroSlide() {
-            currentHeroIndex = (currentHeroIndex + 1) % heroItems.length;
-            updateHeroCarousel();
-        }
+            // Add animation classes to elements when they come into view
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
 
-        function prevHeroSlide() {
-            currentHeroIndex = (currentHeroIndex - 1 + heroItems.length) % heroItems.length;
-            updateHeroCarousel();
-        }
-
-        // Event Listeners for Hero Carousel
-        heroIndicators.forEach((indicator, index) => {
-            indicator.addEventListener('click', () => {
-                currentHeroIndex = index;
-                updateHeroCarousel();
+            document.querySelectorAll('.fade-in').forEach((element) => {
+                observer.observe(element);
             });
         });
+    </script>
+}
 
-        prevHeroArrow?.addEventListener('click', prevHeroSlide);
-        nextHeroArrow?.addEventListener('click', nextHeroSlide);
+<!-- Laptops Section -->
+<section class="laptops-section py-5 bg-light fade-in">
+    <div class="container">
+        <div class="section-header mb-4">
+            <h2 class="section-title">Featured Laptops</h2>
+            <a asp-action="GetAllLaptops" asp-controller="Home" class="btn btn-outline-primary">
+                View All <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
 
-        // Auto-play for Hero Carousel
-        let heroAutoPlayInterval = setInterval(nextHeroSlide, 5000);
-
-        // Pause auto-play on hover for Hero Carousel
-        heroCarousel?.addEventListener('mouseenter', () => {
-            clearInterval(heroAutoPlayInterval);
-        });
-
-        heroCarousel?.addEventListener('mouseleave', () => {
-            heroAutoPlayInterval = setInterval(nextHeroSlide, 5000);
-        });
-
-        // Product Carousel Functionality
-        function handleNavigation(container, direction) {
-            if (!container) return;
-
-            const itemWidth = container.querySelector('.product-card')?.offsetWidth || 0;
-            const currentPosition = container.scrollLeft;
-            const totalWidth = container.scrollWidth;
-            const visibleWidth = container.clientWidth;
-
-            if (direction === 'next') {
-                if (currentPosition >= totalWidth - visibleWidth - itemWidth) {
-                    const firstItem = container.firstElementChild;
-                    container.appendChild(firstItem.cloneNode(true));
-                    container.removeChild(firstItem);
-                    container.scrollLeft = currentPosition - itemWidth;
+        <div class="products-carousel">
+            <div class="products-slick" data-nav="#laptops-slick-nav">
+                @foreach (var laptop in Model.Laptops)
+                {
+                    <div class="product-item">
+                        <div class="product-card h-100">
+                            <div class="card shadow-hover">
+                                <div class="card-img-wrapper">
+                                    <img src="@laptop.ImageUrl" class="card-img-top" alt="@laptop.Name"
+                                        onerror="this.src='/images/placeholder.avif'">
+                                    <div class="product-overlay">
+                                        <a asp-controller="Laptops" asp-action="Details" asp-route-id="@laptop.ProductID" class="btn btn-light btn-sm">
+                                            View Details
+                                        </a>
+                                    </div>
+                                    @if (laptop.StockQuantity > 0)
+                                    {
+                                        <span class="badge bg-success position-absolute top-0 end-0 m-3">In Stock</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger position-absolute top-0 end-0 m-3">Sold Out</span>
+                                    }
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title text-truncate-2">@laptop.Name</h5>
+                                    <div class="price-section mb-3">
+                                        <span class="current-price">@laptop.Price.ToString("N0") EGP</span>
+                                        <span class="original-price">@((laptop.Price * 1.2m).ToString("N0")) EGP</span>
+                                    </div>
+                                    <div class="mt-auto">
+                                        @if (SignInManager.IsSignedIn(User))
+                                        {
+                                            <form asp-controller="Cart" asp-action="AddToCart" method="post" class="add-to-cart-form">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="productId" value="@laptop.ProductID" />
+                                                <button type="submit" class="btn btn-primary w-100"
+                                                    @(laptop.StockQuantity == 0 ? "disabled" : "")>
+                                                    <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                                                    <span class="btn-text">Add to Cart</span>
+                                                    <i class="bi bi-cart-plus ms-2"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <a asp-controller="Cart" asp-action="RequestAddToCartAfterLogin"
+                                                asp-route-productId="@laptop.ProductID" class="btn btn-primary w-100">
+                                                Add to Cart <i class="bi bi-cart-plus ms-2"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 }
-                container.scrollBy({ left: itemWidth, behavior: 'smooth' });
-            } else {
-                if (currentPosition <= itemWidth) {
-                    const lastItem = container.lastElementChild;
-                    container.insertBefore(lastItem.cloneNode(true), container.firstChild);
-                    container.removeChild(lastItem);
-                    container.scrollLeft = itemWidth * 2;
-                }
-                container.scrollBy({ left: -itemWidth, behavior: 'smooth' });
-            }
-        }
-
-        // Best Selling Products Carousel
-        const scrollContainer = document.querySelector('.scroll-container');
-        const prevArrow = document.querySelector('.prev-arrow');
-        const nextArrow = document.querySelector('.next-arrow');
-
-        if (scrollContainer && prevArrow && nextArrow) {
-            nextArrow.addEventListener('click', () => handleNavigation(scrollContainer, 'next'));
-            prevArrow.addEventListener('click', () => handleNavigation(scrollContainer, 'prev'));
-        }
-
-        // Laptops Carousel
-        const scrollContainerLaptops = document.querySelector('.scroll-container-laptops');
-        const prevArrowLaptops = document.querySelector('.prev-arrow-laptops');
-        const nextArrowLaptops = document.querySelector('.next-arrow-laptops');
-
-        if (scrollContainerLaptops && prevArrowLaptops && nextArrowLaptops) {
-            nextArrowLaptops.addEventListener('click', () => handleNavigation(scrollContainerLaptops, 'next'));
-            prevArrowLaptops.addEventListener('click', () => handleNavigation(scrollContainerLaptops, 'prev'));
-        }
-    });
-</script>
+            </div>
+            <div id="laptops-slick-nav"></div>
+        </div>
+    </div>
+</section>
