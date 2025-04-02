@@ -24,7 +24,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 		public async Task<IActionResult> Index(string searchString = "")
 		{
-			var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand,ProductType");
+			var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand");
 
 			if (!string.IsNullOrEmpty(searchString))
 			{
@@ -36,10 +36,10 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 			var viewModel = new HomeIndexViewModel
 			{
-				Products = (await _unitOfWork.ProductRepository.GetAllAsync(c => c.IsBestseller, includeProperties: "Category,Brand,ProductType")), // Use the paginated list
+				Products = (await _unitOfWork.ProductRepository.GetAllAsync(c => c.IsBestseller, includeProperties: "Category,Brand")), // Use the paginated list
 				SearchString = searchString,
-				Accessories = (await _unitOfWork.ProductRepository.GetAllAsync(c => c.Category.Name == "Accessories", includeProperties: "Category,Brand,ProductType")),
-				Laptops = (await _unitOfWork.LaptopRepository.GetAllAsync(null, includeProperties: "Category,Brand,ProductType"))
+				Accessories = (await _unitOfWork.ProductRepository.GetAllAsync(c => c.Category.Name == "Accessories", includeProperties: "Category,Brand")),
+				Laptops = (await _unitOfWork.LaptopRepository.GetAllAsync(null, includeProperties: "Category,Brand"))
 					.Take(5)
 					.ToList()
 			};
@@ -52,8 +52,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 			var product = await _unitOfWork.ProductRepository.GetAsync(
 				p => p.ProductID == id,
 				"Category",
-				"Brand",
-				"ProductType"
+				"Brand"
 			);
 
 			if (product == null)
@@ -75,7 +74,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 		public async Task<IActionResult> GetAllProducts(int pageNumber = 1, string searchString = "", string category = "")
 		{
-			var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand,ProductType");
+			var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand");
 
 			if (!string.IsNullOrEmpty(searchString))
 			{
@@ -111,7 +110,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 		public async Task<IActionResult> GetAllAccessories(int pageNumber = 1, string searchString = "")
 		{
 			// Get all products that belong to the Accessories category
-			var query = _unitOfWork.ProductRepository.GetQueryable(p => p.Category.Name == "Accessories", includeProperties: "Category,Brand,ProductType");
+			var query = _unitOfWork.ProductRepository.GetQueryable(p => p.Category.Name == "Accessories", includeProperties: "Category,Brand");
 
 			if (!string.IsNullOrEmpty(searchString))
 			{
@@ -139,7 +138,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 		public async Task<IActionResult> GetAllLaptops(int pageNumber = 1, string searchString = "")
 		{
-			var query = _unitOfWork.LaptopRepository.GetQueryable(includeProperties: "Category,Brand,ProductType");
+			var query = _unitOfWork.LaptopRepository.GetQueryable(includeProperties: "Category,Brand");
 
 			if (!string.IsNullOrEmpty(searchString))
 			{

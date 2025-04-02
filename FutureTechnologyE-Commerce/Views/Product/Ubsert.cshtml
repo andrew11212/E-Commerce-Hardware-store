@@ -69,15 +69,6 @@
                                 <span asp-validation-for="Product.BrandID" class="text-danger"></span>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-floating">
-                                <select asp-for="Product.ProductTypeID" asp-items="Model.ProductTypeList" class="form-select border-0 shadow-sm">
-                                    <option value="">Select Type</option>
-                                </select>
-                                <label asp-for="Product.ProductTypeID" class="form-label"></label>
-                                <span asp-validation-for="Product.ProductTypeID" class="text-danger"></span>
-                            </div>
-                        </div>
 
                         <div class="col-12">
                             <div class="form-floating">
@@ -88,7 +79,6 @@
                                 <img id="imagePreview" src="@Model.Product.ImageUrl" class="img-thumbnail rounded-3" style="max-height: 200px; display: none;" />
                             </div>
                         </div>
-
                         <div class="col-12">
                             <div class="form-check">
                                 <input asp-for="Product.IsBestseller" class="form-check-input" type="checkbox" id="isBestsellerCheck">

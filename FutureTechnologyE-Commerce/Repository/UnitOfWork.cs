@@ -26,7 +26,6 @@ namespace FutureTechnologyE_Commerce.Repository
 		public IOrderHeaderRepository OrderHeader { get; private set; }
 		public IOrderDetailRepository OrderDetail { get; private set; }
 
-        public IProductTypeRepository ProductTypeRepository { get; private set; }
         public IBrandRepository BrandRepository { get; private set; }
 
 		public IlaptopRepository LaptopRepository { get; private set; }
@@ -44,7 +43,6 @@ namespace FutureTechnologyE_Commerce.Repository
 			OrderHeader = new OrderHeaderRepository(context);
 			OrderDetail = new OrderDetailRepository(context);
             BrandRepository = new BrandRepository(context);
-            ProductTypeRepository = new ProductTypeRepository(context);
 			LaptopRepository = new LaptopRepository(context);
         }
 		public async Task SaveAsync()

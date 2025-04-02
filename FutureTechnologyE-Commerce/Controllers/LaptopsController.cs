@@ -53,7 +53,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 					return NotFound();
 				}
 
-				var laptop = await _unitOfWork.LaptopRepository.GetAsync(l => l.ProductID == id, "Category", "Brand", "ProductType");
+				var laptop = await _unitOfWork.LaptopRepository.GetAsync(l => l.ProductID == id, "Category", "Brand");
 				if (laptop == null)
 				{
 					return NotFound();
@@ -146,7 +146,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 			LaptopViewModel laptopVM = null;
 			try
 			{
-				var laptop = await _unitOfWork.LaptopRepository.GetAsync(l => l.ProductID == id, "Category", "Brand", "ProductType");
+				var laptop = await _unitOfWork.LaptopRepository.GetAsync(l => l.ProductID == id, "Category", "Brand");
 				if (laptop == null)
 				{
 					return NotFound();
@@ -247,7 +247,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 					return NotFound();
 				}
 
-				var laptop = await _unitOfWork.LaptopRepository.GetAsync(l => l.ProductID == id, "Category", "Brand", "ProductType");
+				var laptop = await _unitOfWork.LaptopRepository.GetAsync(l => l.ProductID == id, "Category", "Brand");
 				if (laptop == null)
 				{
 					return NotFound();
@@ -301,8 +301,6 @@ namespace FutureTechnologyE_Commerce.Controllers
 				new SelectListItem { Text = c.Name, Value = c.CategoryID.ToString() }).ToList();
 			laptopVM.BrandList = (await _unitOfWork.BrandRepository.GetAllAsync()).Select(b =>
 				new SelectListItem { Text = b.Name, Value = b.BrandID.ToString() }).ToList();
-			laptopVM.ProductTypeList = (await _unitOfWork.ProductTypeRepository.GetAllAsync()).Select(pt =>
-				new SelectListItem { Text = pt.Name, Value = pt.ProductTypeID.ToString() }).ToList();
 		}
 
 		// Helper method for file validation (example implementation)

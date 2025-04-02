@@ -14,7 +14,6 @@ namespace FutureTechnologyE_Commerce.Repository.IRepository
 	{
         public ICategoryRepository CategoryRepository { get; }
         public IProductRepository ProductRepository { get; }
-		public IProductTypeRepository ProductTypeRepository { get; }
 
 		public IBrandRepository BrandRepository { get; }
         public IShopingCartRepositery CartRepositery { get; }
