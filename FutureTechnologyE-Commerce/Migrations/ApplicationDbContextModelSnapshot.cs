@@ -131,7 +131,7 @@ namespace FutureTechnologyE_Commerce.Migrations
 
                     b.HasKey("BrandID");
 
-                    b.ToTable("Brands");
+                    b.ToTable("Brands", (string)null);
 
                     b.HasData(
                         new
@@ -166,7 +166,7 @@ namespace FutureTechnologyE_Commerce.Migrations
 
                     b.HasIndex("ParentCategoryID");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
 
                     b.HasData(
                         new
@@ -212,7 +212,7 @@ namespace FutureTechnologyE_Commerce.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("orderDetails");
+                    b.ToTable("orderDetails", (string)null);
                 });
 
             modelBuilder.Entity("FutureTechnologyE_Commerce.Models.OrderHeader", b =>
@@ -290,7 +290,7 @@ namespace FutureTechnologyE_Commerce.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("orderHeaders");
+                    b.ToTable("orderHeaders", (string)null);
                 });
 
             modelBuilder.Entity("FutureTechnologyE_Commerce.Models.Product", b =>
@@ -333,7 +333,7 @@ namespace FutureTechnologyE_Commerce.Migrations
 
                     b.HasIndex("CategoryID");
 
-                    b.ToTable("Product");
+                    b.ToTable("Product", (string)null);
 
                     b.UseTptMappingStrategy();
 
@@ -408,7 +408,7 @@ namespace FutureTechnologyE_Commerce.Migrations
                     b.HasIndex("ProductID", "UserID")
                         .IsUnique();
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("FutureTechnologyE_Commerce.Models.ShopingCart", b =>
@@ -435,7 +435,7 @@ namespace FutureTechnologyE_Commerce.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("shopingCarts");
+                    b.ToTable("shopingCarts", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
