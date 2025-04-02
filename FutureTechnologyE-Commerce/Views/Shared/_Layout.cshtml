@@ -115,7 +115,7 @@
         }
 
         .search-container .dropdown-item {
-            padding: 0.5rem 1rem;
+            paddng 05rem 1rem;
             font-size: 0.9rem;
             color: #333;
         }
@@ -331,11 +331,13 @@
         .search-container .dropdown-item {
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
+            display: block;
+            text-decoration: none;
             color: #333;
         }
 
-        .search-container .dropdown-item:hover,
-        .search-container .dropdown-item:focus {
+        .search-container .dropdown-item.active,
+        .search-container .dropdown-item:hover {
             background-color: #f8f9fa;
             color: #333;
             font-weight: 500;
@@ -353,6 +355,37 @@
         /* Add some polish to the search button */
         .search-container .search-btn i {
             font-size: 0.9rem;
+        }
+
+        /* Content Management Dropdown specific styles */
+        .navbar-nav .dropdown .dropdown-menu {
+            margin-top: 0.25rem;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 1060;
+            /* Higher than default to prevent overlap */
+        }
+
+        .navbar-nav .dropdown-item {
+            padding: 0.75rem 1.25rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-radius: 0;
+        }
+
+        .navbar-nav .dropdown-item:hover {
+            transform: translateX(8px);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar-nav .dropdown-item i {
+            transition: transform 0.2s ease;
+        }
+
+        .navbar-nav .dropdown-item:hover i {
+            transform: scale(1.2);
         }
     </style>
 
@@ -450,39 +483,43 @@
                         <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
+                        <a class="nav-link dropdown-toggle fw-semibold d-flex align-items-center" href="#" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-gear-fill me-2"></i>
                             Content Management
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-dark">
+                        <ul class="dropdown-menu dropdown-menu-dark py-2">
+                            <li class="px-3 py-2 text-light small fw-bold text-uppercase">Manage Products</li>
                             <li>
-                                <a class="dropdown-item" asp-controller="Product" asp-action="Index">
-                                    <i class="bi bi-box-seam me-2"></i>Products
+                                <a class="dropdown-item d-flex align-items-center" asp-controller="Product"
+                                    asp-action="Index">
+                                    <i class="bi bi-box-seam me-2"></i>
+                                    <span>All Products</span>
                                 </a>
                             </li>
                             <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <a class="dropdown-item" asp-controller="Category" asp-action="Index">
-                                    <i class="bi bi-tags me-2"></i>Categories
+                                <a class="dropdown-item d-flex align-items-center" asp-controller="Laptops"
+                                    asp-action="Index">
+                                    <i class="bi bi-laptop me-2"></i>
+                                    <span>Laptops</span>
                                 </a>
                             </li>
                             <li>
-                                <hr class="dropdown-divider">
+                                <hr class="dropdown-divider my-2">
                             </li>
-
+                            <li class="px-3 py-2 text-light small fw-bold text-uppercase">Manage Categories</li>
                             <li>
-                                <a class="dropdown-item" asp-controller="Laptops" asp-action="Index">
-                                    <i class="bi bi-tags me-2"></i>Laptops
+                                <a class="dropdown-item d-flex align-items-center" asp-controller="Category"
+                                    asp-action="Index">
+                                    <i class="bi bi-tags me-2"></i>
+                                    <span>Categories</span>
                                 </a>
                             </li>
                             <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <a class="dropdown-item" asp-controller="Brands" asp-action="Index">
-                                    <i class="bi bi-tags me-2"></i>Brands
+                                <a class="dropdown-item d-flex align-items-center" asp-controller="Brands"
+                                    asp-action="Index">
+                                    <i class="bi bi-award me-2"></i>
+                                    <span>Brands</span>
                                 </a>
                             </li>
                         </ul>
@@ -552,13 +589,48 @@
     <script>
         // Category dropdown functionality
         $(document).ready(function () {
-            // Handle dropdown item selection
+            // Handle dropdown item selection for search
             $('.dropdown-item').click(function (e) {
-                e.preventDefault();
                 var selectedValue = $(this).data('value');
-                var selectedText = $(this).text().trim();
-                $('#searchCategoryDropdown').text(selectedText);
-                $('#selectedCategory').val(selectedValue);
+                if (selectedValue !== undefined) {
+                    e.preventDefault();
+                    var selectedText = $(this).text().trim();
+                    $('#searchCategoryDropdown').text(selectedText);
+                    $('#selectedCategory').val(selectedValue);
+                }
+            });
+
+            // Fix the Content Management dropdown positioning
+            $('.navbar-nav .dropdown').on('show.bs.dropdown', function () {
+                $(this).find('.dropdown-menu').css({
+                    'display': 'block',
+                    'opacity': 0
+                }).animate({
+                    'opacity': 1,
+                    'margin-top': '0.25rem'
+                }, 200);
+            });
+
+            // Smooth hide animation
+            $('.navbar-nav .dropdown').on('hide.bs.dropdown', function () {
+                $(this).find('.dropdown-menu').animate({
+                    'opacity': 0,
+                    'margin-top': '0'
+                }, 200, function () {
+                    $(this).css('display', 'none');
+                });
+                return false; // This prevents the immediate hide, allowing our animation to complete
+            });
+
+            // Auto-close when clicking outside
+            $(document).on('click', function (e) {
+                if (!$(e.target).closest('.dropdown').length) {
+                    $('.navbar-nav .dropdown .dropdown-menu').css({
+                        'display': 'none',
+                        'opacity': 0,
+                        'margin-top': '0'
+                    });
+                }
             });
         });
     </script>
