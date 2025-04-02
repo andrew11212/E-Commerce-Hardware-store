@@ -8,7 +8,6 @@ namespace FutureTechnologyE_Commerce.Models
 	{
 		[Key]
 		public int ProductID { get; set; }
-
 		[Required]
 		[StringLength(255)]
 		public string Name { get; set; } = string.Empty;
@@ -28,16 +27,11 @@ namespace FutureTechnologyE_Commerce.Models
 		[Required (ErrorMessage ="Add stock")]
 		public int StockQuantity { get; set; }
 
-		[ForeignKey("ProductType")]
-		public int ProductTypeID { get; set; }
-
 		[ValidateNever]
 		public virtual Category Category { get; set; } = default!;
         [ValidateNever]
 
         public virtual Brand Brand { get; set; } = default!;
-        [ValidateNever]
-        public virtual ProductType ProductType { get; set; } =default!;
 	}
 }
 
