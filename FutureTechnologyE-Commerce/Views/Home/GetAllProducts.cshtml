@@ -1,89 +1,84 @@
-﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<ApplicationUser> SignInManager
+﻿@model FutureTechnologyE_Commerce.Models.ViewModels.HomeIndexViewModel
 
-@using FutureTechnologyE_Commerce.Models.ViewModels
-@model HomeIndexViewModel
 @{
-    ViewData["Title"] = "All Products";
+    ViewData["Title"] = "All Laptops";
+
 }
 
-<div class="container py-4">
-    <h1 class="mb-4">All Products</h1>
-
-    @if (!string.IsNullOrEmpty(Model.SearchString))
-    {
-        <div class="alert alert-info">
-            Showing results for "@Model.SearchString"
+<div class="container my-5">
+    <div class="row g-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+            <h1 class="display-6 fw-bold mb-3 mb-md-0">@ViewData["Title"]</h1>
+            <form asp-action="GetAllLaptops" method="get" class="d-flex">
+                <input type="text" name="searchString" value="@Model.SearchString"
+                       class="form-control me-2" placeholder="Search products..." />
+                <button type="submit" class="btn btn-outline-primary">Search</button>
+            </form>
         </div>
-    }
 
-    @foreach (var categoryGroup in Model.ProductsByCategory)
-    {
-        <div class="mb-5">
-            <h2 class="mb-4">@categoryGroup.Key.Name</h2>
-            <div class="row row-cols-1 row-cols-md-3 g-4">
-                @foreach (var product in categoryGroup.Value)
-                {
-                    <div class="col">
-                        <div class="card h-100 border-0 shadow-sm rounded-3">
-                            <picture>
-                                <source srcset="@product.ImageUrl" type="image/webp">
-                                <img src="@product.ImageUrl" class="card-img-top object-fit-cover"
-                                    style="aspect-ratio: 4/3;" alt="@product.Name" loading="lazy"
-                                    onerror="this.src='/images/placeholder.avif'">
-                            </picture>
-                            <div class="card-body d-flex flex-column px-3 pb-3">
-                                <h5 class="card-title fw-semibold text-truncate-2 mb-2">@product.Name</h5>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div>
-                                        <span class="text-primary fw-bold text-uppercase fs-5">@product.Price.ToString("N0") EGP</span>
-                                        <del class="text-muted small ms-2 d-none d-md-inline">@((product.Price * 1.2m).ToString("N0")) EGP</del>
-                                    </div>
-                                    <span class="badge bg-@(product.StockQuantity > 0 ? "success" : "danger") rounded-pill">
-                                        @(product.StockQuantity > 0 ? "In Stock" : "Sold Out")
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="d-grid gap-2 mt-auto">
-                                <a asp-action="Details" asp-route-id="@product.ProductID"
-                                    class="btn btn-outline-primary rounded-pill btn-sm">
-                                    View Details
-                                </a>
-                                @if (SignInManager.IsSignedIn(User))
-                                {
-                                    <form asp-controller="Cart" asp-action="AddToCart" method="post">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="productId" value="@product.ProductID" />
-                                        <div class="d-grid gap-2">
-                                            <button type="submit"
-                                                class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center"
-                                                @(product.StockQuantity == 0 ? "disabled" : "")>
-                                                <span class="spinner-border spinner-border-sm d-none me-2" role="status"
-                                                    aria-hidden="true"></span>
-                                                <span class="btn-text">Add to Cart</span>
-                                                <i class="bi bi-cart-plus ms-2"></i>
-                                            </button>
-                                        </div>
-                                    </form>
-                                }
-                                else
-                                {
-                                    <a asp-controller="Cart" asp-action="RequestAddToCartAfterLogin"
-                                        asp-route-productId="@product.ProductID"
-                                        class="btn btn-primary rounded-pill btn-sm d-flex align-items-center justify-content-center">
-                                        <span class="spinner-border spinner-border-sm d-none me-2" role="status"
-                                            aria-hidden="true"></span>
-                                        <span class="btn-text">Add to Cart</span>
-                                        <i class="bi bi-cart-plus ms-2"></i>
-                                    </a>
-                                }
-                            </div>
+        @foreach (var item in Model.Products)
+        {
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow rounded-3 overflow-hidden">
+                    <div class="position-relative">
+                        <img src="@item.ImageUrl"
+                             class="card-img-top img-fluid object-fit-cover"
+                             style="aspect-ratio: 16/9; object-position: center"
+                             alt="@item.Name">
+
+                        <div class="position-absolute top-0 end-0 m-3">
+                            <span class="badge bg-primary">@item.Category.Name</span>
+                            <span class="badge bg-secondary">@item.Brand.Name</span>
                         </div>
                     </div>
+
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold text-truncate-2">@item.Name</h5>
+                        <p class="card-text text-muted small mb-2">@item.ProductType.Name</p>
+
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <div>
+                                <span class="h5 text-primary fw-bold">@item.Price.ToString("C")</span>
+                                }
+                            </div>
+
+                            <form asp-controller="Cart" asp-action="AddToCart" method="post" class="addToCartForm">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="productId" value="@item.ProductID" />
+                                <button type="submit" class="btn btn-primary btn-sm rounded-pill"
+                                        @(item.StockQuantity == 0 ? "disabled" : "")>
+                                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                    Add to Cart <i class="bi bi-cart-plus ms-2"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <nav aria-label="Page navigation" class="mt-4">
+            <!-- Pagination Controls -->
+            <div class="pagination mt-4 d-flex justify-content-center flex-wrap gap-2">
+                @{
+                    int totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+                }
+                @if (Model.PageNumber > 1)
+                {
+                    <a asp-action="GetAllLaptops" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-searchString="@Model.SearchString" class="btn btn-outline-primary">Previous</a>
+                }
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <a asp-action="GetAllLaptops" asp-route-pageNumber="@i" asp-route-searchString="@Model.SearchString"
+                       class="btn btn-outline-primary @(i == Model.PageNumber ? "active" : "")">@i</a>
+                }
+                @if (Model.PageNumber < totalPages)
+                {
+                    <a asp-action="GetAllLaptops" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-searchString="@Model.SearchString" class="btn btn-outline-primary">Next</a>
                 }
             </div>
-        </div>
-    }
+        </nav>
+    </div>
 </div>
 
 <style>
