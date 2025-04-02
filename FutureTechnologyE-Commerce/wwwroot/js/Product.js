@@ -20,7 +20,6 @@ function loadDataTable() {
             },
             { "data": "categoryName" },
             { "data": "brandName" },
-            { "data": "productTypeName" },
             { "data": "stockQuantity" },
             {
                 "data": "isBestseller",

@@ -38,8 +38,6 @@ namespace FutureTechnologyE_Commerce.Controllers
 					new SelectListItem { Text = c.Name, Value = c.CategoryID.ToString() }).ToList(),
 				BrandList = (await _unitOfWork.BrandRepository.GetAllAsync()).Select(b =>
 					new SelectListItem { Text = b.Name, Value = b.BrandID.ToString() }).ToList(),
-				ProductTypeList = (await _unitOfWork.ProductTypeRepository.GetAllAsync()).Select(pt =>
-					new SelectListItem { Text = pt.Name, Value = pt.ProductTypeID.ToString() }).ToList()
 			};
 
 			if (id == null || id == 0)
@@ -50,7 +48,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 			else
 			{
 				productVM.Product = await _unitOfWork.ProductRepository
-					.GetAsync(p => p.ProductID == id, "Category", "Brand", "ProductType");
+					.GetAsync(p => p.ProductID == id, "Category", "Brand");
 
 				if (productVM.Product == null)
 				{
@@ -73,8 +71,6 @@ namespace FutureTechnologyE_Commerce.Controllers
 					.Select(c => new SelectListItem(c.Name, c.CategoryID.ToString())).ToList();
 				productVM.BrandList = (await _unitOfWork.BrandRepository.GetAllAsync())
 					.Select(b => new SelectListItem(b.Name, b.BrandID.ToString())).ToList();
-				productVM.ProductTypeList = (await _unitOfWork.ProductTypeRepository.GetAllAsync())
-					.Select(pt => new SelectListItem(pt.Name, pt.ProductTypeID.ToString())).ToList();
 
 				return View(productVM);
 			}
@@ -133,7 +129,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 			try
 			{
 				// Get the base query with related data
-				var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand,ProductType");
+				var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand");
 
 				// Apply search filter if searchString is provided
 				if (!string.IsNullOrEmpty(searchString))
@@ -161,7 +157,6 @@ namespace FutureTechnologyE_Commerce.Controllers
 					price = p.Price,
 					categoryName = p.Category?.Name ?? "N/A",
 					brandName = p.Brand?.Name ?? "N/A",
-					productTypeName = p.ProductType?.Name ?? "N/A",
 					stockQuantity = p.StockQuantity,
 					isBestseller =p.IsBestseller
 
