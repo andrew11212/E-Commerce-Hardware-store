@@ -290,31 +290,6 @@
                         <i class="bi bi-twitter fs-3"></i>
                     </a>
                 </div>
-
-                <!-- Language Switcher -->
-                <div class="dropdown">
-                    <button class="btn btn-sm contact-bar dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-globe"></i>
-                        @(System.Threading.Thread.CurrentThread.CurrentCulture.Name.StartsWith("ar") ? "العربية" :
-                                                "English")
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end text-white">
-                        <li>
-                            <form asp-controller="Language" asp-action="SetLanguage" method="post">
-                                <input type="hidden" name="culture" value="en-US" />
-                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                <button type="submit" class="dropdown-item text-white">English</button>
-                            </form>
-                        </li>
-                        <li>
-                            <form asp-controller="Language" asp-action="SetLanguage" method="post">
-                                <input type="hidden" name="culture" value="ar-EG" />
-                                <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                <button type="submit" class="dropdown-item text-white">العربية</button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
             </div>
         </div>
     </div>
@@ -337,9 +312,10 @@
                     <i class="bi bi-heart fs-4"></i>
                     <span class="text-light small mb-0">Wishlist</span>
                 </a> *@
-                <a class="nav-link text-light icon-text-link" asp-controller="Cart" asp-action="Index">
-                    <i class="bi bi-cart fs-4"></i>
-                    <span class="text-light small mb-0">Cart</span>
+                <a class="nav-link icon-text-link" asp-controller="Cart" asp-action="Index"
+                    style="color: var(--text-color);">
+                    <i class="bi bi-cart fs-4" style="color: var(--primary);"></i>
+                    <span class="small mb-0" style="color: var(--text-color);">Cart</span>
                 </a>
             </div>
         </div>
