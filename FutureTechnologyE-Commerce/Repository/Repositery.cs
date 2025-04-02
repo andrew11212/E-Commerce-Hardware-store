@@ -64,9 +64,14 @@ namespace FutureTechnologyE_Commerce.Repository
 		{
 			Set.Remove(entity);
 		}
-		public IQueryable<T> GetQueryable(string includeProperties = null)
+		public IQueryable<T> GetQueryable(Expression<Func<T, bool>>? filter = null,
+									   string? includeProperties = null)
 		{
 			IQueryable<T> query = Set;
+			if (filter != null)
+			{
+				query = query.Where(filter);
+			}
 			if (!string.IsNullOrEmpty(includeProperties))
 			{
 				foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
