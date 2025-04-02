@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 using System.Threading.RateLimiting;
 
 namespace FutureTechnologyE_Commerce
@@ -18,67 +19,81 @@ namespace FutureTechnologyE_Commerce
 	{
 		public static void Main(string[] args)
 		{
-			var builder = WebApplication.CreateBuilder(args);
+			// Configure Serilog
+			Log.Logger = new LoggerConfiguration()
+				.WriteTo.Console()
+				.WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
+				.Enrich.FromLogContext()
+				.Enrich.WithEnvironmentName()
+				.CreateLogger();
 
-            // Configure logging
-            builder.Logging.ClearProviders();
-			builder.Logging.AddConsole();
-			builder.Logging.AddDebug();
-			builder.Logging.SetMinimumLevel(LogLevel.Information);
-
-			builder.Services.AddControllersWithViews();
-			builder.Services.AddDbContext<ApplicationDbContext>(options => options
-				.UseSqlServer(builder.Configuration.GetConnectionString("DefualtConnection")));
-			builder.Services.Configure<Paymob>(builder.Configuration.GetSection("PayMob"));
-			builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+			try
 			{
-				//options.SignIn.RequireConfirmedAccount = true; // Enforce account confirmation
-			}).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+				Log.Information("Starting web application");
+				var builder = WebApplication.CreateBuilder(args);
 
-			// Configure cookie policy for secure sessions
-			builder.Services.ConfigureApplicationCookie(options =>
-			{
-				options.LoginPath = "/Identity/Account/Login";
-				options.LogoutPath = "/Identity/Account/Logout";
-				options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-				options.Cookie.HttpOnly = true;
-				options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-				options.Cookie.SameSite = SameSiteMode.Strict;
-				options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-				options.SlidingExpiration = true;
-			});
+				// Add Serilog to the application
+				builder.Host.UseSerilog();
 
-			builder.Services.AddRazorPages();
-			builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-			builder.Services.AddScoped<IEmailSender, EmailSender>();
-			builder.Services.AddDistributedMemoryCache();
-			builder.Services.AddSession(options =>
-			{
-				options.IdleTimeout = TimeSpan.FromMinutes(30);
-				options.Cookie.HttpOnly = true;
-				options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-				options.Cookie.SameSite = SameSiteMode.Strict;
-				options.Cookie.IsEssential = true;
-			});
+				// Configure logging
+				builder.Logging.ClearProviders();
+				builder.Logging.AddConsole();
+				builder.Logging.AddDebug();
+				builder.Logging.SetMinimumLevel(LogLevel.Information);
 
-			// Configure rate limiting
-			builder.Services.AddRateLimiter(options =>
-			{
-				options.AddFixedWindowLimiter("fixed", limiterOptions =>
+				builder.Services.AddControllersWithViews();
+				builder.Services.AddDbContext<ApplicationDbContext>(options => options
+					.UseSqlServer(builder.Configuration.GetConnectionString("DefualtConnection")));
+				builder.Services.Configure<Paymob>(builder.Configuration.GetSection("PayMob"));
+				builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 				{
-					limiterOptions.PermitLimit = 100;
-					limiterOptions.Window = TimeSpan.FromMinutes(1);
-					limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-					limiterOptions.QueueLimit = 0;
+					//options.SignIn.RequireConfirmedAccount = true; // Enforce account confirmation
+				}).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
+				// Configure cookie policy for secure sessions
+				builder.Services.ConfigureApplicationCookie(options =>
+				{
+					options.LoginPath = "/Identity/Account/Login";
+					options.LogoutPath = "/Identity/Account/Logout";
+					options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+					options.Cookie.HttpOnly = true;
+					options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+					options.Cookie.SameSite = SameSiteMode.Strict;
+					options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+					options.SlidingExpiration = true;
 				});
-				options.OnRejected = (context, token) =>
-				{
-					context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
-					return ValueTask.CompletedTask;
-				};
-			});
 
-			builder.Services.AddAuthentication()
+				builder.Services.AddRazorPages();
+				builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+				builder.Services.AddScoped<IEmailSender, EmailSender>();
+				builder.Services.AddDistributedMemoryCache();
+				builder.Services.AddSession(options =>
+				{
+					options.IdleTimeout = TimeSpan.FromMinutes(30);
+					options.Cookie.HttpOnly = true;
+					options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+					options.Cookie.SameSite = SameSiteMode.Strict;
+					options.Cookie.IsEssential = true;
+				});
+
+				// Configure rate limiting
+				builder.Services.AddRateLimiter(options =>
+				{
+					options.AddFixedWindowLimiter("fixed", limiterOptions =>
+					{
+						limiterOptions.PermitLimit = 100;
+						limiterOptions.Window = TimeSpan.FromMinutes(1);
+						limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+						limiterOptions.QueueLimit = 0;
+					});
+					options.OnRejected = (context, token) =>
+					{
+						context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+						return ValueTask.CompletedTask;
+					};
+				});
+
+				builder.Services.AddAuthentication()
 	.AddGoogle(googleOptions =>
 	{
 		googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
@@ -92,34 +107,43 @@ namespace FutureTechnologyE_Commerce
 		facebookOptions.AccessDeniedPath = "/Account/AccessDenied"; // Optional: Redirect path on access denied
 	});
 
-			var app = builder.Build();
-            var supportedCultures = new[] { "en-US", "ar-EG" };
-            var localizationOptions = new RequestLocalizationOptions()
-                .SetDefaultCulture(supportedCultures[0])
-                .AddSupportedCultures(supportedCultures)
-                .AddSupportedUICultures(supportedCultures);
+				var app = builder.Build();
+				var supportedCultures = new[] { "en-US", "ar-EG" };
+				var localizationOptions = new RequestLocalizationOptions()
+					.SetDefaultCulture(supportedCultures[0])
+					.AddSupportedCultures(supportedCultures)
+					.AddSupportedUICultures(supportedCultures);
 
-            app.UseRequestLocalization(localizationOptions);
-            // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
-			{
-				app.UseExceptionHandler("/Home/Error");
-				app.UseHsts();
+				app.UseRequestLocalization(localizationOptions);
+				// Configure the HTTP request pipeline.
+				if (!app.Environment.IsDevelopment())
+				{
+					app.UseExceptionHandler("/Home/Error");
+					app.UseHsts();
+				}
+
+				//app.UseHttpsRedirection();
+				app.UseStaticFiles();
+				app.UseRouting();
+				app.UseAuthentication();
+				app.UseAuthorization();
+				app.UseSession();
+				app.UseRateLimiter(); // Enable rate limiting
+				app.MapRazorPages();
+				app.MapControllerRoute(
+					name: "default",
+					pattern: "{controller=Home}/{action=Index}/{id?}");
+
+				app.Run();
 			}
-
-			//app.UseHttpsRedirection();
-			app.UseStaticFiles();
-			app.UseRouting();
-			app.UseAuthentication();
-			app.UseAuthorization();
-			app.UseSession();
-			app.UseRateLimiter(); // Enable rate limiting
-			app.MapRazorPages();
-			app.MapControllerRoute(
-				name: "default",
-				pattern: "{controller=Home}/{action=Index}/{id?}");
-
-			app.Run();
+			catch (Exception ex)
+			{
+				Log.Fatal(ex, "Application terminated unexpectedly");
+			}
+			finally
+			{
+				Log.CloseAndFlush();
+			}
 		}
 	}
 }
