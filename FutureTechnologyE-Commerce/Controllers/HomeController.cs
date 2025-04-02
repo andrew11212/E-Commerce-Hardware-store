@@ -22,7 +22,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 			_unitOfWork = unitOfWork;
 		}
 
-		public async Task<IActionResult> Index( string searchString = "")
+		public async Task<IActionResult> Index(string searchString = "")
 		{
 			var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand,ProductType");
 
@@ -36,8 +36,9 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 			var viewModel = new HomeIndexViewModel
 			{
-				Products = (await _unitOfWork.ProductRepository.GetAllAsync(c=>c.IsBestseller, includeProperties: "Category,Brand,ProductType")), // Use the paginated list
+				Products = (await _unitOfWork.ProductRepository.GetAllAsync(c => c.IsBestseller, includeProperties: "Category,Brand,ProductType")), // Use the paginated list
 				SearchString = searchString,
+				Accessories = (await _unitOfWork.ProductRepository.GetAllAsync(c => c.Category.Name == "Accessories", includeProperties: "Category,Brand,ProductType")),
 				Laptops = (await _unitOfWork.LaptopRepository.GetAllAsync(null, includeProperties: "Category,Brand,ProductType"))
 					.Take(5)
 					.ToList()
@@ -93,6 +94,35 @@ namespace FutureTechnologyE_Commerce.Controllers
 			{
 				SearchString = searchString,
 				Products = products,
+				PageNumber = pageNumber,
+				PageSize = pageSize,
+				TotalCount = totalCount,
+			};
+			return View(viewModel);
+		}
+
+		public async Task<IActionResult> GetAllAccessories(int pageNumber = 1, string searchString = "")
+		{
+			// Get all products that belong to the Accessories category
+			var query = _unitOfWork.ProductRepository.GetQueryable(p => p.Category.Name == "Accessories", includeProperties: "Category,Brand,ProductType");
+
+			if (!string.IsNullOrEmpty(searchString))
+			{
+				searchString = searchString.Trim().ToLower();
+				query = query.Where(p => p.Name.ToLower().Contains(searchString) ||
+										 (p.Brand != null && p.Brand.Name.ToLower().Contains(searchString)));
+			}
+			int pageSize = 4;
+			int totalCount = await query.CountAsync();
+			var accessoriesProducts = await query
+				.Skip((pageNumber - 1) * pageSize)
+				.Take(pageSize)
+				.ToListAsync();
+
+			var viewModel = new HomeIndexViewModel
+			{
+				SearchString = searchString,
+				Accessories = accessoriesProducts, // Assign the paginated list to Accessories
 				PageNumber = pageNumber,
 				PageSize = pageSize,
 				TotalCount = totalCount,

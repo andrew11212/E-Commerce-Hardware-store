@@ -15,7 +15,7 @@
             <div class="carousel-item active">
                 <div class="carousel-content">
                     <img src="/images/ASUS TUF Gaming F15 Gaming Laptop.jpeg" alt="ASUS TUF Gaming F15"
-                        class="carousel-image">
+                         class="carousel-image">
                     <div class="carousel-overlay"></div>
                     <div class="carousel-caption">
                         <h2 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">ASUS TUF Gaming F15</h2>
@@ -46,7 +46,7 @@
             <div class="carousel-item">
                 <div class="carousel-content">
                     <img src="/images/Pc Portable Gamer ASUS TUF F15 _ 15_6″ _ Intel i7 _ RTX 4060 _ 8 Go Ram.jpeg"
-                        alt="RTX 4060 Gaming Laptop" class="carousel-image">
+                         alt="RTX 4060 Gaming Laptop" class="carousel-image">
                     <div class="carousel-overlay"></div>
                     <div class="carousel-caption">
                         <h2 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">RTX 4060 Gaming Laptop</h2>
@@ -97,7 +97,7 @@
                             <div class="card shadow-hover">
                                 <div class="card-img-wrapper">
                                     <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name"
-                                        onerror="this.src='/images/placeholder.avif'">
+                                         onerror="this.src='/images/placeholder.avif'">
                                     <div class="product-overlay">
                                         <a asp-action="Details" asp-route-id="@product.ProductID" class="btn btn-light btn-sm">
                                             View Details
@@ -125,7 +125,7 @@
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="productId" value="@product.ProductID" />
                                                 <button type="submit" class="btn btn-primary w-100"
-                                                    @(product.StockQuantity == 0 ? "disabled" : "")>
+                                                        @(product.StockQuantity == 0 ? "disabled" : "")>
                                                     <span class="spinner-border spinner-border-sm d-none" role="status"></span>
                                                     <span class="btn-text">Add to Cart</span>
                                                     <i class="bi bi-cart-plus ms-2"></i>
@@ -135,7 +135,7 @@
                                         else
                                         {
                                             <a asp-controller="Cart" asp-action="RequestAddToCartAfterLogin"
-                                                asp-route-productId="@product.ProductID" class="btn btn-primary w-100">
+                                               asp-route-productId="@product.ProductID" class="btn btn-primary w-100">
                                                 Add to Cart <i class="bi bi-cart-plus ms-2"></i>
                                             </a>
                                         }
@@ -195,37 +195,37 @@
         right: 10%;
     }
 
-    .carousel-caption h2 {
-        font-size: 3.5rem;
-        font-weight: 700;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        margin-bottom: 1rem;
-    }
+        .carousel-caption h2 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 1rem;
+        }
 
-    .carousel-caption .lead {
-        font-size: 1.25rem;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        margin-bottom: 2rem;
-    }
+        .carousel-caption .lead {
+            font-size: 1.25rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            margin-bottom: 2rem;
+        }
 
     .carousel-indicators {
         bottom: 20px;
     }
 
-    .carousel-indicators button {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        margin: 0 6px;
-        background-color: rgba(255,255,255,0.5);
-        border: none;
-        transition: all 0.3s ease;
-    }
+        .carousel-indicators button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin: 0 6px;
+            background-color: rgba(255,255,255,0.5);
+            border: none;
+            transition: all 0.3s ease;
+        }
 
-    .carousel-indicators button.active {
-        background-color: var(--primary-color);
-        transform: scale(1.2);
-    }
+            .carousel-indicators button.active {
+                background-color: var(--primary-color);
+                transform: scale(1.2);
+            }
 
     /* Products Section */
     .products-section {
@@ -320,9 +320,9 @@
         backdrop-filter: blur(4px);
     }
 
-    .badge.bg-danger {
-        background-color: rgba(231, 76, 60, 0.8);
-    }
+        .badge.bg-danger {
+            background-color: rgba(231, 76, 60, 0.8);
+        }
 
     /* Slick Carousel Navigation */
     .slick-prev, .slick-next {
@@ -335,19 +335,19 @@
         transition: all 0.3s ease;
     }
 
-    .slick-prev:hover, .slick-next:hover {
-        background: var(--primary-color);
-    }
+        .slick-prev:hover, .slick-next:hover {
+            background: var(--primary-color);
+        }
 
-    .slick-prev:before, .slick-next:before {
-        color: var(--text-color);
-        opacity: 0.7;
-    }
+        .slick-prev:before, .slick-next:before {
+            color: var(--text-color);
+            opacity: 0.7;
+        }
 
-    .slick-prev:hover:before, .slick-next:hover:before {
-        color: white;
-        opacity: 1;
-    }
+        .slick-prev:hover:before, .slick-next:hover:before {
+            color: white;
+            opacity: 1;
+        }
 
     .slick-prev {
         left: -20px;
@@ -384,13 +384,13 @@
             right: 5%;
         }
 
-        .carousel-caption h2 {
-            font-size: 2rem;
-        }
+            .carousel-caption h2 {
+                font-size: 2rem;
+            }
 
-        .carousel-caption .lead {
-            font-size: 1rem;
-        }
+            .carousel-caption .lead {
+                font-size: 1rem;
+            }
 
         .section-header {
             flex-direction: column;
@@ -416,9 +416,157 @@
     }
 </style>
 
+
+
+<!-- Laptops Section -->
+<section class="products-section py-5 fade-in">
+    <div class="container">
+        <div class="section-header mb-4">
+            <h2 class="section-title">Featured Laptops</h2>
+            <a asp-action="GetAllLaptops" asp-controller="Home" class="btn btn-outline-primary">
+                View All <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+
+        <div class="products-carousel">
+            <div class="products-slick" data-nav="#laptops-slick-nav">
+                @foreach (var laptop in Model.Laptops)
+                {
+                    <div class="product-item">
+                        <div class="product-card h-100">
+                            <div class="card shadow-hover">
+                                <div class="card-img-wrapper">
+                                    <img src="@laptop.ImageUrl" class="card-img-top" alt="@laptop.Name"
+                                         onerror="this.src='/images/placeholder.avif'">
+                                    <div class="product-overlay">
+                                        <a asp-controller="Laptops" asp-action="Details" asp-route-id="@laptop.ProductID" class="btn btn-light btn-sm">
+                                            View Details
+                                        </a>
+                                    </div>
+                                    @if (laptop.StockQuantity > 0)
+                                    {
+                                        <span class="badge bg-success position-absolute top-0 end-0 m-3">In Stock</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger position-absolute top-0 end-0 m-3">Sold Out</span>
+                                    }
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title text-truncate-2">@laptop.Name</h5>
+                                    <div class="price-section mb-3">
+                                        <span class="current-price">@laptop.Price.ToString("N0") EGP</span>
+                                        <span class="original-price">@((laptop.Price * 1.2m).ToString("N0")) EGP</span>
+                                    </div>
+                                    <div class="mt-auto">
+                                        @if (SignInManager.IsSignedIn(User))
+                                        {
+                                            <form asp-controller="Cart" asp-action="AddToCart" method="post" class="add-to-cart-form">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="productId" value="@laptop.ProductID" />
+                                                <button type="submit" class="btn btn-primary w-100"
+                                                        @(laptop.StockQuantity == 0 ? "disabled" : "")>
+                                                    <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                                                    <span class="btn-text">Add to Cart</span>
+                                                    <i class="bi bi-cart-plus ms-2"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <a asp-controller="Cart" asp-action="RequestAddToCartAfterLogin"
+                                               asp-route-productId="@laptop.ProductID" class="btn btn-primary w-100">
+                                                Add to Cart <i class="bi bi-cart-plus ms-2"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div id="laptops-slick-nav"></div>
+        </div>
+    </div>
+</section>
+ section accessories
+<section class="products-section py-5 fade-in">
+    <div class="container">
+        <div class="section-header mb-4">
+            <h2 class="section-title">Accessories</h2>
+            <a asp-action="GetAllAccessories" asp-controller="Home" class="btn btn-outline-primary">
+                View All Accessorires <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+
+        <div class="products-carousel">
+            <div class="products-slick" data-nav="#products-slick-nav">
+                @foreach (var product in Model.Accessories)
+                {
+                    <div class="product-item">
+                        <div class="product-card h-100">
+                            <div class="card shadow-hover">
+                                <div class="card-img-wrapper">
+                                    <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name"
+                                         onerror="this.src='/images/placeholder.avif'">
+                                    <div class="product-overlay">
+                                        <a asp-action="Details" asp-route-id="@product.ProductID" class="btn btn-light btn-sm">
+                                            View Details
+                                        </a>
+                                    </div>
+                                    @if (product.StockQuantity > 0)
+                                    {
+                                        <span class="badge bg-success position-absolute top-0 end-0 m-3">In Stock</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger position-absolute top-0 end-0 m-3">Sold Out</span>
+                                    }
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title text-truncate-2">@product.Name</h5>
+                                    <div class="price-section mb-3">
+                                        <span class="current-price">@product.Price.ToString("N0") EGP</span>
+                                        <span class="original-price">@((product.Price * 1.2m).ToString("N0")) EGP</span>
+                                    </div>
+                                    <div class="mt-auto">
+                                        @if (SignInManager.IsSignedIn(User))
+                                        {
+                                            <form asp-controller="Cart" asp-action="AddToCart" method="post" class="add-to-cart-form">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="productId" value="@product.ProductID" />
+                                                <button type="submit" class="btn btn-primary w-100"
+                                                        @(product.StockQuantity == 0 ? "disabled" : "")>
+                                                    <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                                                    <span class="btn-text">Add to Cart</span>
+                                                    <i class="bi bi-cart-plus ms-2"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <a asp-controller="Cart" asp-action="RequestAddToCartAfterLogin"
+                                               asp-route-productId="@product.ProductID" class="btn btn-primary w-100">
+                                                Add to Cart <i class="bi bi-cart-plus ms-2"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div id="products-slick-nav"></div>
+        </div>
+    </div>
+</section>
+
+
 @section Scripts {
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Initialize Slick Carousel for products
             $('.products-slick').slick({
                 slidesToShow: 4,
@@ -474,76 +622,3 @@
         });
     </script>
 }
-
-<!-- Laptops Section -->
-<section class="products-section py-5 fade-in">
-    <div class="container">
-        <div class="section-header mb-4">
-            <h2 class="section-title">Featured Laptops</h2>
-            <a asp-action="GetAllLaptops" asp-controller="Home" class="btn btn-outline-primary">
-                View All <i class="bi bi-arrow-right ms-2"></i>
-            </a>
-        </div>
-
-        <div class="products-carousel">
-            <div class="products-slick" data-nav="#laptops-slick-nav">
-                @foreach (var laptop in Model.Laptops)
-                {
-                    <div class="product-item">
-                        <div class="product-card h-100">
-                            <div class="card shadow-hover">
-                                <div class="card-img-wrapper">
-                                    <img src="@laptop.ImageUrl" class="card-img-top" alt="@laptop.Name"
-                                        onerror="this.src='/images/placeholder.avif'">
-                                    <div class="product-overlay">
-                                        <a asp-controller="Laptops" asp-action="Details" asp-route-id="@laptop.ProductID" class="btn btn-light btn-sm">
-                                            View Details
-                                        </a>
-                                    </div>
-                                    @if (laptop.StockQuantity > 0)
-                                    {
-                                        <span class="badge bg-success position-absolute top-0 end-0 m-3">In Stock</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger position-absolute top-0 end-0 m-3">Sold Out</span>
-                                    }
-                                </div>
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title text-truncate-2">@laptop.Name</h5>
-                                    <div class="price-section mb-3">
-                                        <span class="current-price">@laptop.Price.ToString("N0") EGP</span>
-                                        <span class="original-price">@((laptop.Price * 1.2m).ToString("N0")) EGP</span>
-                                    </div>
-                                    <div class="mt-auto">
-                                        @if (SignInManager.IsSignedIn(User))
-                                        {
-                                            <form asp-controller="Cart" asp-action="AddToCart" method="post" class="add-to-cart-form">
-                                                @Html.AntiForgeryToken()
-                                                <input type="hidden" name="productId" value="@laptop.ProductID" />
-                                                <button type="submit" class="btn btn-primary w-100"
-                                                    @(laptop.StockQuantity == 0 ? "disabled" : "")>
-                                                    <span class="spinner-border spinner-border-sm d-none" role="status"></span>
-                                                    <span class="btn-text">Add to Cart</span>
-                                                    <i class="bi bi-cart-plus ms-2"></i>
-                                                </button>
-                                            </form>
-                                        }
-                                        else
-                                        {
-                                            <a asp-controller="Cart" asp-action="RequestAddToCartAfterLogin"
-                                                asp-route-productId="@laptop.ProductID" class="btn btn-primary w-100">
-                                                Add to Cart <i class="bi bi-cart-plus ms-2"></i>
-                                            </a>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-            <div id="laptops-slick-nav"></div>
-        </div>
-    </div>
-</section>
