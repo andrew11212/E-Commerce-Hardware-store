@@ -88,34 +88,67 @@
 
         .search-container {
             position: relative;
-            max-width: 400px;
+            max-width: 500px;
             width: 100%;
         }
 
-        .search-container input {
-            border-radius: 8px;
-            border: 2px solid var(--border-color);
-            padding: 0.75rem 1rem;
-            transition: all 0.3s ease;
+        .search-container .input-group {
+            border-radius: 4px;
+            overflow: hidden;
         }
 
-        .search-container input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        .search-container .btn-light {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-right: none;
+            color: #333;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            font-size: 0.9rem;
         }
 
-        .search-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 0.75rem 1.5rem;
-            transition: all 0.3s ease;
+        .search-container .dropdown-menu {
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-top: 1px;
         }
 
-        .search-btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
+        .search-container .dropdown-item {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .search-container .dropdown-item:hover,
+        .search-container .dropdown-item:focus {
+            background-color: #f8f9fa;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .search-container .form-control {
+            border: 1px solid #dee2e6;
+            border-left: none;
+            border-right: none;
+            box-shadow: none;
+        }
+
+        .search-container .form-control:focus {
+            box-shadow: none;
+            border-color: #dee2e6;
+        }
+
+        .search-container .btn-primary {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+        .search-container .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
         }
 
         /* Main Navigation */
@@ -256,6 +289,71 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        .dropdown-menu {
+            z-index: 1050;
+            margin-top: 0.5rem;
+            border: none;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            border-radius: 8px;
+            padding: 0.5rem;
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .dropdown-divider {
+            margin: 0.5rem 0;
+            border-color: var(--border-color);
+        }
+
+        .navbar {
+            position: relative;
+            z-index: 1000;
+        }
+
+        .navbar .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 200px;
+        }
+
+        .search-container .dropdown-item {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .search-container .dropdown-item:hover,
+        .search-container .dropdown-item:focus {
+            background-color: #f8f9fa;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* Make the caret smaller and aligned properly */
+        .search-container .dropdown-toggle::after {
+            margin-left: 0.5rem;
+            vertical-align: middle;
+            border-top: 0.3em solid;
+            border-right: 0.3em solid transparent;
+            border-left: 0.3em solid transparent;
+        }
+
+        /* Add some polish to the search button */
+        .search-container .search-btn i {
+            font-size: 0.9rem;
+        }
     </style>
 
 </head>
@@ -300,11 +398,29 @@
             <a class="navbar-brand" asp-controller="Home" asp-action="Index">
                 <b>Future Technology Store</b>
             </a>
-            <form asp-controller="Search" asp-action="Index" method="get" class="d-flex search-container">
-                <input name="query" class="form-control me-2" type="search" placeholder="Search products...">
-                <button class="btn search-btn" type="submit">
-                    <i class="bi bi-search"></i>
-                </button>
+            <form asp-controller="Home" asp-action="GetAllProducts" method="get" class="search-container">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false" id="searchCategoryDropdown">
+                            All
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="#" data-value="">All</a>
+                            <a class="dropdown-item" href="#" data-value="Accessories">Accessories</a>
+                            <a class="dropdown-item" href="#" data-value="Laptops">Laptops</a>
+                            <a class="dropdown-item" href="#" data-value="Gaming">Gaming</a>
+                            <a class="dropdown-item" href="#" data-value="Office">Office Needs</a>
+                        </div>
+                    </div>
+                    <input name="searchString" class="form-control" type="search" placeholder="Search products...">
+                    <input type="hidden" name="category" id="selectedCategory" value="">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
             </form>
 
             <div class="d-flex align-items-center gap-3">
@@ -432,6 +548,20 @@
     <script type="text/javascript" charset="utf8"
         src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
+    <script>
+        // Category dropdown functionality
+        $(document).ready(function () {
+            // Handle dropdown item selection
+            $('.dropdown-item').click(function (e) {
+                e.preventDefault();
+                var selectedValue = $(this).data('value');
+                var selectedText = $(this).text().trim();
+                $('#searchCategoryDropdown').text(selectedText);
+                $('#selectedCategory').val(selectedValue);
+            });
+        });
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
