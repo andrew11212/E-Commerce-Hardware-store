@@ -164,9 +164,22 @@
                 <!-- Add to Cart Section -->
                 <div class="d-grid gap-2 mb-4">
                     <div class="d-flex gap-3">
-                        <a asp-controller="Cart" asp-action="AddToCart" asp-route-productId="@Model.ProductID" class="btn btn-primary btn-lg flex-grow-1 rounded-3">
-                            <i class="bi bi-cart-plus me-2"></i> Add to Cart
-                        </a>
+                        <form asp-controller="Cart" asp-action="AddToCart" method="post" class="flex-grow-1">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@Model.ProductID" />
+                            <div class="input-group">
+                                <button class="btn btn-outline-secondary" type="button" id="btnMinus">
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input type="number" name="count" class="form-control text-center" value="1" min="1" max="@Model.StockQuantity" id="quantity">
+                                <button class="btn btn-outline-secondary" type="button" id="btnPlus">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                                <button type="submit" class="btn btn-primary btn-lg w-100 rounded-end" @(Model.StockQuantity == 0 ? "disabled" : "")>
+                                    <i class="bi bi-cart-plus me-2"></i> Add to Cart
+                                </button>
+                            </div>
+                        </form>
                         <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg">
                             <i class="bi bi-arrow-left"></i>
                         </a>
@@ -312,6 +325,22 @@
                     $(this).find("img").css("transform", "scale(1)");
                 }
             );
+            
+            // Quantity increment/decrement
+            $("#btnMinus").click(function() {
+                var quantity = parseInt($("#quantity").val());
+                if (quantity > 1) {
+                    $("#quantity").val(quantity - 1);
+                }
+            });
+            
+            $("#btnPlus").click(function() {
+                var quantity = parseInt($("#quantity").val());
+                var max = parseInt($("#quantity").attr("max"));
+                if (quantity < max) {
+                    $("#quantity").val(quantity + 1);
+                }
+            });
         });
     </script>
     
