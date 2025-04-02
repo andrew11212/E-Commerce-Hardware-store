@@ -73,7 +73,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 			return View(product);
 		}
 
-		public async Task<IActionResult> GetAllProducts(int pageNumber = 1, string searchString = "")
+		public async Task<IActionResult> GetAllProducts(int pageNumber = 1, string searchString = "", string category = "")
 		{
 			var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand,ProductType");
 
@@ -81,6 +81,12 @@ namespace FutureTechnologyE_Commerce.Controllers
 			{
 				searchString = searchString.Trim().ToLower();
 				query = query.Where(c => c.Brand.Name.ToLower().Contains(searchString) || c.Name.ToLower().Contains(searchString));
+			}
+
+			if (!string.IsNullOrEmpty(category))
+			{
+				category = category.Trim();
+				query = query.Where(p => p.Category.Name.Contains(category));
 			}
 
 			int pageSize = 4;
@@ -93,6 +99,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 			var viewModel = new HomeIndexViewModel
 			{
 				SearchString = searchString,
+				Category = category,
 				Products = products,
 				PageNumber = pageNumber,
 				PageSize = pageSize,

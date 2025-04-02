@@ -9,5 +9,8 @@
 		public IEnumerable<Product>? Products { get; set; }
 		public IEnumerable<Product>? Accessories { get; set; }
 		public IEnumerable<Laptop>? Laptops { get; set; }
+		public string Category { get; set; } = string.Empty;
+	
+
 	}
 }
