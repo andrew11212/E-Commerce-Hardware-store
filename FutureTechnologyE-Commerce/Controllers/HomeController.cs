@@ -22,7 +22,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 			_unitOfWork = unitOfWork;
 		}
 
-		public async Task<IActionResult> Index( string searchString = "")
+		public async Task<IActionResult> Index(string searchString = "")
 		{
 			var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand,ProductType");
 
@@ -36,7 +36,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 			var viewModel = new HomeIndexViewModel
 			{
-				Products = (await _unitOfWork.ProductRepository.GetAllAsync(c=>c.IsBestseller, includeProperties: "Category,Brand,ProductType")), // Use the paginated list
+				Products = (await _unitOfWork.ProductRepository.GetAllAsync(c => c.IsBestseller, includeProperties: "Category,Brand,ProductType")), // Use the paginated list
 				SearchString = searchString,
 				Laptops = (await _unitOfWork.LaptopRepository.GetAllAsync(null, includeProperties: "Category,Brand,ProductType"))
 					.Take(5)
@@ -72,7 +72,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 			return View(product);
 		}
 
-		public async Task<IActionResult> GetAllProducts(int pageNumber = 1, string searchString = "")
+		public async Task<IActionResult> GetAllProducts(int pageNumber = 1, string searchString = "", string category = "")
 		{
 			var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand,ProductType");
 
@@ -80,6 +80,12 @@ namespace FutureTechnologyE_Commerce.Controllers
 			{
 				searchString = searchString.Trim().ToLower();
 				query = query.Where(c => c.Brand.Name.ToLower().Contains(searchString) || c.Name.ToLower().Contains(searchString));
+			}
+
+			if (!string.IsNullOrEmpty(category))
+			{
+				category = category.Trim();
+				query = query.Where(p => p.Category.Name.Contains(category));
 			}
 
 			int pageSize = 4;
@@ -92,6 +98,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 			var viewModel = new HomeIndexViewModel
 			{
 				SearchString = searchString,
+				Category = category,
 				Products = products,
 				PageNumber = pageNumber,
 				PageSize = pageSize,
