@@ -1,134 +1,356 @@
 ﻿@model FutureTechnologyE_Commerce.Models.Laptop
 
 @{
-    ViewData["Title"] = "Laptop Details";
+    ViewData["Title"] = Model.Name;
+    string FormatEGP(decimal amount) => $"{amount:N2} EGP";
 }
 
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-10 col-lg-8">
-            <div class="card shadow border-0 rounded-4 overflow-hidden">
-                <div class="card-header bg-light position-relative">
-                    <div class="row g-0">
-                        <div class="col-md-5">
-                            <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : "/images/no-image.png")"
-                                 class="img-fluid object-fit-cover h-100 w-100"
-                                 style="aspect-ratio: 16/9; object-position: center"
-                                 alt="@Model.Name">
-                        </div>
-                        <div class="col-md-7 p-4">
-                            <h3 class="fw-bold mb-3">@Model.Name</h3>
-                            <div class="d-flex gap-3 mb-3">
-                                <span class="badge bg-primary">@Model.Brand?.Name</span>
-                                <span class="badge bg-secondary">@Model.Category?.Name</span>
-                            </div>
-                            <p class="text-muted mb-4">@Model.Description</p>
-                            <div class="d-flex justify-content-between align-items-center">
+<div class="container-fluid py-5 bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="GetAllLaptops">Laptops</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Laptop Details Section -->
+<section class="container py-5">
+    <div class="row g-4">
+        <!-- Laptop Images -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="product-image-wrapper position-relative">
+                    @if (Model.IsBestseller)
+                    {
+                        <span class="badge bg-warning position-absolute top-0 start-0 m-3 py-2 px-3 rounded-pill">Bestseller</span>
+                    }
+                    <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : "/images/placeholder.png")"
+                         class="img-fluid w-100"
+                         alt="@Model.Name"
+                         style="aspect-ratio: 4/3; object-fit: contain; background-color: white;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Laptop Info -->
+        <div class="col-lg-6">
+            <div class="ps-lg-4">
+                <!-- Product Title and Rating -->
+                <h1 class="display-5 fw-bold mb-2">@Model.Name</h1>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="text-warning me-2">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-half"></i>
+                    </div>
+                    <div class="text-muted small">4.5/5 (Reviews)</div>
+                </div>
+                
+                <!-- Price Information -->
+                <div class="d-flex align-items-baseline mb-4">
+                    <h2 class="text-primary fw-bold mb-0 me-3">@FormatEGP(Model.Price)</h2>
+                    <del class="text-muted h5">@FormatEGP(Model.Price * 1.2m)</del>
+                    <span class="badge bg-danger ms-3">20% OFF</span>
+                </div>
+                
+                <!-- Key Specs Card -->
+                <div class="mb-4 p-4 bg-light rounded-3 border">
+                    <h5 class="mb-3 fw-bold">Key Specifications</h5>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-cpu text-primary me-2 fs-5"></i>
                                 <div>
-                                    <h4 class="text-primary fw-bold mb-0">@Model.Price.ToString("C")</h4>
-                                    <small class="text-success">In Stock: @Model.StockQuantity</small>
+                                    <div class="text-muted small">Processor</div>
+                                    <div class="fw-semibold">@Model.Processor</div>
                                 </div>
-                                <div class="btn-group" role="group">
-                                
-                                    <a asp-action="Index" asp-controller="Home" class="btn btn-outline-secondary rounded-pill">
-                                        <i class="bi bi-arrow-left me-2"></i>Back
-                                    </a>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-memory text-primary me-2 fs-5"></i>
+                                <div>
+                                    <div class="text-muted small">RAM</div>
+                                    <div class="fw-semibold">@Model.RAM</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-hdd-stack text-primary me-2 fs-5"></i>
+                                <div>
+                                    <div class="text-muted small">Storage</div>
+                                    <div class="fw-semibold">@Model.Storage</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-gpu-card text-primary me-2 fs-5"></i>
+                                <div>
+                                    <div class="text-muted small">Graphics</div>
+                                    <div class="fw-semibold">@Model.GraphicsCard</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-body">
-                    <h5 class="border-bottom pb-2 mb-4">Technical Specifications</h5>
-                    <div class="row row-cols-1 row-cols-md-2 g-4">
-                        <div class="col">
-                            <div class="d-flex align-items-center mb-3">
-                                <i class="bi bi-cpu fs-4 text-primary me-3"></i>
+                
+                <!-- Product Metadata -->
+                <div class="mb-4 p-4 bg-light rounded-3">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-tag-fill text-primary me-2 fs-5"></i>
                                 <div>
-                                    <h6 class="mb-1">Processor</h6>
-                                    <p class="text-muted mb-0">@Model.Processor</p>
+                                    <div class="text-muted small">Brand</div>
+                                    <div class="fw-semibold">@Model.Brand?.Name</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col">
-                            <div class="d-flex align-items-center mb-3">
-                                <i class="bi bi-memory fs-4 text-primary me-3"></i>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-folder-fill text-primary me-2 fs-5"></i>
                                 <div>
-                                    <h6 class="mb-1">RAM</h6>
-                                    <p class="text-muted mb-0">@Model.RAM GB</p>
+                                    <div class="text-muted small">Category</div>
+                                    <div class="fw-semibold">@Model.Category?.Name</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col">
-                            <div class="d-flex align-items-center mb-3">
-                                <i class="bi bi-hdd-stack fs-4 text-primary me-3"></i>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-display text-primary me-2 fs-5"></i>
                                 <div>
-                                    <h6 class="mb-1">Storage</h6>
-                                    <p class="text-muted mb-0">@Model.Storage</p>
+                                    <div class="text-muted small">Screen Size</div>
+                                    <div class="fw-semibold">@Model.ScreenSize"</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col">
-                            <div class="d-flex align-items-center mb-3">
-                                <i class="bi bi-display fs-4 text-primary me-3"></i>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-clipboard-check-fill text-primary me-2 fs-5"></i>
                                 <div>
-                                    <h6 class="mb-1">Screen Size</h6>
-                                    <p class="text-muted mb-0">@Model.ScreenSize"</p>
+                                    <div class="text-muted small">Availability</div>
+                                    <div>
+                                        <span class="badge @(Model.StockQuantity > 0 ? "bg-success" : "bg-danger") rounded-pill">
+                                            @(Model.StockQuantity > 0 ? $"{Model.StockQuantity} in stock" : "Out of stock")
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col">
-                            <div class="d-flex align-items-center mb-3">
-                                <i class="bi bi-gpu-card fs-4 text-primary me-3"></i>
-                                <div>
-                                    <h6 class="mb-1">Graphics</h6>
-                                    <p class="text-muted mb-0">@Model.GraphicsCard</p>
-                                </div>
-                            </div>
+                    </div>
+                </div>
+
+                <!-- Delivery Options -->
+                <div class="mb-4">
+                    <div class="fw-semibold mb-2">Delivery Options:</div>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-truck text-success me-2"></i>
+                        <span>Free shipping for orders over 1000 EGP</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-clock-history text-info me-2"></i>
+                        <span>Estimated delivery: 3-5 business days</span>
+                    </div>
+                </div>
+                
+                <!-- Add to Cart Section -->
+                <div class="d-grid gap-2 mb-4">
+                    <div class="d-flex gap-3">
+                        <a asp-controller="Cart" asp-action="AddToCart" asp-route-productId="@Model.ProductID" class="btn btn-primary btn-lg flex-grow-1 rounded-3">
+                            <i class="bi bi-cart-plus me-2"></i> Add to Cart
+                        </a>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-arrow-left"></i>
+                        </a>
+                    </div>
+                    <button class="btn btn-outline-primary rounded-3">
+                        <i class="bi bi-heart me-2"></i> Add to Wishlist
+                    </button>
+                </div>
+
+                <!-- Share Buttons -->
+                <div class="mt-4">
+                    <p class="fw-semibold mb-2">Share this laptop:</p>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="btn btn-sm btn-outline-primary rounded-circle">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-outline-info rounded-circle">
+                            <i class="bi bi-twitter"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-outline-success rounded-circle">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle">
+                            <i class="bi bi-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs for Description, Specifications, and Reviews -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <ul class="nav nav-tabs mb-4" id="productTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="true">
+                        Description
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button" role="tab" aria-controls="specs" aria-selected="false">
+                        Full Specifications
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">
+                        Reviews
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content" id="productTabsContent">
+                <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                    <div class="p-4 bg-white rounded-3 shadow-sm">
+                        @if (string.IsNullOrEmpty(Model.Description))
+                        {
+                            <p class="text-muted fst-italic">No description available for this laptop.</p>
+                        }
+                        else
+                        {
+                            @Html.Raw(Model.Description)
+                        }
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="specs" role="tabpanel" aria-labelledby="specs-tab">
+                    <div class="p-4 bg-white rounded-3 shadow-sm">
+                        <h5 class="mb-3">Technical Specifications</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th style="width: 30%">Brand</th>
+                                        <td>@Model.Brand?.Name</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Model</th>
+                                        <td>@Model.Name</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Processor</th>
+                                        <td>@Model.Processor</td>
+                                    </tr>
+                                    <tr>
+                                        <th>RAM</th>
+                                        <td>@Model.RAM</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Storage</th>
+                                        <td>@Model.Storage</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Graphics Card</th>
+                                        <td>@Model.GraphicsCard</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Screen Size</th>
+                                        <td>@Model.ScreenSize"</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Category</th>
+                                        <td>@Model.Category?.Name</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Type</th>
+                                        <td>@Model.ProductType?.Name</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Warranty</th>
+                                        <td>1 Year Manufacturer Warranty</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                    <div class="p-4 bg-white rounded-3 shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="mb-0">Customer Reviews</h5>
+                            <button class="btn btn-sm btn-primary">Write a Review</button>
+                        </div>
+                        <div class="text-center py-5">
+                            <i class="bi bi-chat-square-text display-4 text-muted mb-3"></i>
+                            <p class="lead">No reviews yet</p>
+                            <p class="text-muted">Be the first to review this laptop</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-    <style>
-        .object-fit-cover {
-            object-fit: cover;
-        }
-
-        .card-header {
-            min-height: 250px;
-        }
-
-        .bi {
-            flex-shrink: 0;
-        }
-
-        @@media (max-width: 768px) {
-            .card-header {
-                flex-direction: column !important;
-            }
-
-                .card-header img {
-                    width: 100%;
-                    height: 200px;
-                    object-position: center;
-                }
-        }
-    </style>
-}
+</section>
 
 @section Scripts {
     <script>
-        // Add smooth image transition
-        document.querySelector('.card-header img').addEventListener('mouseover', function() {
-            this.style.transform = 'scale(1.05)';
-            this.style.transition = 'transform 0.3s ease';
-        });
-
-        document.querySelector('.card-header img').addEventListener('mouseout', function() {
-            this.style.transform = 'scale(1)';
+        $(document).ready(function() {
+            // Product image zoom effect
+            $(".product-image-wrapper").hover(
+                function() {
+                    $(this).find("img").css("transform", "scale(1.05)");
+                },
+                function() {
+                    $(this).find("img").css("transform", "scale(1)");
+                }
+            );
         });
     </script>
+    
+    <style>
+        /* Product details page specific styles */
+        .product-image-wrapper img {
+            transition: transform 0.3s ease;
+        }
+        
+        /* Tab styling */
+        .nav-tabs .nav-link {
+            color: var(--bs-gray-700);
+            font-weight: 500;
+            border: none;
+            border-bottom: 3px solid transparent;
+            padding: 0.75rem 1.25rem;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--bs-primary);
+            background: none;
+            border-bottom: 3px solid var(--bs-primary);
+        }
+        
+        /* Make description content better */
+        #description p {
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+        
+        /* Responsive fixes */
+        @@media (max-width: 768px) {
+            .display-5 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 }
