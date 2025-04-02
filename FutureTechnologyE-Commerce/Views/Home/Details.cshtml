@@ -1,109 +1,400 @@
-﻿
-@using Microsoft.AspNetCore.Identity
+﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
 @model Product
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = Model.Name;
     // Formatting helper function for EGP currency
     string FormatEGP(decimal amount) => $"{amount:N2} EGP";
 }
 
+<div class="container-fluid py-5 bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="GetAllProducts">Products</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
 <!-- Product Details Section -->
 <section class="container py-5">
-    <div class="row gx-5">
+    <div class="row g-4">
         <!-- Product Images -->
-        <div class="col-md-6">
-            <div class="mb-4 rounded-3 overflow-hidden">
-                <img src="@Model.ImageUrl"
-                     class="img-fluid w-100"
-                     alt="@Model.Name"
-                     onerror="this.src='/images/placeholder.png'"
-                     style="aspect-ratio: 4/3; object-fit: contain;">
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="product-image-wrapper position-relative">
+                    @if (Model.IsBestseller)
+                    {
+                        <span class="badge bg-warning position-absolute top-0 start-0 m-3 py-2 px-3 rounded-pill">Bestseller</span>
+                    }
+                    <img src="@Model.ImageUrl"
+                         class="img-fluid w-100"
+                         alt="@Model.Name"
+                         onerror="this.src='/images/placeholder.png'"
+                         style="aspect-ratio: 4/3; object-fit: contain; background-color: white;">
+                </div>
             </div>
         </div>
 
         <!-- Product Info -->
-        <div class="col-md-6">
-            <div class="sticky-top pt-4">
-                <h1 class="display-6 fw-bold">@Model.Name</h1>
-
+        <div class="col-lg-6">
+            <div class="ps-lg-4">
+                <!-- Product Title and Rating -->
+                <h1 class="display-5 fw-bold mb-2">@Model.Name</h1>
                 <div class="d-flex align-items-center mb-3">
-                    <p class="h4 text-primary mb-0 me-3">@FormatEGP(Model.Price)</p>
-                    <del class="text-muted">@FormatEGP(Model.Price * 1.2m)</del>
+                    <div class="text-warning me-2">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-half"></i>
+                    </div>
+                    <div class="text-muted small">4.5/5 (Reviews)</div>
                 </div>
-
-                <div class="mb-4">
-                    <p class="text-muted small mb-2">Brand: <span class="fw-semibold">@Model.Brand?.Name</span></p>
-                    <p class="text-muted small mb-2">Category: <span class="fw-semibold">@Model.Category?.Name</span></p>
-                    <p class="text-muted small mb-2">Type: <span class="fw-semibold">@Model.ProductType?.Name</span></p>
-                    <p class="text-muted small mb-0">
-                        Stock:
-                        <span class="badge @(Model.StockQuantity > 0 ? "bg-success" : "bg-danger") rounded-pill">
-                            @(Model.StockQuantity > 0 ? $"{Model.StockQuantity} in stock" : "Out of stock")
-                        </span>
-                    </p>
+                
+                <!-- Price Information -->
+                <div class="d-flex align-items-baseline mb-4">
+                    <h2 class="text-primary fw-bold mb-0 me-3">@FormatEGP(Model.Price)</h2>
+                    <del class="text-muted h5">@FormatEGP(Model.Price * 1.2m)</del>
+                    <span class="badge bg-danger ms-3">20% OFF</span>
                 </div>
-                @if (SignInManager.IsSignedIn(User)) // Or @if (User.Identity.IsAuthenticated)
-                {
-                    <!-- Add to Cart Form -->
-                    <form asp-controller="Cart" asp-action="AddToCart" method="post">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="productId" value="@Model.ProductID" />
-
-                        <div class="d-grid gap-3">
-                            <button type="submit"
-                                    class="btn btn-lg btn-primary rounded-pill"
-                                    @(Model.StockQuantity == 0 ? "disabled" : "")>
-                                Add to Cart <i class="bi bi-cart-plus ms-2"></i>
-                            </button>
+                
+                <!-- Product Metadata -->
+                <div class="mb-4 p-4 bg-light rounded-3">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-tag-fill text-primary me-2 fs-5"></i>
+                                <div>
+                                    <div class="text-muted small">Brand</div>
+                                    <div class="fw-semibold">@Model.Brand?.Name</div>
+                                </div>
+                            </div>
                         </div>
-                    </form>
-                }
-                else
-                {
-                    // --- User is LOGGED OUT: Use the GET link ---
-            <a asp-controller="Cart" asp-action="RequestAddToCartAfterLogin"
-               asp-route-productId="@Model.ProductID"
-               class="btn btn-lg btn-primary rounded-pill">
-                Add to Cart <i class="bi bi-cart-plus ms-2"></i>
-            </a>
-                    @* This link will trigger [Authorize] on RequestAddToCartAfterLogin,
-            redirecting to Login with ReturnUrl pointing here. After login,
-            RequestAddToCartAfterLogin runs, adds the item, and redirects to Cart/Index *@
-                }
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-folder-fill text-primary me-2 fs-5"></i>
+                                <div>
+                                    <div class="text-muted small">Category</div>
+                                    <div class="fw-semibold">@Model.Category?.Name</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-box-fill text-primary me-2 fs-5"></i>
+                                <div>
+                                    <div class="text-muted small">Type</div>
+                                    <div class="fw-semibold">@Model.ProductType?.Name</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-clipboard-check-fill text-primary me-2 fs-5"></i>
+                                <div>
+                                    <div class="text-muted small">Availability</div>
+                                    <div>
+                                        <span class="badge @(Model.StockQuantity > 0 ? "bg-success" : "bg-danger") rounded-pill">
+                                            @(Model.StockQuantity > 0 ? $"{Model.StockQuantity} in stock" : "Out of stock")
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Delivery Options -->
+                <div class="mb-4">
+                    <div class="fw-semibold mb-2">Delivery Options:</div>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-truck text-success me-2"></i>
+                        <span>Free shipping for orders over 1000 EGP</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-clock-history text-info me-2"></i>
+                        <span>Estimated delivery: 3-5 business days</span>
+                    </div>
+                </div>
+                
+                <!-- Add to Cart Section -->
+                <div class="d-grid gap-2 mb-4">
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-flex gap-3">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@Model.ProductID" />
+                            <div class="input-group" style="max-width: 150px;">
+                                <button class="btn btn-outline-secondary" type="button" id="btnMinus">
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input type="number" name="quantity" class="form-control text-center" value="1" min="1" max="@Model.StockQuantity" id="quantity">
+                                <button class="btn btn-outline-secondary" type="button" id="btnPlus">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg flex-grow-1 rounded-3" @(Model.StockQuantity == 0 ? "disabled" : "")>
+                                <i class="bi bi-cart-plus me-2"></i> Add to Cart
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-controller="Cart" asp-action="RequestAddToCartAfterLogin"
+                           asp-route-productId="@Model.ProductID"
+                           class="btn btn-primary btn-lg rounded-3">
+                            <i class="bi bi-cart-plus me-2"></i> Add to Cart
+                        </a>
+                    }
+                    <button class="btn btn-outline-primary rounded-3">
+                        <i class="bi bi-heart me-2"></i> Add to Wishlist
+                    </button>
+                </div>
+
+                <!-- Share Buttons -->
+                <div class="mt-4">
+                    <p class="fw-semibold mb-2">Share this product:</p>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="btn btn-sm btn-outline-primary rounded-circle">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-outline-info rounded-circle">
+                            <i class="bi bi-twitter"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-outline-success rounded-circle">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle">
+                            <i class="bi bi-envelope"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- Product Description -->
-        <div class="col-12 mt-5">
-            <h3 class="border-bottom pb-2 mb-4">Product Description</h3>
-            <div class="product-description">
-                @Html.Raw(Model.Description)
+    <!-- Tabs for Description and Specifications -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <ul class="nav nav-tabs mb-4" id="productTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="true">
+                        Description
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button" role="tab" aria-controls="specs" aria-selected="false">
+                        Specifications
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab" aria-controls="reviews" aria-selected="false">
+                        Reviews
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content" id="productTabsContent">
+                <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                    <div class="p-4 bg-white rounded-3 shadow-sm">
+                        @if (string.IsNullOrEmpty(Model.Description))
+                        {
+                            <p class="text-muted fst-italic">No description available for this product.</p>
+                        }
+                        else
+                        {
+                            @Html.Raw(Model.Description)
+                        }
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="specs" role="tabpanel" aria-labelledby="specs-tab">
+                    <div class="p-4 bg-white rounded-3 shadow-sm">
+                        <h5 class="mb-3">Technical Specifications</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th style="width: 30%">Brand</th>
+                                        <td>@Model.Brand?.Name</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Model</th>
+                                        <td>@Model.Name</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Category</th>
+                                        <td>@Model.Category?.Name</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Type</th>
+                                        <td>@Model.ProductType?.Name</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Warranty</th>
+                                        <td>1 Year Manufacturer Warranty</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                    <div class="p-4 bg-white rounded-3 shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="mb-0">Customer Reviews</h5>
+                            <button class="btn btn-sm btn-primary">Write a Review</button>
+                        </div>
+                        <div class="text-center py-5">
+                            <i class="bi bi-chat-square-text display-4 text-muted mb-3"></i>
+                            <p class="lead">No reviews yet</p>
+                            <p class="text-muted">Be the first to review this product</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Related Products -->
-<section class="container py-5">
-    <h3 class="mb-4">Related Products</h3>
-    <div class="row g-4">
-        <!-- Example related product cards -->
-        @foreach (var product in ViewBag.RelatedProducts)
-        {
-            <div class="col-lg-3 col-md-4 col-sm-6">
-                <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden">
-                    <img src="@product.ImageUrl"
-                         class="card-img-top img-fluid"
-                         alt="@product.Name"
-                         style="aspect-ratio: 1/1; object-fit: cover;">
-                    <div class="card-body">
-                        <h5 class="card-title text-dark fw-semibold text-truncate">@product.Name</h5>
-                        <p class="card-text text-primary fw-bold">@FormatEGP(product.Price)</p>
+<section class="container-fluid bg-light py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0">Related Products</h2>
+            <a asp-controller="Home" asp-action="GetAllProducts" class="btn btn-outline-primary">View All</a>
+        </div>
+        <div class="row g-4">
+            @if (ViewBag.RelatedProducts != null && ViewBag.RelatedProducts.Count > 0)
+            {
+                @foreach (var product in ViewBag.RelatedProducts)
+                {
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 product-card">
+                            <div class="position-relative">
+                                <a asp-controller="Home" asp-action="Details" asp-route-id="@product.ProductID">
+                                    <img src="@product.ImageUrl"
+                                         class="card-img-top"
+                                         alt="@product.Name"
+                                         onerror="this.src='/images/placeholder.png'"
+                                         style="height: 200px; object-fit: contain; background-color: white;">
+                                </a>
+                                <button class="btn btn-sm rounded-circle position-absolute top-0 end-0 m-2 p-2 bg-white text-primary shadow-sm wishlist-btn">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="text-muted small mb-1">@product.Brand?.Name</div>
+                                <h5 class="card-title fw-semibold mb-2">
+                                    <a asp-controller="Home" asp-action="Details" asp-route-id="@product.ProductID" class="text-decoration-none text-dark product-name">
+                                        @product.Name
+                                    </a>
+                                </h5>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="fw-bold text-primary">@FormatEGP(product.Price)</div>
+                                    <a asp-controller="Home" asp-action="Details" asp-route-id="@product.ProductID" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center py-5">
+                    <p class="lead text-muted">No related products found</p>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Quantity increment/decrement
+            $("#btnMinus").click(function() {
+                var quantity = parseInt($("#quantity").val());
+                if (quantity > 1) {
+                    $("#quantity").val(quantity - 1);
+                }
+            });
+            
+            $("#btnPlus").click(function() {
+                var quantity = parseInt($("#quantity").val());
+                var max = parseInt($("#quantity").attr("max"));
+                if (quantity < max) {
+                    $("#quantity").val(quantity + 1);
+                }
+            });
+            
+            // Product image zoom effect (example)
+            $(".product-image-wrapper").hover(
+                function() {
+                    $(this).find("img").css("transform", "scale(1.05)");
+                },
+                function() {
+                    $(this).find("img").css("transform", "scale(1)");
+                }
+            );
+        });
+    </script>
+    
+    <style>
+        /* Product details page specific styles */
+        .product-image-wrapper img {
+            transition: transform 0.3s ease;
+        }
+        
+        .product-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+        
+        .product-name {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            height: 2.8rem;
+        }
+        
+        .wishlist-btn:hover {
+            color: #dc3545 !important;
+        }
+        
+        .wishlist-btn:hover i::before {
+            content: "\f415";  /* bi-heart-fill */
+        }
+        
+        /* Tab styling */
+        .nav-tabs .nav-link {
+            color: var(--bs-gray-700);
+            font-weight: 500;
+            border: none;
+            border-bottom: 3px solid transparent;
+            padding: 0.75rem 1.25rem;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--bs-primary);
+            background: none;
+            border-bottom: 3px solid var(--bs-primary);
+        }
+        
+        /* Make description content better */
+        #description p {
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+    </style>
+}
