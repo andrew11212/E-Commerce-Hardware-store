@@ -8,7 +8,7 @@
         <div class="col-12 col-md-10 col-lg-8">
             <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
                 <!-- Card Header -->
-                <div class="card-header bg-primary  text-white py-4">
+                <div class="card-header bg-primary text-white py-4">
                     <h3 class="mb-0 fw-bold text-center">Checkout</h3>
                 </div>
 
@@ -20,13 +20,13 @@
                         <!-- Personal Information -->
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label asp-for="OrderHeader.first_name" class="form-label fw-bold text-capitalize "></label>
-                                <input asp-for="OrderHeader.first_name" class="form-control form-control-lg" required>
+                                <label asp-for="OrderHeader.first_name" class="form-label fw-bold text-capitalize"></label>
+                                <input asp-for="OrderHeader.first_name" class="form-control form-control-lg" placeholder="NA" required>
                                 <span asp-validation-for="OrderHeader.first_name" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
                                 <label asp-for="OrderHeader.last_name" class="form-label fw-bold text-capitalize"></label>
-                                <input asp-for="OrderHeader.last_name" class="form-control form-control-lg" required>
+                                <input asp-for="OrderHeader.last_name" class="form-control form-control-lg" placeholder="NA" required>
                                 <span asp-validation-for="OrderHeader.last_name" class="text-danger"></span>
                             </div>
                         </div>
@@ -34,13 +34,13 @@
                         <!-- Contact Information -->
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label asp-for="OrderHeader.email" class="form-label fw-bold text-capitalize "></label>
-                                <input asp-for="OrderHeader.email" type="email" class="form-control form-control-lg" required>
+                                <label asp-for="OrderHeader.email" class="form-label fw-bold text-capitalize"></label>
+                                <input asp-for="OrderHeader.email" type="email" class="form-control form-control-lg" placeholder="NA" required>
                                 <span asp-validation-for="OrderHeader.email" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="OrderHeader.phone_number" class="form-label fw-bold text-capitalize "></label>
-                                <input asp-for="OrderHeader.phone_number" class="form-control form-control-lg" required>
+                                <label asp-for="OrderHeader.phone_number" class="form-label fw-bold text-capitalize"></label>
+                                <input asp-for="OrderHeader.phone_number" class="form-control form-control-lg" placeholder="NA" required>
                                 <span asp-validation-for="OrderHeader.phone_number" class="text-danger"></span>
                             </div>
                         </div>
@@ -48,23 +48,23 @@
                         <!-- Address Information -->
                         <div class="row g-3 mb-4">
                             <div class="col-12">
-                                <label asp-for="OrderHeader.street" class="form-label  fw-bold text-capitalize"></label>
-                                <input asp-for="OrderHeader.street" class="form-control form-control-lg" required>
+                                <label asp-for="OrderHeader.street" class="form-label fw-bold text-capitalize"></label>
+                                <input asp-for="OrderHeader.street" class="form-control form-control-lg" placeholder="NA" required>
                                 <span asp-validation-for="OrderHeader.street" class="text-danger"></span>
                             </div>
                             <div class="col-md-4">
-                                <label asp-for="OrderHeader.building" class="form-label  fw-bold text-capitalize"></label>
-                                <input asp-for="OrderHeader.building" class="form-control form-control-lg">
+                                <label asp-for="OrderHeader.building" class="form-label fw-bold text-capitalize"></label>
+                                <input asp-for="OrderHeader.building" class="form-control form-control-lg" placeholder="NA">
                                 <span asp-validation-for="OrderHeader.building" class="text-danger"></span>
                             </div>
                             <div class="col-md-4">
-                                <label asp-for="OrderHeader.floor" class="form-label  fw-bold text-capitalize"></label>
-                                <input asp-for="OrderHeader.floor" class="form-control form-control-lg">
+                                <label asp-for="OrderHeader.floor" class="form-label fw-bold text-capitalize"></label>
+                                <input asp-for="OrderHeader.floor" class="form-control form-control-lg" placeholder="NA">
                                 <span asp-validation-for="OrderHeader.floor" class="text-danger"></span>
                             </div>
                             <div class="col-md-4">
-                                <label asp-for="OrderHeader.state" class="form-label  fw-bold text-capitalize"></label>
-                                <input asp-for="OrderHeader.state" class="form-control form-control-lg" required>
+                                <label asp-for="OrderHeader.state" class="form-label fw-bold text-capitalize"></label>
+                                <input asp-for="OrderHeader.state" class="form-control form-control-lg" placeholder="NA" required>
                                 <span asp-validation-for="OrderHeader.state" class="text-danger"></span>
                             </div>
                         </div>
@@ -72,7 +72,7 @@
                         <!-- Order Summary -->
                         <div class="card rounded-3 border-0 shadow-sm mb-4">
                             <div class="card-body p-4">
-                                <h5 class="mb-3  fw-bold text-capitalize">Order Summary</h5>
+                                <h5 class="mb-3 fw-bold text-capitalize">Order Summary</h5>
                                 <div class="d-flex justify-content-between mb-2">
                                     <span>Subtotal</span>
                                     <span>@Model.OrderHeader.OrderTotal.ToString("C")</span>
@@ -82,7 +82,7 @@
                                     <span>Free</span>
                                 </div>
                                 <hr class="my-3">
-                                <div class="d-flex justify-content-between  fw-bold text-capitalize">
+                                <div class="d-flex justify-content-between fw-bold text-capitalize">
                                     <span>Total</span>
                                     <span>@Model.OrderHeader.OrderTotal.ToString("C")</span>
                                 </div>
@@ -103,35 +103,15 @@
 </div>
 
 <style>
-   /* .btn-primary-gradient {
-        background: linear-gradient(135deg, #007bff, #0069d9);
-        border: none;
-    }
-
-        .btn-primary-gradient:hover {
-            background: linear-gradient(135deg, #0062cc, #005cbf);
-        }
-
-    .bg-secondary-opacity {
-        background-color: rgba(108, 117, 125, 0.15);
-    }*/
-
-    .object-fit-cover {
-        object-fit: cover;
-    }
-
-    .ratio-1x1 {
-        aspect-ratio: 1/1;
-    }
-
+    /* Card styling */
     .card {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
 
     @@media (max-width: 768px) {
         .card-header {
@@ -143,7 +123,80 @@
             padding: 0.75rem;
         }
     }
+
+    /* Handle placeholders across all browsers */
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    .form-control-lg::placeholder {
+        color: rgba(0, 0, 0, 0.15) !important;
+        opacity: 1 !important; /* Firefox */
+        transition: opacity 0.1s ease;
+    }
+    
+    /* Internet Explorer 10-11 */
+    .form-control-lg:-ms-input-placeholder {
+        color: rgba(0, 0, 0, 0.15) !important;
+        transition: opacity 0.1s ease;
+    }
+    
+    /* Microsoft Edge */
+    .form-control-lg::-ms-input-placeholder {
+        color: rgba(0, 0, 0, 0.15) !important;
+        transition: opacity 0.1s ease;
+    }
+    
+    /* Hide on focus - all browsers */
+    .form-control-lg:focus::placeholder {
+        opacity: 0 !important;
+    }
+    
+    .form-control-lg:focus:-ms-input-placeholder {
+        opacity: 0 !important;
+    }
+    
+    .form-control-lg:focus::-ms-input-placeholder {
+        opacity: 0 !important;
+    }
+
+    /* Ensure labels stay bold */
+    .form-label {
+        font-weight: 600 !important;
+    }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get all form inputs with placeholders
+        const inputs = document.querySelectorAll('.form-control-lg[placeholder]');
+        
+        // Make placeholders semi-transparent
+        inputs.forEach(input => {
+            // Set initial placeholder color to be very light
+            input.style.color = 'black'; // Ensure text is black
+            
+            // When input gets focus, remove placeholder
+            input.addEventListener('focus', function() {
+                if (this.placeholder) {
+                    this.dataset.placeholder = this.placeholder; // Store original
+                    this.placeholder = ''; // Remove placeholder
+                }
+            });
+            
+            // When input loses focus, restore placeholder if empty
+            input.addEventListener('blur', function() {
+                if (this.value === '' && this.dataset.placeholder) {
+                    this.placeholder = this.dataset.placeholder;
+                }
+            });
+            
+            // When typing starts, keep placeholder hidden
+            input.addEventListener('input', function() {
+                if (this.value !== '') {
+                    this.placeholder = '';
+                }
+            });
+        });
+    });
+</script>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

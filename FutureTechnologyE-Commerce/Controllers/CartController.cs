@@ -360,10 +360,10 @@ namespace FutureTechnologyE_Commerce.Controllers
 		}
 
 		private string SanitizeInput(string input) =>
-			string.IsNullOrWhiteSpace(input) ? "NA" : Regex.Replace(input.Trim(), @"[<>&'""\\/]", "").Substring(0, Math.Min(255, input.Trim().Length));
+			string.IsNullOrWhiteSpace(input) ? " " : Regex.Replace(input.Trim(), @"[<>&'""\\/]", "").Substring(0, Math.Min(255, input.Trim().Length));
 
 		private string SanitizePhoneNumber(string phoneNumber) =>
-			string.IsNullOrWhiteSpace(phoneNumber) ? "+201234567890" :
+			string.IsNullOrWhiteSpace(phoneNumber) ? " " :
 			Regex.Replace(phoneNumber.Trim(), @"[^0-9+]", "").StartsWith("+") ?
 			phoneNumber.Substring(0, Math.Min(20, phoneNumber.Length)) :
 			("+20" + phoneNumber).Substring(0, Math.Min(20, phoneNumber.Length + 3));

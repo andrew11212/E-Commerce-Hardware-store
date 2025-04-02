@@ -505,7 +505,7 @@
         <div class="section-header mb-4">
             <h2 class="section-title">Accessories</h2>
             <a asp-action="GetAllAccessories" asp-controller="Home" class="btn btn-outline-primary">
-                View All Accessorires <i class="bi bi-arrow-right ms-2"></i>
+                View All <i class="bi bi-arrow-right ms-2"></i>
             </a>
         </div>
 
@@ -520,9 +520,18 @@
                                     <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name"
                                          onerror="this.src='/images/placeholder.avif'">
                                     <div class="product-overlay">
-                                        <a asp-action="Details" asp-route-id="@product.ProductID" class="btn btn-light btn-sm">
-                                            View Details
-                                        </a>
+                                        @if (product.GetType().Name == "Laptop")
+                                        {
+                                            <a asp-controller="Laptops" asp-action="Details" asp-route-id="@product.ProductID" class="btn btn-light btn-sm">
+                                                View Details
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-controller="Home" asp-action="Details" asp-route-id="@product.ProductID" class="btn btn-light btn-sm">
+                                                View Details
+                                            </a>
+                                        }
                                     </div>
                                     @if (product.StockQuantity > 0)
                                     {
