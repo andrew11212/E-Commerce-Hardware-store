@@ -20,7 +20,7 @@
                     <div class="carousel-caption">
                         <h2 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">ASUS TUF Gaming F15</h2>
                         <p class="lead mb-4 animate__animated animate__fadeInUp">Experience unrivaled gaming performance with the latest technology</p>
-                        <a href="/Laptops/Details" class="btn btn-primary btn-lg animate__animated animate__fadeInUp">
+                        <a asp-controller="Laptops" asp-action="Details" asp-route-id="@Model.Laptops.FirstOrDefault()?.ProductID" class="btn btn-primary btn-lg animate__animated animate__fadeInUp">
                             Explore Now <i class="bi bi-arrow-right ms-2"></i>
                         </a>
                     </div>
@@ -35,7 +35,7 @@
                     <div class="carousel-caption">
                         <h2 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">ASUS TUF Gaming Series</h2>
                         <p class="lead mb-4 animate__animated animate__fadeInUp">Built for durability, designed for victory</p>
-                        <a href="/Laptops/Details" class="btn btn-primary btn-lg animate__animated animate__fadeInUp">
+                        <a asp-controller="Laptops" asp-action="Details" asp-route-id="@Model.Laptops.FirstOrDefault()?.ProductID" class="btn btn-primary btn-lg animate__animated animate__fadeInUp">
                             Learn More <i class="bi bi-arrow-right ms-2"></i>
                         </a>
                     </div>
@@ -51,7 +51,7 @@
                     <div class="carousel-caption">
                         <h2 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">RTX 4060 Gaming Laptop</h2>
                         <p class="lead mb-4 animate__animated animate__fadeInUp">Powered by NVIDIA RTX 4060 for ultimate gaming performance</p>
-                        <a href="/Laptops/Details" class="btn btn-primary btn-lg animate__animated animate__fadeInUp">
+                        <a asp-controller="Laptops" asp-action="Details" asp-route-id="@Model.Laptops.FirstOrDefault()?.ProductID" class="btn btn-primary btn-lg animate__animated animate__fadeInUp">
                             Shop Now <i class="bi bi-arrow-right ms-2"></i>
                         </a>
                     </div>
@@ -99,9 +99,18 @@
                                     <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name"
                                         onerror="this.src='/images/placeholder.avif'">
                                     <div class="product-overlay">
-                                        <a asp-action="Details" asp-route-id="@product.ProductID" class="btn btn-light btn-sm">
-                                            View Details
-                                        </a>
+                                        @if (product.GetType().Name == "Laptop")
+                                        {
+                                            <a asp-controller="Laptops" asp-action="Details" asp-route-id="@product.ProductID" class="btn btn-light btn-sm">
+                                                View Details
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a asp-controller="Home" asp-action="Details" asp-route-id="@product.ProductID" class="btn btn-light btn-sm">
+                                                View Details
+                                            </a>
+                                        }
                                     </div>
                                     @if (product.StockQuantity > 0)
                                     {
