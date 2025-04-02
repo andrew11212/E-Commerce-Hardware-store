@@ -12,7 +12,8 @@ namespace FutureTechnologyE_Commerce.Repository.IRepository
 	{
 		Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? filter = null,
 									   string? includeProperties = null);
-		IQueryable<T> GetQueryable(string includeProperties = null);
+		IQueryable<T> GetQueryable(Expression<Func<T, bool>>? filter = null,
+									   string? includeProperties = null);
 		Task<T?> GetAsync(Expression<Func<T, bool>> filter, params string[] includeProperties);
 
 		Task AddAsync(T entity);
