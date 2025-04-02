@@ -177,14 +177,12 @@ namespace FutureTechnologyE_Commerce.Migrations
                         new
                         {
                             CategoryID = 2,
-                            Name = "Laptops",
-                            ParentCategoryID = 1
+                            Name = "Laptops"
                         },
                         new
                         {
                             CategoryID = 3,
-                            Name = "Smartphones",
-                            ParentCategoryID = 1
+                            Name = "Smartphones"
                         });
                 });
 
@@ -326,9 +324,6 @@ namespace FutureTechnologyE_Commerce.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("ProductTypeID")
-                        .HasColumnType("int");
-
                     b.Property<int>("StockQuantity")
                         .HasColumnType("int");
 
@@ -337,8 +332,6 @@ namespace FutureTechnologyE_Commerce.Migrations
                     b.HasIndex("BrandID");
 
                     b.HasIndex("CategoryID");
-
-                    b.HasIndex("ProductTypeID");
 
                     b.ToTable("Product");
 
@@ -353,9 +346,8 @@ namespace FutureTechnologyE_Commerce.Migrations
                             Description = "Latest Apple iPhone",
                             ImageUrl = "iphone14.jpg",
                             IsBestseller = false,
-                            Name = "iPhone 14",
+                            Name = "AsusTuf",
                             Price = 999.99m,
-                            ProductTypeID = 1,
                             StockQuantity = 50
                         },
                         new
@@ -366,53 +358,21 @@ namespace FutureTechnologyE_Commerce.Migrations
                             Description = "Latest Samsung Smartphone",
                             ImageUrl = "galaxys22.jpg",
                             IsBestseller = false,
-                            Name = "Galaxy S22",
+                            Name = "Lenovo",
                             Price = 899.99m,
-                            ProductTypeID = 1,
                             StockQuantity = 40
                         },
                         new
                         {
                             ProductID = 3,
-                            BrandID = 1,
+                            BrandID = 2,
                             CategoryID = 2,
                             Description = "Apple MacBook Pro 16-inch",
                             ImageUrl = "macbookpro.jpg",
                             IsBestseller = false,
-                            Name = "MacBook Pro",
+                            Name = "Hp",
                             Price = 2499.99m,
-                            ProductTypeID = 2,
                             StockQuantity = 20
-                        });
-                });
-
-            modelBuilder.Entity("FutureTechnologyE_Commerce.Models.ProductType", b =>
-                {
-                    b.Property<int>("ProductTypeID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductTypeID"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("ProductTypeID");
-
-                    b.ToTable("ProductTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            ProductTypeID = 1,
-                            Name = "Mobile"
-                        },
-                        new
-                        {
-                            ProductTypeID = 2,
-                            Name = "Laptop"
                         });
                 });
 
@@ -728,17 +688,9 @@ namespace FutureTechnologyE_Commerce.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FutureTechnologyE_Commerce.Models.ProductType", "ProductType")
-                        .WithMany("Products")
-                        .HasForeignKey("ProductTypeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Brand");
 
                     b.Navigation("Category");
-
-                    b.Navigation("ProductType");
                 });
 
             modelBuilder.Entity("FutureTechnologyE_Commerce.Models.Review", b =>
@@ -867,11 +819,6 @@ namespace FutureTechnologyE_Commerce.Migrations
                     b.Navigation("Products");
 
                     b.Navigation("Subcategories");
-                });
-
-            modelBuilder.Entity("FutureTechnologyE_Commerce.Models.ProductType", b =>
-                {
-                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

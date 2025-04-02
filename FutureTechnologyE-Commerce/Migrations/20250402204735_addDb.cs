@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace FutureTechnologyE_Commerce.Migrations
 {
     /// <inheritdoc />
@@ -30,11 +32,15 @@ namespace FutureTechnologyE_Commerce.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StreetAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    State = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    first_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    last_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    apartment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    street = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    building = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    phone_number = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    country = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    floor = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    state = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -85,19 +91,6 @@ namespace FutureTechnologyE_Commerce.Migrations
                         column: x => x.ParentCategoryID,
                         principalTable: "Categories",
                         principalColumn: "CategoryID");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProductTypes",
-                columns: table => new
-                {
-                    ProductTypeID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductTypes", x => x.ProductTypeID);
                 });
 
             migrationBuilder.CreateTable(
@@ -222,13 +215,16 @@ namespace FutureTechnologyE_Commerce.Migrations
                     TransactionId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     PaymentDueDate = table.Column<DateOnly>(type: "date", nullable: true),
-                    PaymentIntentId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    State = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    first_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    last_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    apartment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    street = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    building = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    phone_number = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    country = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    floor = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    state = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -248,13 +244,13 @@ namespace FutureTechnologyE_Commerce.Migrations
                     ProductID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CategoryID = table.Column<int>(type: "int", nullable: false),
+                    IsBestseller = table.Column<bool>(type: "bit", nullable: false),
                     BrandID = table.Column<int>(type: "int", nullable: false),
-                    StockQuantity = table.Column<int>(type: "int", nullable: false),
-                    ProductTypeID = table.Column<int>(type: "int", nullable: false)
+                    StockQuantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -270,12 +266,6 @@ namespace FutureTechnologyE_Commerce.Migrations
                         column: x => x.CategoryID,
                         principalTable: "Categories",
                         principalColumn: "CategoryID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Product_ProductTypes_ProductTypeID",
-                        column: x => x.ProductTypeID,
-                        principalTable: "ProductTypes",
-                        principalColumn: "ProductTypeID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -425,6 +415,35 @@ namespace FutureTechnologyE_Commerce.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Brands",
+                columns: new[] { "BrandID", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Apple" },
+                    { 2, "Samsung" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "CategoryID", "Name", "ParentCategoryID" },
+                values: new object[,]
+                {
+                    { 1, "Electronics", null },
+                    { 2, "Laptops", null },
+                    { 3, "Smartphones", null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Product",
+                columns: new[] { "ProductID", "BrandID", "CategoryID", "Description", "ImageUrl", "IsBestseller", "Name", "Price", "StockQuantity" },
+                values: new object[,]
+                {
+                    { 1, 1, 3, "Latest Apple iPhone", "iphone14.jpg", false, "AsusTuf", 999.99m, 50 },
+                    { 2, 2, 3, "Latest Samsung Smartphone", "galaxys22.jpg", false, "Lenovo", 899.99m, 40 },
+                    { 3, 2, 2, "Apple MacBook Pro 16-inch", "macbookpro.jpg", false, "Hp", 2499.99m, 20 }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -493,11 +512,6 @@ namespace FutureTechnologyE_Commerce.Migrations
                 name: "IX_Product_CategoryID",
                 table: "Product",
                 column: "CategoryID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Product_ProductTypeID",
-                table: "Product",
-                column: "ProductTypeID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_ProductID_UserID",
@@ -574,9 +588,6 @@ namespace FutureTechnologyE_Commerce.Migrations
 
             migrationBuilder.DropTable(
                 name: "Categories");
-
-            migrationBuilder.DropTable(
-                name: "ProductTypes");
         }
     }
 }

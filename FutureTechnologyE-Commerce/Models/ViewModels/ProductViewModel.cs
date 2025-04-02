@@ -9,8 +9,6 @@ namespace FutureTechnologyE_Commerce.Models.ViewModels
 		[ValidateNever]
 		public IEnumerable<SelectListItem> CategoryList { get; set; } = default!;
         [ValidateNever]
-        public IEnumerable<SelectListItem> ProductTypeList { get; set; } = default!;
-        [ValidateNever]
         public IEnumerable<SelectListItem> BrandList { get; set; } = default!;
 
     }
