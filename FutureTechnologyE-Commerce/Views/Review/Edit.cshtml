@@ -1,0 +1,50 @@
+@model FutureTechnologyE_Commerce.Models.Review
+
+@{
+    ViewData["Title"] = "Edit Review";
+}
+
+<div class="container mt-4">
+    <h2>Edit Your Review</h2>
+    <hr />
+    <div class="row">
+        <div class="col-md-8">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="ReviewID" />
+                <input type="hidden" asp-for="ProductID" />
+                <input type="hidden" asp-for="UserID" />
+                <input type="hidden" asp-for="ReviewDate" />
+                
+                <div class="form-group mb-3">
+                    <label asp-for="Rating" class="control-label mb-2">Rating</label>
+                    <div class="rating-input">
+                        <div class="btn-group" role="group">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <input type="radio" class="btn-check" name="Rating" id="rating-@i" value="@i" @(Model.Rating == i ? "checked" : "") autocomplete="off">
+                                <label class="btn btn-outline-warning" for="rating-@i">@i ⭐</label>
+                            }
+                        </div>
+                    </div>
+                    <span asp-validation-for="Rating" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label asp-for="Comment" class="control-label mb-2">Your Review</label>
+                    <textarea asp-for="Comment" class="form-control" rows="5" placeholder="Write your review here..."></textarea>
+                    <span asp-validation-for="Comment" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-primary">Update Review</button>
+                    <a asp-controller="Home" asp-action="Details" asp-route-id="@Model.ProductID" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

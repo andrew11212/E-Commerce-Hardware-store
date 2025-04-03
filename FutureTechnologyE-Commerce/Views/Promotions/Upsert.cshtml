@@ -1,0 +1,116 @@
+@model FutureTechnologyE_Commerce.Models.ViewModels.PromotionViewModel
+
+@{
+    ViewData["Title"] = Model.Promotion.PromotionId == 0 ? "Create Promotion" : "Edit Promotion";
+}
+
+<form method="post" enctype="multipart/form-data">
+    <input asp-for="Promotion.PromotionId" hidden />
+    <input asp-for="Promotion.ImageUrl" hidden />
+
+    <div class="container">
+        <div class="card shadow border-0 mt-4">
+            <div class="card-header bg-primary bg-gradient py-3">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <h2 class="text-white">@(Model.Promotion.PromotionId == 0 ? "Create" : "Update") Promotion</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Promotion.Title" class="form-label">Title</label>
+                            <input asp-for="Promotion.Title" class="form-control" />
+                            <span asp-validation-for="Promotion.Title" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Promotion.Description" class="form-label">Description</label>
+                            <textarea asp-for="Promotion.Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Promotion.Description" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Promotion.StartDate" class="form-label">Start Date</label>
+                            <input asp-for="Promotion.StartDate" class="form-control" type="date" />
+                            <span asp-validation-for="Promotion.StartDate" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Promotion.EndDate" class="form-label">End Date</label>
+                            <input asp-for="Promotion.EndDate" class="form-control" type="date" />
+                            <span asp-validation-for="Promotion.EndDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Promotion.IsActive" class="form-label">Status</label>
+                            <div class="form-check form-switch">
+                                <input asp-for="Promotion.IsActive" class="form-check-input" type="checkbox" />
+                                <label class="form-check-label" for="Promotion_IsActive">Active</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Promotion.ProductId" class="form-label">Related Product (Optional)</label>
+                            <select asp-for="Promotion.ProductId" asp-items="@Model.ProductList" class="form-select">
+                                <option disabled selected>--Select Product--</option>
+                                <option value="">None</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Promotion.DisplayOrder" class="form-label">Display Order</label>
+                            <input asp-for="Promotion.DisplayOrder" class="form-control" type="number" min="1" max="100" />
+                            <span asp-validation-for="Promotion.DisplayOrder" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Promotion.ImageUrl" class="form-label">Image</label>
+                            <input type="file" name="file" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            @if (!string.IsNullOrEmpty(Model.Promotion.ImageUrl))
+                            {
+                                <div class="mb-2">Current Image:</div>
+                                <img src="@Model.Promotion.ImageUrl" style="width: 100%; max-height: 300px; object-fit: cover;" />
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <button type="submit" class="btn btn-primary" style="width: 150px">
+                            @(Model.Promotion.PromotionId == 0 ? "Create" : "Update")
+                        </button>
+                        <a asp-controller="Promotions" asp-action="Index" class="btn btn-secondary" style="width: 150px">
+                            Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Preview uploaded image before form submission
+        document.querySelector('input[name="file"]').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const img = document.createElement('img');
+                    img.src = event.target.result;
+                    img.style.width = '100%';
+                    img.style.maxHeight = '300px';
+                    img.style.objectFit = 'cover';
+                    
+                    const previewContainer = document.querySelector('.col-md-6:last-child .mb-3:last-child');
+                    previewContainer.innerHTML = '<div class="mb-2">New Image Preview:</div>';
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+} 
