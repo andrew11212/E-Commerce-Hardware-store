@@ -63,7 +63,7 @@ namespace FutureTechnologyE_Commerce.Repository
 		public async Task RemoveAsync(T entity)
 		{
 			Set.Remove(entity);
-		}
+        }
 		public IQueryable<T> GetQueryable(Expression<Func<T, bool>>? filter = null,
 									   string? includeProperties = null)
 		{

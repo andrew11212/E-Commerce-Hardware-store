@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace FutureTechnologyE_Commerce.Controllers
 {
-	[Authorize(Roles = SD.Role_Admin)]
+	
 	public class LaptopsController : Controller
 	{
 		private readonly IUnitOfWork _unitOfWork;
@@ -28,8 +28,8 @@ namespace FutureTechnologyE_Commerce.Controllers
 			_logger = logger;
 		}
 
-		// GET: Laptops
-		public async Task<IActionResult> Index()
+        [Authorize(Roles = SD.Role_Admin)]
+        public async Task<IActionResult> Index()
 		{
 			try
 			{
@@ -43,8 +43,8 @@ namespace FutureTechnologyE_Commerce.Controllers
 			}
 		}
 
-		// GET: Laptops/Details/5
-		public async Task<IActionResult> Details(int? id)
+        // GET: Laptops/Details/5
+        public async Task<IActionResult> Details(int? id)
 		{
 			try
 			{
