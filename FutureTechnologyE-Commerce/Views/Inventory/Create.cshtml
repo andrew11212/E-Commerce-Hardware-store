@@ -1,0 +1,77 @@
+@model FutureTechnologyE_Commerce.Models.ViewModels.InventoryViewModel
+
+@{
+    ViewData["Title"] = "Create Inventory";
+}
+
+<div class="container p-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="text-primary fw-bold">
+                <i class="bi bi-plus-circle me-2"></i>Add New Inventory
+            </h2>
+        </div>
+        <div class="col text-end">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Inventory
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="post" asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Inventory.ProductId" class="form-label fw-semibold">Product</label>
+                            <select asp-for="Inventory.ProductId" asp-items="Model.ProductList" class="form-select">
+                                <option disabled selected>-- Select Product --</option>
+                            </select>
+                            <span asp-validation-for="Inventory.ProductId" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Inventory.CurrentStock" class="form-label fw-semibold">Current Stock</label>
+                                <input asp-for="Inventory.CurrentStock" class="form-control" min="0" />
+                                <span asp-validation-for="Inventory.CurrentStock" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Inventory.LowStockThreshold" class="form-label fw-semibold">Low Stock Threshold</label>
+                                <div class="input-group">
+                                    <input asp-for="Inventory.LowStockThreshold" class="form-control" min="1" />
+                                    <span class="input-group-text">units</span>
+                                </div>
+                                <span asp-validation-for="Inventory.LowStockThreshold" class="text-danger"></span>
+                                <div class="form-text">System will alert when stock falls below this threshold</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Inventory.Notes" class="form-label fw-semibold">Notes</label>
+                            <textarea asp-for="Inventory.Notes" class="form-control" rows="3" placeholder="Optional inventory notes"></textarea>
+                            <span asp-validation-for="Inventory.Notes" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i> Create
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+} 

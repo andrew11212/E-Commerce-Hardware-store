@@ -1,0 +1,221 @@
+@model FutureTechnologyE_Commerce.Models.ViewModels.InventoryViewModel
+
+@{
+    ViewData["Title"] = "Adjust Stock";
+}
+
+@if (Model == null || Model.Inventory == null || Model.Product == null)
+{
+    <div class="alert alert-danger">
+        <h4>Error</h4>
+        <p>Could not load the inventory data. The data may be missing or corrupted.</p>
+    </div>
+    <a asp-action="Index" class="btn btn-primary">Back to Inventory List</a>
+}
+else
+{
+    <div class="container p-4">
+        <div class="row mb-4">
+            <div class="col">
+                <h2 class="text-primary fw-bold">
+                    <i class="bi bi-plus-slash-minus me-2"></i>Adjust Stock
+                </h2>
+                <p class="text-muted">Update stock quantity for @Model.Product.Name</p>
+            </div>
+            <div class="col text-end">
+                <a asp-action="Details" asp-route-id="@Model.Inventory.InventoryId" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Details
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <div class="product-info bg-light p-3 rounded">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h5 class="mb-2">@Model.Product.Name</h5>
+                                        @if (Model.Product.Category != null)
+                                        {
+                                            <p class="mb-1">Category: <span class="fw-medium">@Model.Product.Category.Name</span></p>
+                                        }
+                                        <p class="mb-1">Current Stock: <span class="fw-bold fs-5">@Model.Inventory.CurrentStock</span></p>
+                                        <p class="mb-1">Low Stock Threshold: <span class="fw-medium">@Model.Inventory.LowStockThreshold</span></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        @{
+                                            var stockStatus = Model.Inventory.CurrentStock <= 0 ? "Out of Stock" :
+                                                             Model.Inventory.CurrentStock <= Model.Inventory.LowStockThreshold ? "Low Stock" : "In Stock";
+                                            var statusClass = Model.Inventory.CurrentStock <= 0 ? "bg-danger" :
+                                                             Model.Inventory.CurrentStock <= Model.Inventory.LowStockThreshold ? "bg-warning" : "bg-success";
+                                        }
+                                        <div class="text-center mt-2">
+                                            <span class="badge @statusClass d-block p-2 mb-2">@stockStatus</span>
+                                            @if (!string.IsNullOrEmpty(Model.Product.ImageUrl))
+                                            {
+                                                <img src="@Model.Product.ImageUrl" alt="@Model.Product.Name" class="img-fluid rounded" style="max-height: 100px;" />
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form method="post" asp-action="AdjustStock" asp-route-id="@Model.Inventory.InventoryId">
+                            <div class="mb-4">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-success text-white">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="changeType" id="addStock" value="Addition" checked>
+                                            <label class="form-check-label fw-bold" for="addStock">
+                                                <i class="bi bi-plus-circle me-1"></i> Add Stock
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="input-group mb-2">
+                                            <span class="input-group-text"><i class="bi bi-plus-lg"></i></span>
+                                            <input type="number" id="addQuantity" name="adjustmentQuantity" class="form-control adjustment-input" min="1" value="1">
+                                            <span class="input-group-text">units</span>
+                                        </div>
+                                        <div class="form-text">Add stock when new inventory arrives</div>
+                                    </div>
+                                </div>
+
+                                <div class="card mb-3">
+                                    <div class="card-header bg-danger text-white">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="changeType" id="removeStock" value="Reduction">
+                                            <label class="form-check-label fw-bold" for="removeStock">
+                                                <i class="bi bi-dash-circle me-1"></i> Remove Stock
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="input-group mb-2">
+                                            <span class="input-group-text"><i class="bi bi-dash-lg"></i></span>
+                                            <input type="number" id="removeQuantity" name="adjustmentQuantity" class="form-control adjustment-input" min="1" value="1" disabled>
+                                            <span class="input-group-text">units</span>
+                                        </div>
+                                        <div class="form-text">Remove stock for returns, damages, or other adjustments</div>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header bg-info text-white">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="changeType" id="adjustStock" value="Adjustment">
+                                            <label class="form-check-label fw-bold" for="adjustStock">
+                                                <i class="bi bi-arrow-repeat me-1"></i> Manual Adjustment
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="input-group mb-2">
+                                            <span class="input-group-text"><i class="bi bi-arrow-left-right"></i></span>
+                                            <input type="number" id="adjustQuantity" name="adjustmentQuantity" class="form-control adjustment-input" min="1" value="1" disabled>
+                                            <span class="input-group-text">units</span>
+                                        </div>
+                                        <div class="form-text">Manually adjust stock after inventory count</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="notes" class="form-label fw-semibold">Notes</label>
+                                <textarea id="notes" name="notes" class="form-control" rows="2" placeholder="Optional notes about this adjustment"></textarea>
+                            </div>
+
+                            <div class="alert alert-info">
+                                <div class="d-flex">
+                                    <i class="bi bi-info-circle-fill fs-5 me-2"></i>
+                                    <div>
+                                        <span class="fw-bold">Preview: </span>
+                                        <span id="summaryText">Adding 1 unit to current stock (New stock will be @(Model.Inventory.CurrentStock + 1))</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a asp-action="Details" asp-route-id="@Model.Inventory.InventoryId" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle me-1"></i> Apply Adjustment
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const currentStock = @Model.Inventory.CurrentStock;
+            
+            // Handle radio button changes
+            $('input[name="changeType"]').change(function() {
+                // Disable all inputs first
+                $('.adjustment-input').prop('disabled', true);
+                
+                // Enable the selected input
+                const selectedType = $('input[name="changeType"]:checked').val();
+                if (selectedType === "Addition") {
+                    $('#addQuantity').prop('disabled', false);
+                    updateSummary($('#addQuantity').val(), "Addition");
+                } else if (selectedType === "Reduction") {
+                    $('#removeQuantity').prop('disabled', false);
+                    updateSummary($('#removeQuantity').val(), "Reduction");
+                } else if (selectedType === "Adjustment") {
+                    $('#adjustQuantity').prop('disabled', false);
+                    updateSummary($('#adjustQuantity').val(), "Adjustment");
+                }
+            });
+            
+            // Handle input changes
+            $('.adjustment-input').on('input', function() {
+                const selectedType = $('input[name="changeType"]:checked').val();
+                updateSummary($(this).val(), selectedType);
+            });
+            
+            // Update summary text
+            function updateSummary(value, type) {
+                const quantity = parseInt(value) || 0;
+                let newStock = currentStock;
+                let actionText = "";
+                
+                if (type === "Addition") {
+                    newStock = currentStock + quantity;
+                    actionText = `Adding ${quantity} unit${quantity !== 1 ? 's' : ''} to current stock`;
+                } else if (type === "Reduction") {
+                    newStock = Math.max(0, currentStock - quantity);
+                    if (currentStock < quantity) {
+                        actionText = `Removing all ${currentStock} units from stock (cannot go below 0)`;
+                    } else {
+                        actionText = `Removing ${quantity} unit${quantity !== 1 ? 's' : ''} from current stock`;
+                    }
+                } else if (type === "Adjustment") {
+                    const diff = quantity - currentStock;
+                    if (diff > 0) {
+                        actionText = `Adding ${diff} unit${diff !== 1 ? 's' : ''} to adjust stock`;
+                    } else if (diff < 0) {
+                        actionText = `Removing ${Math.abs(diff)} unit${Math.abs(diff) !== 1 ? 's' : ''} to adjust stock`;
+                    } else {
+                        actionText = `No change to current stock`;
+                    }
+                    newStock = quantity;
+                }
+                
+                $('#summaryText').html(`${actionText} (New stock will be ${newStock})`);
+            }
+            
+            // Initialize summary
+            updateSummary($('#addQuantity').val(), "Addition");
+        });
+    </script>
+} 

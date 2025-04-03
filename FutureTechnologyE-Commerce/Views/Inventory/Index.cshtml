@@ -1,0 +1,129 @@
+@model IEnumerable<FutureTechnologyE_Commerce.Models.Inventory>
+
+@{
+    ViewData["Title"] = "Inventory Management";
+}
+
+<div class="container p-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="text-primary fw-bold">Inventory Management</h2>
+        </div>
+        <div class="col text-end">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add New Inventory
+            </a>
+            <a asp-action="BulkUpdate" class="btn btn-success">
+                <i class="bi bi-arrow-repeat"></i> Bulk Update
+            </a>
+            <a asp-action="SyncWithProducts" class="btn btn-info text-white">
+                <i class="bi bi-sync"></i> Sync with Products
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-box-seam"></i> Total Products</h5>
+                    <h2 class="display-6">@Model.Count()</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-exclamation-triangle"></i> Low Stock</h5>
+                    <h2 class="display-6">@Model.Count(i => i.CurrentStock <= i.LowStockThreshold)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-check-circle"></i> In Stock</h5>
+                    <h2 class="display-6">@Model.Count(i => i.CurrentStock > 0)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-x-circle"></i> Out of Stock</h5>
+                    <h2 class="display-6">@Model.Count(i => i.CurrentStock == 0)</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="inventoryTable" class="table table-hover table-striped">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Current Stock</th>
+                            <th>Status</th>
+                            <th>Last Updated</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Product.Name</td>
+                                <td>@item.Product.Category.Name</td>
+                                <td>@item.CurrentStock</td>
+                                <td>
+                                    @if (item.CurrentStock <= 0)
+                                    {
+                                        <span class="badge bg-danger">Out of Stock</span>
+                                    }
+                                    else if (item.CurrentStock <= item.LowStockThreshold)
+                                    {
+                                        <span class="badge bg-warning text-dark">Low Stock</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">In Stock</span>
+                                    }
+                                </td>
+                                <td>@item.LastUpdated.ToString("g")</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@item.InventoryId" class="btn btn-sm btn-info text-white me-1">
+                                            <i class="bi bi-info-circle"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.InventoryId" class="btn btn-sm btn-primary me-1">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a asp-action="AdjustStock" asp-route-id="@item.InventoryId" class="btn btn-sm btn-success">
+                                            <i class="bi bi-plus-slash-minus"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#inventoryTable').DataTable({
+                "order": [[4, "desc"]],
+                "language": {
+                    "search": "Search inventory:"
+                }
+            });
+        });
+    </script>
+} 

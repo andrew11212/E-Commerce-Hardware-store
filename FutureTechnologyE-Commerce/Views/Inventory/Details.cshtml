@@ -1,0 +1,211 @@
+@model FutureTechnologyE_Commerce.Models.ViewModels.InventoryViewModel
+
+@{
+    ViewData["Title"] = "Inventory Details";
+}
+
+@if (Model == null || Model.Inventory == null || Model.Product == null)
+{
+    <div class="alert alert-danger">
+        <h4>Error</h4>
+        <p>Could not load the inventory details. The data may be missing or corrupted.</p>
+    </div>
+    <a asp-action="Index" class="btn btn-primary">Back to Inventory List</a>
+}
+else
+{
+    <div class="container p-4">
+        <div class="row mb-4">
+            <div class="col">
+                <h2 class="text-primary fw-bold">
+                    <i class="bi bi-info-circle me-2"></i>Inventory Details
+                </h2>
+                <p class="text-muted">Stock information for @Model.Product.Name</p>
+            </div>
+            <div class="col text-end">
+                <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                    <i class="bi bi-arrow-left"></i> Back to Inventory
+                </a>
+                <a asp-action="Edit" asp-route-id="@Model.Inventory.InventoryId" class="btn btn-primary me-2">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a asp-action="AdjustStock" asp-route-id="@Model.Inventory.InventoryId" class="btn btn-success">
+                    <i class="bi bi-plus-slash-minus"></i> Adjust Stock
+                </a>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-7">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-box-seam me-2"></i>Product Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h4 class="mb-3">@Model.Product.Name</h4>
+                                <p class="mb-1"><strong>Product ID:</strong> @Model.Product.ProductID</p>
+                                @if (Model.Product.Category != null)
+                                {
+                                    <p class="mb-1"><strong>Category:</strong> @Model.Product.Category.Name</p>
+                                }
+                                <p class="mb-1"><strong>Price:</strong> $@Model.Product.Price.ToString("0.00")</p>
+                                @if (Model.Product.Brand != null)
+                                {
+                                    <p class="mb-1"><strong>Brand:</strong> @Model.Product.Brand.Name</p>
+                                }
+                            </div>
+                            <div class="col-md-6">
+                                @if (!string.IsNullOrEmpty(Model.Product.ImageUrl))
+                                {
+                                    <img src="@Model.Product.ImageUrl" alt="@Model.Product.Name" class="img-fluid rounded" style="max-height: 150px;" />
+                                }
+                                else
+                                {
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 150px; width: 150px;">
+                                        <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.Product.Description))
+                        {
+                            <div class="mb-3">
+                                <h6 class="fw-bold">Description</h6>
+                                <p>@Model.Product.Description</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-clipboard-data me-2"></i>Stock Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold mb-0">Current Stock</h6>
+                                <span class="fs-3 fw-bold text-primary">@Model.Inventory.CurrentStock</span>
+                            </div>
+                            @{
+                                var stockPercentage = (Model.Inventory.CurrentStock * 100) / Math.Max(1, Model.Inventory.LowStockThreshold);
+                                var progressClass = Model.Inventory.CurrentStock <= 0 ? "bg-danger" :
+                                                  Model.Inventory.CurrentStock <= Model.Inventory.LowStockThreshold ? "bg-warning" : "bg-success";
+                            }
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar @progressClass" role="progressbar" style="width: @Math.Min(stockPercentage, 100)%"></div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                <small class="text-muted">Low Stock Threshold: @Model.Inventory.LowStockThreshold</small>
+                                @if (Model.Inventory.CurrentStock <= 0)
+                                {
+                                    <span class="badge bg-danger">Out of Stock</span>
+                                }
+                                else if (Model.Inventory.CurrentStock <= Model.Inventory.LowStockThreshold)
+                                {
+                                    <span class="badge bg-warning text-dark">Low Stock</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">In Stock</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Last Updated:</strong><br /> @Model.Inventory.LastUpdated.ToString("g")</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Last Restock:</strong><br /> 
+                                    @(Model.Inventory.LastRestockDate.HasValue ? Model.Inventory.LastRestockDate.Value.ToString("g") : "N/A")
+                                </p>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.Inventory.Notes))
+                        {
+                            <div>
+                                <h6 class="fw-bold">Notes</h6>
+                                <p class="mb-0">@Model.Inventory.Notes</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Inventory History</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.InventoryLogs == null || !Model.InventoryLogs.Any())
+                {
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i> No inventory history available.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table id="historyTable" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Change Type</th>
+                                    <th>Previous</th>
+                                    <th>New</th>
+                                    <th>Change</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var log in Model.InventoryLogs)
+                                {
+                                    var changeClass = log.ChangeType == "Addition" ? "text-success" :
+                                                    log.ChangeType == "Reduction" ? "text-danger" : "";
+                                    var changeIcon = log.ChangeType == "Addition" ? "bi-plus-circle" :
+                                                  log.ChangeType == "Reduction" ? "bi-dash-circle" : "bi-arrow-repeat";
+                                    
+                                    <tr>
+                                        <td>@log.ChangeDate.ToString("g")</td>
+                                        <td>
+                                            <i class="bi @changeIcon me-1"></i>
+                                            <span class="@changeClass">@log.ChangeType</span>
+                                        </td>
+                                        <td>@log.PreviousStock</td>
+                                        <td>@log.NewStock</td>
+                                        <td class="@changeClass">
+                                            @(log.ChangeType == "Addition" ? "+" : "")@log.ChangeQuantity
+                                        </td>
+                                        <td>@(string.IsNullOrEmpty(log.Notes) ? "-" : log.Notes)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#historyTable').DataTable({
+                "order": [[0, "desc"]],
+                "pageLength": 10,
+                "language": {
+                    "search": "Search history:"
+                }
+            });
+        });
+    </script>
+} 

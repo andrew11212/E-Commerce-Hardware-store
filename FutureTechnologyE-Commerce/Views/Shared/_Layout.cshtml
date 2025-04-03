@@ -389,6 +389,8 @@
             transform: scale(1.2);
         }
     </style>
+    
+    @await RenderSectionAsync("Styles", required: false)
 
 </head>
 
@@ -514,6 +516,31 @@
                                     asp-action="Index">
                                     <i class="bi bi-laptop me-2"></i>
                                     <span>Laptops</span>
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider my-2">
+                            </li>
+                            <li class="px-3 py-2 text-light small fw-bold text-uppercase">Manage Inventory</li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-controller="Inventory"
+                                    asp-action="Index">
+                                    <i class="bi bi-box2-fill me-2"></i>
+                                    <span>Stock Management</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-controller="Inventory"
+                                    asp-action="LowStock">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    <span>Low Stock Alerts</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-controller="Inventory"
+                                    asp-action="BulkUpdate">
+                                    <i class="bi bi-arrow-repeat me-2"></i>
+                                    <span>Bulk Update</span>
                                 </a>
                             </li>
                             <li>
