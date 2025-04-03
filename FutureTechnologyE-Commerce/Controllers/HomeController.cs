@@ -34,6 +34,12 @@ namespace FutureTechnologyE_Commerce.Controllers
 										 (p.Brand != null && p.Brand.Name.ToLower().Contains(searchString)));
 			}
 
+			// Get top reviews (with high ratings)
+			var topReviews = await _unitOfWork.ReviewRepository
+				.GetAllAsync(
+					r => r.Rating >= 4, 
+					includeProperties: "User,Product"
+				);
 
 			var viewModel = new HomeIndexViewModel
 			{
@@ -42,7 +48,8 @@ namespace FutureTechnologyE_Commerce.Controllers
 				Accessories = (await _unitOfWork.ProductRepository.GetAllAsync(c => c.Category.Name == "Accessories", includeProperties: "Category,Brand")),
 				Laptops = (await _unitOfWork.LaptopRepository.GetAllAsync(null, includeProperties: "Category,Brand"))
 					.Take(5)
-					.ToList()
+					.ToList(),
+				TopReviews = topReviews.OrderByDescending(r => r.Rating).ThenByDescending(r => r.ReviewDate).Take(3).ToList()
 			};
 
 			return View(viewModel);
@@ -68,7 +75,13 @@ namespace FutureTechnologyE_Commerce.Controllers
 				.Take(4)
 				.ToList();
 
+			// Get reviews for this product
+			var reviews = _unitOfWork.ReviewRepository.GetReviewsByProductId(id);
+			var averageRating = _unitOfWork.ReviewRepository.GetAverageRatingByProductId(id);
+
 			ViewBag.RelatedProducts = relatedProducts;
+			ViewBag.Reviews = reviews;
+			ViewBag.AverageRating = averageRating;
 
 			return View(product);
 		}
@@ -220,6 +233,22 @@ namespace FutureTechnologyE_Commerce.Controllers
 		public IActionResult Privacy()
 		{
 			return View();
+		}
+
+		[HttpGet]
+		public async Task<IActionResult> GetProductReviews(int productId)
+		{
+			// Get reviews for the specific product
+			var reviews = _unitOfWork.ReviewRepository.GetReviewsByProductId(productId);
+			var averageRating = _unitOfWork.ReviewRepository.GetAverageRatingByProductId(productId);
+			
+			var result = new
+			{
+				Reviews = reviews,
+				AverageRating = averageRating
+			};
+			
+			return Json(result);
 		}
 
 		[AllowAnonymous]

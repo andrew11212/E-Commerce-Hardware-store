@@ -84,7 +84,18 @@ namespace FutureTechnologyE_Commerce.Controllers
                 }
 
                 await _unitOfWork.SaveAsync();
-                return RedirectToAction("Details", "Product", new { id = review.ProductID });
+                
+                // Check if the product is a regular product or a special type (like laptop)
+                var product = await _unitOfWork.ProductRepository.GetAsync(p => p.ProductID == review.ProductID);
+                
+                if (product != null && product.GetType().Name == "Laptop")
+                {
+                    return RedirectToAction("Details", "Laptops", new { id = review.ProductID });
+                }
+                else
+                {
+                    return RedirectToAction("Details", "Home", new { id = review.ProductID });
+                }
             }
             
             return View(review);
@@ -141,7 +152,17 @@ namespace FutureTechnologyE_Commerce.Controllers
                 _unitOfWork.ReviewRepository.Update(existingReview);
                 await _unitOfWork.SaveAsync();
                 
-                return RedirectToAction("Details", "Product", new { id = existingReview.ProductID });
+                // Check if the product is a regular product or a special type (like laptop)
+                var product = await _unitOfWork.ProductRepository.GetAsync(p => p.ProductID == existingReview.ProductID);
+                
+                if (product != null && product.GetType().Name == "Laptop")
+                {
+                    return RedirectToAction("Details", "Laptops", new { id = existingReview.ProductID });
+                }
+                else
+                {
+                    return RedirectToAction("Details", "Home", new { id = existingReview.ProductID });
+                }
             }
             
             return View(review);
@@ -169,7 +190,17 @@ namespace FutureTechnologyE_Commerce.Controllers
             await _unitOfWork.ReviewRepository.RemoveAsync(review);
             await _unitOfWork.SaveAsync();
             
-            return RedirectToAction("Details", "Product", new { id = productId });
+            // Check if the product is a regular product or a special type (like laptop)
+            var product = await _unitOfWork.ProductRepository.GetAsync(p => p.ProductID == productId);
+            
+            if (product != null && product.GetType().Name == "Laptop")
+            {
+                return RedirectToAction("Details", "Laptops", new { id = productId });
+            }
+            else
+            {
+                return RedirectToAction("Details", "Home", new { id = productId });
+            }
         }
     }
 } 
