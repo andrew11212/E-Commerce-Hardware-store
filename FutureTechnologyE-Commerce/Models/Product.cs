@@ -32,6 +32,9 @@ namespace FutureTechnologyE_Commerce.Models
         [ValidateNever]
 
         public virtual Brand Brand { get; set; } = default!;
+        
+        [ValidateNever]
+        public virtual ICollection<Review>? Reviews { get; set; }
 	}
 }
 

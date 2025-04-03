@@ -18,6 +18,7 @@ namespace FutureTechnologyE_Commerce.Data
 		public DbSet<Category> Categories { get; set; }
 		public DbSet<Brand> Brands { get; set; }
 		public DbSet<Review> Reviews { get; set; }
+		public DbSet<Promotion> Promotions { get; set; }
 		public DbSet<Product> products { get; set; }
 
 		public DbSet<ApplicationUser> applicationUsers { get; set; }
