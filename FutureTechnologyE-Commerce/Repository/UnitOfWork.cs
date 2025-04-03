@@ -29,6 +29,10 @@ namespace FutureTechnologyE_Commerce.Repository
         public IBrandRepository BrandRepository { get; private set; }
 
 		public IlaptopRepository LaptopRepository { get; private set; }
+        
+        public IReviewRepository ReviewRepository { get; private set; }
+        
+        public IPromotionRepository PromotionRepository { get; private set; }
 
 		public UnitOfWork(ApplicationDbContext context)
 		{
@@ -44,6 +48,8 @@ namespace FutureTechnologyE_Commerce.Repository
 			OrderDetail = new OrderDetailRepository(context);
             BrandRepository = new BrandRepository(context);
 			LaptopRepository = new LaptopRepository(context);
+            ReviewRepository = new ReviewRepository(context);
+            PromotionRepository = new PromotionRepository(context);
         }
 		public async Task SaveAsync()
 		{
