@@ -11,6 +11,6 @@
 		public IEnumerable<Laptop>? Laptops { get; set; }
 		public string Category { get; set; } = string.Empty;
 		public List<string>? CategoryOptions { get; set; }
-
+		public IEnumerable<Review>? TopReviews { get; set; }
 	}
 }
