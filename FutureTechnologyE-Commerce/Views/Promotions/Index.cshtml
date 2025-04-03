@@ -1,0 +1,134 @@
+@{
+    ViewData["Title"] = "Promotions";
+}
+
+<div class="container mt-5">
+    <div class="card shadow border-0 my-4">
+        <div class="card-header bg-primary bg-gradient text-white py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="text-white">Promotions List</h2>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-end mb-3">
+                <a asp-controller="Promotions" asp-action="Upsert" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Create New Promotion
+                </a>
+            </div>
+
+            <table id="promotionsTable" class="table table-bordered table-striped w-100">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Image</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            loadDataTable();
+        });
+
+        function loadDataTable() {
+            dataTable = $('#promotionsTable').DataTable({
+                "ajax": { "url": "/Promotions/GetAll" },
+                "columns": [
+                    { "data": "title", "width": "15%" },
+                    { 
+                        "data": "description",
+                        "width": "20%",
+                        "render": function (data) {
+                            return data ? (data.length > 50 ? data.substring(0, 50) + '...' : data) : 'N/A';
+                        }
+                    },
+                    {
+                        "data": "imageUrl",
+                        "width": "15%",
+                        "render": function (data) {
+                            return `<img src="${data}" style="width: 100px; height: 60px; object-fit: cover;" onerror="this.onerror=null;this.src='/images/placeholder.avif';" />`;
+                        }
+                    },
+                    {
+                        "data": "startDate",
+                        "width": "10%",
+                        "render": function (data) {
+                            return new Date(data).toLocaleDateString();
+                        }
+                    },
+                    {
+                        "data": "endDate",
+                        "width": "10%",
+                        "render": function (data) {
+                            return new Date(data).toLocaleDateString();
+                        }
+                    },
+                    {
+                        "data": "isActive",
+                        "width": "10%",
+                        "render": function (data) {
+                            return data ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>';
+                        }
+                    },
+                    {
+                        "data": "promotionId",
+                        "width": "15%",
+                        "render": function (data) {
+                            return `
+                                <div class="btn-group" role="group">
+                                    <a href="/Promotions/Upsert?id=${data}" class="btn btn-primary">
+                                        <i class="bi bi-pencil-square"></i> Edit
+                                    </a>
+                                    <a onClick="Delete('/Promotions/Delete/${data}')" class="btn btn-danger">
+                                        <i class="bi bi-trash-fill"></i> Delete
+                                    </a>
+                                </div>
+                            `;
+                        }
+                    }
+                ],
+                "language": {
+                    "emptyTable": "No promotions available"
+                }
+            });
+        }
+
+        function Delete(url) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'DELETE',
+                        success: function (data) {
+                            if (data.success) {
+                                dataTable.ajax.reload();
+                                toastr.success(data.message);
+                            } else {
+                                toastr.error(data.message);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+} 
