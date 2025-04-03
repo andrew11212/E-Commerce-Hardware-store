@@ -23,6 +23,8 @@ namespace FutureTechnologyE_Commerce.Repository.IRepository
 		public IOrderDetailRepository OrderDetail { get; }
         public IReviewRepository ReviewRepository { get; }
         public IPromotionRepository PromotionRepository { get; }
+        public IInventoryRepository InventoryRepository { get; }
+        public IInventoryLogRepository InventoryLogRepository { get; }
 
 		IDbContextTransaction BeginTransaction(); // Add this line
 		public Task SaveAsync();

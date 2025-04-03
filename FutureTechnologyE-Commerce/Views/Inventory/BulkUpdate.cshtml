@@ -1,0 +1,140 @@
+@model FutureTechnologyE_Commerce.Models.ViewModels.BulkInventoryUpdateViewModel
+
+@{
+    ViewData["Title"] = "Bulk Inventory Update";
+}
+
+<div class="container p-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="text-primary fw-bold">
+                <i class="bi bi-arrow-repeat me-2"></i>Bulk Stock Update
+            </h2>
+            <p class="text-muted">Update stock quantities for multiple products at once</p>
+        </div>
+        <div class="col text-end">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Inventory
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="post">
+                <div class="table-responsive">
+                    <table id="bulkUpdateTable" class="table table-hover">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Product</th>
+                                <th width="120">Current Stock</th>
+                                <th width="120">New Stock</th>
+                                <th width="220">Low Stock Threshold</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Items.Count; i++)
+                            {
+                                var item = Model.Items[i];
+                                var isLowStockClass = item.IsLowStock ? "table-warning" : "";
+                                
+                                <tr class="@isLowStockClass">
+                                    <td>
+                                        <input type="hidden" asp-for="Items[i].InventoryId" />
+                                        <input type="hidden" asp-for="Items[i].ProductId" />
+                                        <input type="hidden" asp-for="Items[i].ProductName" />
+                                        <span>@item.ProductName</span>
+                                    </td>
+                                    <td>
+                                        <input type="hidden" asp-for="Items[i].CurrentStock" />
+                                        <span class="badge bg-secondary">@item.CurrentStock</span>
+                                    </td>
+                                    <td>
+                                        <input type="number" asp-for="Items[i].NewStock" class="form-control form-control-sm" min="0" />
+                                    </td>
+                                    <td>
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" asp-for="Items[i].LowStockThreshold" class="form-control" min="1" />
+                                            <span class="input-group-text">units</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input type="text" asp-for="Items[i].Notes" class="form-control form-control-sm" placeholder="Optional notes" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="onlyShowChanged">
+                            <label class="form-check-label" for="onlyShowChanged">Show only items with changes</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-1"></i> Update Inventory
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTable
+            var table = $('#bulkUpdateTable').DataTable({
+                "order": [],
+                "pageLength": 25,
+                "language": {
+                    "search": "Search products:"
+                }
+            });
+
+            // Handle the "show only changed" toggle
+            $('#onlyShowChanged').change(function () {
+                if ($(this).is(':checked')) {
+                    // Show only rows where current stock != new stock
+                    table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                        var $row = $(this.node());
+                        var currentStock = parseInt($row.find('input[name$="CurrentStock"]').val());
+                        var newStock = parseInt($row.find('input[name$="NewStock"]').val());
+                        
+                        if (currentStock === newStock) {
+                            $(this.node()).addClass('d-none');
+                        } else {
+                            $(this.node()).removeClass('d-none');
+                        }
+                    });
+                } else {
+                    // Show all rows
+                    table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                        $(this.node()).removeClass('d-none');
+                    });
+                }
+            });
+
+            // Monitor changes to update highlighting
+            $('input[name$="NewStock"]').on('input', function () {
+                var $row = $(this).closest('tr');
+                var currentStock = parseInt($row.find('input[name$="CurrentStock"]').val());
+                var newStock = parseInt($(this).val());
+
+                $row.removeClass('table-success table-danger');
+                
+                if (newStock > currentStock) {
+                    $row.addClass('table-success');
+                } else if (newStock < currentStock) {
+                    $row.addClass('table-danger');
+                }
+            });
+        });
+    </script>
+} 

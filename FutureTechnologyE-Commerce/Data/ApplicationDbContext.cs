@@ -20,6 +20,8 @@ namespace FutureTechnologyE_Commerce.Data
 		public DbSet<Review> Reviews { get; set; }
 		public DbSet<Promotion> Promotions { get; set; }
 		public DbSet<Product> products { get; set; }
+		public DbSet<Inventory> Inventories { get; set; }
+		public DbSet<InventoryLog> InventoryLogs { get; set; }
 
 		public DbSet<ApplicationUser> applicationUsers { get; set; }
 

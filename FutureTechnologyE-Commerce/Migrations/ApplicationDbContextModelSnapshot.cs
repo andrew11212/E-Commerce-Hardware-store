@@ -172,7 +172,7 @@ namespace FutureTechnologyE_Commerce.Migrations
                         new
                         {
                             CategoryID = 1,
-                            Name = "Electronics"
+                            Name = "mouse"
                         },
                         new
                         {
@@ -182,8 +182,88 @@ namespace FutureTechnologyE_Commerce.Migrations
                         new
                         {
                             CategoryID = 3,
-                            Name = "Smartphones"
+                            Name = "mousepad"
+                        },
+                        new
+                        {
+                            CategoryID = 4,
+                            Name = "Printer"
+                        },
+                        new
+                        {
+                            CategoryID = 5,
+                            Name = "Keypoard"
                         });
+                });
+
+            modelBuilder.Entity("FutureTechnologyE_Commerce.Models.Inventory", b =>
+                {
+                    b.Property<int>("InventoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InventoryId"));
+
+                    b.Property<int>("CurrentStock")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastRestockDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LowStockThreshold")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("InventoryId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Inventories");
+                });
+
+            modelBuilder.Entity("FutureTechnologyE_Commerce.Models.InventoryLog", b =>
+                {
+                    b.Property<int>("LogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LogId"));
+
+                    b.Property<DateTime>("ChangeDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ChangeQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ChangeType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InventoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NewStock")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PreviousStock")
+                        .HasColumnType("int");
+
+                    b.HasKey("LogId");
+
+                    b.HasIndex("InventoryId");
+
+                    b.ToTable("InventoryLogs");
                 });
 
             modelBuilder.Entity("FutureTechnologyE_Commerce.Models.OrderDetail", b =>
@@ -395,7 +475,6 @@ namespace FutureTechnologyE_Commerce.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -685,6 +764,28 @@ namespace FutureTechnologyE_Commerce.Migrations
                         .HasForeignKey("ParentCategoryID");
 
                     b.Navigation("ParentCategory");
+                });
+
+            modelBuilder.Entity("FutureTechnologyE_Commerce.Models.Inventory", b =>
+                {
+                    b.HasOne("FutureTechnologyE_Commerce.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("FutureTechnologyE_Commerce.Models.InventoryLog", b =>
+                {
+                    b.HasOne("FutureTechnologyE_Commerce.Models.Inventory", "Inventory")
+                        .WithMany()
+                        .HasForeignKey("InventoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Inventory");
                 });
 
             modelBuilder.Entity("FutureTechnologyE_Commerce.Models.OrderDetail", b =>
