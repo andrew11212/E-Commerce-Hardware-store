@@ -14,7 +14,6 @@ using System.Linq;
 
 namespace FutureTechnologyE_Commerce.Controllers
 {
-	[Authorize(Roles = SD.Role_Admin)]
 	public class LaptopsController : Controller
 	{
 		private readonly IUnitOfWork _unitOfWork;
@@ -29,6 +28,8 @@ namespace FutureTechnologyE_Commerce.Controllers
 		}
 
 		// GET: Laptops
+		[Authorize(Roles = SD.Role_Admin)]
+
 		public async Task<IActionResult> Index()
 		{
 			try
@@ -69,6 +70,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 		}
 
 		// GET: Laptops/Create
+		[Authorize(Roles = SD.Role_Admin)]
 		public async Task<IActionResult> Create()
 		{
 			LaptopViewModel laptopVM = new()
@@ -86,8 +88,8 @@ namespace FutureTechnologyE_Commerce.Controllers
 			}
 			return View(laptopVM);
 		}
-
 		// POST: Laptops/Create
+		[Authorize(Roles = SD.Role_Admin)]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Create(LaptopViewModel laptopVM, IFormFile? file)
@@ -136,6 +138,8 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 		// GET: Laptops/Edit/5
 		[HttpGet]
+		[Authorize(Roles = SD.Role_Admin)]
+
 		public async Task<IActionResult> Edit(int? id)
 		{
 			if (id == null)
@@ -179,6 +183,8 @@ namespace FutureTechnologyE_Commerce.Controllers
 		// POST: Laptops/Edit/5
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[Authorize(Roles = SD.Role_Admin)]
+
 		public async Task<IActionResult> Edit(int id, LaptopViewModel laptopVM, IFormFile? file)
 		{
 			try
@@ -238,6 +244,8 @@ namespace FutureTechnologyE_Commerce.Controllers
 		}
 
 		// GET: Laptops/Delete/5
+		[Authorize(Roles = SD.Role_Admin)]
+
 		public async Task<IActionResult> Delete(int? id)
 		{
 			try
@@ -265,6 +273,8 @@ namespace FutureTechnologyE_Commerce.Controllers
 		// POST: Laptops/Delete/5
 		[HttpPost, ActionName("Delete")]
 		[ValidateAntiForgeryToken]
+		[Authorize(Roles = SD.Role_Admin)]
+
 		public async Task<IActionResult> DeleteConfirmed(int id)
 		{
 			try
@@ -295,6 +305,8 @@ namespace FutureTechnologyE_Commerce.Controllers
 		}
 
 		// Helper method to populate dropdowns
+		[Authorize(Roles = SD.Role_Admin)]
+
 		private async Task PopulateDropdowns(LaptopViewModel laptopVM)
 		{
 			laptopVM.CategoryList = (await _unitOfWork.CategoryRepository.GetAllAsync()).Select(c =>
@@ -304,6 +316,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 		}
 
 		// Helper method for file validation (example implementation)
+		[Authorize(Roles = SD.Role_Admin)]
 		private bool IsValidImage(IFormFile file)
 		{
 			var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };

@@ -10,7 +10,8 @@
 		public IEnumerable<Product>? Accessories { get; set; }
 		public IEnumerable<Laptop>? Laptops { get; set; }
 		public string Category { get; set; } = string.Empty;
-
-
+		public List<string>? CategoryOptions { get; set; }
+		public IEnumerable<Review>? TopReviews { get; set; }
+		public IEnumerable<Promotion>? Promotions { get; set; }
 	}
 }

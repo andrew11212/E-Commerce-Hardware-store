@@ -11,52 +11,80 @@
 <div class="hero-carousel fade-in mb-5">
     <div id="mainCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
-            <!-- Slide 1 -->
-            <div class="carousel-item active">
-                <div class="carousel-content">
-                    <img src="/images/ASUS TUF Gaming F15 Gaming Laptop.jpeg" alt="ASUS TUF Gaming F15"
-                         class="carousel-image">
-                    <div class="carousel-overlay"></div>
-                    <div class="carousel-caption">
-                        <h2 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">ASUS TUF Gaming F15</h2>
-                        <p class="lead mb-4 animate__animated animate__fadeInUp">Experience unrivaled gaming performance with the latest technology</p>
-                        <a asp-controller="Laptops" asp-action="Details" asp-route-id="@Model.Laptops.FirstOrDefault()?.ProductID" class="btn btn-primary btn-lg animate__animated animate__fadeInUp">
-                            Explore Now <i class="bi bi-arrow-right ms-2"></i>
-                        </a>
+            @if (Model.Promotions != null && Model.Promotions.Any())
+            {
+                var firstPromotion = true;
+                foreach (var promotion in Model.Promotions.OrderBy(p => p.DisplayOrder).Take(3))
+                {
+                    <div class="carousel-item @(firstPromotion ? "active" : "")">
+                        <div class="carousel-content">
+                            <img src="@promotion.ImageUrl" alt="@promotion.Title"
+                                 class="carousel-image" onerror="this.src='/images/placeholder.avif'">
+                            <div class="carousel-overlay"></div>
+                            <div class="carousel-caption">
+                                <h2 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">@promotion.Title</h2>
+                                <p class="lead mb-4 animate__animated animate__fadeInUp">@promotion.Description</p>
+                                @if (promotion.ProductId.HasValue)
+                                {
+                                    <a asp-controller="Home" asp-action="Details" asp-route-id="@promotion.ProductId" class="btn btn-primary btn-lg animate__animated animate__fadeInUp">
+                                        View Product <i class="bi bi-arrow-right ms-2"></i>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    firstPromotion = false;
+                }
+            }
+            else
+            {
+                <!-- Default Slide 1 (shown when no promotions exist) -->
+                <div class="carousel-item active">
+                    <div class="carousel-content">
+                        <img src="/images/ASUS TUF Gaming F15 Gaming Laptop.jpeg" alt="ASUS TUF Gaming F15"
+                             class="carousel-image">
+                        <div class="carousel-overlay"></div>
+                        <div class="carousel-caption">
+                            <h2 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">ASUS TUF Gaming F15</h2>
+                            <p class="lead mb-4 animate__animated animate__fadeInUp">Experience unrivaled gaming performance with the latest technology</p>
+                            <a asp-controller="Laptops" asp-action="Details" asp-route-id="@Model.Laptops.FirstOrDefault()?.ProductID" class="btn btn-primary btn-lg animate__animated animate__fadeInUp">
+                                Explore Now <i class="bi bi-arrow-right ms-2"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Slide 2 -->
-            <div class="carousel-item">
-                <div class="carousel-content">
-                    <img src="/images/ASUS TUF GAMING F15.jpeg" alt="ASUS TUF Gaming Series" class="carousel-image">
-                    <div class="carousel-overlay"></div>
-                    <div class="carousel-caption">
-                        <h2 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">ASUS TUF Gaming Series</h2>
-                        <p class="lead mb-4 animate__animated animate__fadeInUp">Built for durability, designed for victory</p>
-                        <a asp-controller="Laptops" asp-action="Details" asp-route-id="@Model.Laptops.FirstOrDefault()?.ProductID" class="btn btn-primary btn-lg animate__animated animate__fadeInUp">
-                            Learn More <i class="bi bi-arrow-right ms-2"></i>
-                        </a>
+                <!-- Default Slide 2 -->
+                <div class="carousel-item">
+                    <div class="carousel-content">
+                        <img src="/images/ASUS TUF GAMING F15.jpeg" alt="ASUS TUF Gaming Series" class="carousel-image">
+                        <div class="carousel-overlay"></div>
+                        <div class="carousel-caption">
+                            <h2 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">ASUS TUF Gaming Series</h2>
+                            <p class="lead mb-4 animate__animated animate__fadeInUp">Built for durability, designed for victory</p>
+                            <a asp-controller="Laptops" asp-action="Details" asp-route-id="@Model.Laptops.FirstOrDefault()?.ProductID" class="btn btn-primary btn-lg animate__animated animate__fadeInUp">
+                                Learn More <i class="bi bi-arrow-right ms-2"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Slide 3 -->
-            <div class="carousel-item">
-                <div class="carousel-content">
-                    <img src="/images/Pc Portable Gamer ASUS TUF F15 _ 15_6″ _ Intel i7 _ RTX 4060 _ 8 Go Ram.jpeg"
-                         alt="RTX 4060 Gaming Laptop" class="carousel-image">
-                    <div class="carousel-overlay"></div>
-                    <div class="carousel-caption">
-                        <h2 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">RTX 4060 Gaming Laptop</h2>
-                        <p class="lead mb-4 animate__animated animate__fadeInUp">Powered by NVIDIA RTX 4060 for ultimate gaming performance</p>
-                        <a asp-controller="Laptops" asp-action="Details" asp-route-id="@Model.Laptops.FirstOrDefault()?.ProductID" class="btn btn-primary btn-lg animate__animated animate__fadeInUp">
-                            Shop Now <i class="bi bi-arrow-right ms-2"></i>
-                        </a>
+                <!-- Default Slide 3 -->
+                <div class="carousel-item">
+                    <div class="carousel-content">
+                        <img src="/images/Pc Portable Gamer ASUS TUF F15 _ 15_6″ _ Intel i7 _ RTX 4060 _ 8 Go Ram.jpeg"
+                             alt="RTX 4060 Gaming Laptop" class="carousel-image">
+                        <div class="carousel-overlay"></div>
+                        <div class="carousel-caption">
+                            <h2 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">RTX 4060 Gaming Laptop</h2>
+                            <p class="lead mb-4 animate__animated animate__fadeInUp">Powered by NVIDIA RTX 4060 for ultimate gaming performance</p>
+                            <a asp-controller="Laptops" asp-action="Details" asp-route-id="@Model.Laptops.FirstOrDefault()?.ProductID" class="btn btn-primary btn-lg animate__animated animate__fadeInUp">
+                                Shop Now <i class="bi bi-arrow-right ms-2"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
         </div>
 
         <!-- Carousel Controls -->
@@ -71,12 +99,66 @@
 
         <!-- Carousel Indicators -->
         <div class="carousel-indicators">
-            <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="0" class="active"></button>
-            <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="1"></button>
-            <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="2"></button>
+            @if (Model.Promotions != null && Model.Promotions.Any())
+            {
+                for (int i = 0; i < Math.Min(Model.Promotions.Count(), 3); i++)
+                {
+                    <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")"></button>
+                }
+            }
+            else
+            {
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="2"></button>
+            }
         </div>
     </div>
 </div>
+
+<!-- Active Promotions Section -->
+@if (Model.Promotions != null && Model.Promotions.Count() > 3)
+{
+    <section class="promotions-section py-5 fade-in mb-5">
+        <div class="container">
+            <div class="section-header mb-4">
+                <h2 class="section-title">More Promotions</h2>
+            </div>
+
+            <div class="row">
+                @foreach (var promotion in Model.Promotions.OrderBy(p => p.DisplayOrder).Skip(3))
+                {
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="promotion-card h-100">
+                            <div class="card shadow-hover">
+                                <div class="promotion-img-wrapper">
+                                    <img src="@promotion.ImageUrl" class="card-img-top" alt="@promotion.Title"
+                                         onerror="this.src='/images/placeholder.avif'">
+                                    <div class="promotion-overlay">
+                                        @if (promotion.ProductId.HasValue)
+                                        {
+                                            <a asp-controller="Home" asp-action="Details" asp-route-id="@promotion.ProductId" class="btn btn-light btn-sm">
+                                                View Product
+                                            </a>
+                                        }
+                                    </div>
+                                    <span class="badge bg-danger position-absolute top-0 end-0 m-3">Special Offer</span>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title text-truncate-2">@promotion.Title</h5>
+                                    <p class="card-text">@promotion.Description</p>
+                                    <div class="promotion-dates mt-2 mb-3">
+                                        <small class="text-muted">Valid until: @promotion.EndDate.ToString("MMM dd, yyyy")</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
 
 <!-- Best Selling Products Section -->
 <section class="products-section py-5 fade-in">
@@ -235,6 +317,59 @@
                 background-color: var(--primary-color);
                 transform: scale(1.2);
             }
+
+    /* Promotions Section */
+    .promotions-section {
+        padding: 4rem 0;
+        margin-bottom: 2rem;
+        background-color: var(--white);
+        border-radius: 1rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .promotion-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .promotion-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .promotion-img-wrapper {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+    }
+
+    .promotion-img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .promotion-card:hover .promotion-img-wrapper img {
+        transform: scale(1.1);
+    }
+
+    .promotion-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .promotion-card:hover .promotion-overlay {
+        opacity: 1;
+    }
 
     /* Products Section */
     .products-section {
@@ -581,6 +716,88 @@
     </div>
 </section>
 
+<!-- Customer Reviews Section -->
+@if (Model.TopReviews != null && Model.TopReviews.Any() && User.IsInRole(FutureTechnologyE_Commerce.Utility.SD.Role_Admin))
+{
+    <section class="reviews-section py-5 mt-4 fade-in bg-light">
+        <div class="container">
+            <div class="section-header mb-5 text-center">
+                <h2 class="section-title">What Our Customers Say</h2>
+                <p class="text-muted">Read reviews from our satisfied customers</p>
+            </div>
+
+            <div class="row">
+                @foreach (var review in Model.TopReviews)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 border-0 shadow-sm rounded-3 p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="avatar-circle me-3 bg-primary text-white">
+                                    @(review.User.UserName != null && review.User.UserName.Length > 0 ? review.User.UserName.Substring(0, 1).ToUpper() : "U")
+                                </div>
+                                <div>
+                                    <h5 class="mb-0 fw-bold">
+                                        @review.User.UserName
+                                    </h5>
+                                    <p class="text-muted mb-0 small">@review.ReviewDate.ToString("MMM dd, yyyy")</p>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= review.Rating)
+                                    {
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-star text-warning"></i>
+                                    }
+                                }
+                            </div>
+                            <p class="review-text mb-4">
+                                @if (string.IsNullOrEmpty(review.Comment))
+                                {
+                                    <em>No comment provided</em>
+                                }
+                                else if (review.Comment.Length > 150)
+                                {
+                                    @(review.Comment.Substring(0, 150) + "...")
+                                }
+                                else
+                                {
+                                    @review.Comment
+                                }
+                            </p>
+                            <div class="mt-auto">
+                                <a asp-controller="Home" asp-action="Details" asp-route-id="@review.ProductID" class="btn btn-outline-primary btn-sm">
+                                    View Product <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                                
+                                @if (SignInManager.IsSignedIn(User) && (User.Identity.Name == review.User.UserName || User.IsInRole("Admin")))
+                                {
+                                    <div class="mt-2 d-flex gap-2">
+                                        <a asp-controller="Review" asp-action="Edit" asp-route-id="@review.ReviewID" 
+                                           class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        <form asp-controller="Review" asp-action="Delete" asp-route-id="@review.ReviewID" method="post" 
+                                              onsubmit="return confirm('Are you sure you want to delete this review?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
 
 @section Scripts {
     <script>

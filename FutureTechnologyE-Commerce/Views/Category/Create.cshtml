@@ -16,10 +16,22 @@
                     <form asp-action="Create">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        <div class="form-floating mb-3">
-                            <input asp-for="Name" class="form-control" placeholder="Category name" required>
-                            <label asp-for="Name" class="form-label"></label>
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-bold">Category Name</label>
+                            <div class="input-group">
+                                <input asp-for="Name" class="form-control" id="categoryName" placeholder="Category name" required>
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Suggestions
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    @foreach (var item in ViewBag.SuggestedCategories)
+                                    {
+                                        <li><a class="dropdown-item category-suggestion" href="javascript:void(0)" data-value="@item.Text">@item.Text</a></li>
+                                    }
+                                </ul>
+                            </div>
                             <span asp-validation-for="Name" class="text-danger small"></span>
+                            <small class="text-muted">Recommended categories: Mouse, Keyboard, Mousepad, Printer</small>
                         </div>
 
                         <div class="form-floating mb-3">
@@ -51,10 +63,17 @@
         // Add smooth transitions to form elements
         document.querySelectorAll('.form-control, .form-select').forEach(input => {
             input.addEventListener('focus', () => {
-                input.closest('.form-floating').classList.add('focused');
+                input.closest('.form-floating')?.classList.add('focused');
             });
             input.addEventListener('blur', () => {
-                input.closest('.form-floating').classList.remove('focused');
+                input.closest('.form-floating')?.classList.remove('focused');
+            });
+        });
+
+        // Handle category suggestion selection
+        document.querySelectorAll('.category-suggestion').forEach(item => {
+            item.addEventListener('click', function() {
+                document.getElementById('categoryName').value = this.getAttribute('data-value');
             });
         });
     </script>

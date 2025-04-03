@@ -28,10 +28,10 @@
                 <div class="list-group list-group-flush">
                     @foreach (var item in Model.CartList)
                     {
-                        <div class="list-group-item px-3 px-md-4">
+                        <div class="list-group-item px-3 px-md-4" id="cart-item-@item.Id">
                             <div class="row align-items-center gy-3">
                                 <!-- Product Image -->
-                                <div class="col-4 col-md-3">
+                                <div class="col-4 col-md-2">
                                     <div class="ratio ratio-1x1">
                                         <img src="@item.Product.ImageUrl"
                                              class="img-fluid rounded-3 object-fit-cover w-100 h-100"
@@ -41,16 +41,41 @@
                                 </div>
 
                                 <!-- Product Details -->
-                                <div class="col-8 col-md-5">
+                                <div class="col-8 col-md-4">
                                     <h6 class="mb-1 text-truncate">@item.Product.Name</h6>
                                     <div class="d-flex align-items-center gap-2">
-                                        <span class="text-primary fw-bold">@item.Product.Price.ToString("c")</span>
-                                        <span class="badge bg-secondary-opacity">Qty: @item.Count</span>
+                                        <span class="text-primary fw-bold item-price" data-price="@item.price">@item.price.ToString("c")</span>
+                                    </div>
+                                </div>
+
+                                <!-- Quantity Controls -->
+                                <div class="col-6 col-md-3">
+                                    <div class="d-flex align-items-center">
+                                        <form asp-action="Minus" method="post" class="me-2 d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="cartId" value="@item.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary rounded-circle minus-btn" data-cart-id="@item.Id">
+                                                <i class="bi bi-dash"></i>
+                                            </button>
+                                        </form>
+                                        
+                                        <span class="badge bg-light text-dark border px-3 py-2 item-count" id="count-@item.Id">@item.Count</span>
+                                        
+                                        <form asp-action="Plus" method="post" class="ms-2 d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="cartId" value="@item.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary rounded-circle plus-btn" data-cart-id="@item.Id">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="mt-2 small text-success fw-bold item-total" id="total-@item.Id">
+                                        Total: @((item.price * item.Count).ToString("c"))
                                     </div>
                                 </div>
 
                                 <!-- Actions -->
-                                <div class="col-12 col-md-4 text-end">
+                                <div class="col-6 col-md-3 text-end">
                                     <a asp-action="Remove" asp-route-cartId="@item.Id"
                                        class="btn btn-outline-danger btn-sm rounded-circle"
                                        data-bs-toggle="tooltip" data-bs-title="Remove item">
@@ -58,6 +83,20 @@
                                     </a>
                                 </div>
                             </div>
+                        </div>
+                    }
+
+                    @if (!Model.CartList.Any())
+                    {
+                        <div class="list-group-item p-5 text-center">
+                            <div class="mb-3">
+                                <i class="bi bi-cart-x fs-1 text-muted"></i>
+                            </div>
+                            <h5>Your cart is empty</h5>
+                            <p class="text-muted mb-4">Add items to your cart to proceed with checkout.</p>
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-primary rounded-pill px-4">
+                                Start Shopping
+                            </a>
                         </div>
                     }
                 </div>
@@ -76,8 +115,8 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-6 text-end">
-                            <a asp-action="Checkout" class="btn btn-lg btn-primary w-100 rounded-pill py-3">
-                                Checkout Now - @Model.OrderHeader.OrderTotal.ToString("c")
+                            <a asp-action="Checkout" class="btn btn-lg btn-primary w-100 rounded-pill py-3 @(Model.CartList.Any() ? "" : "disabled")">
+                                Checkout Now - <span id="cart-total">@Model.OrderHeader.OrderTotal.ToString("c")</span>
                             </a>
                         </div>
                     </div>
@@ -86,4 +125,127 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Enable tooltips
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+            
+            // AJAX Plus button click
+            $('.plus-btn').on('click', function(e) {
+                e.preventDefault();
+                const cartId = $(this).data('cart-id');
+                const token = $('input[name="__RequestVerificationToken"]').first().val();
+                
+                $.ajax({
+                    url: '@Url.Action("PlusAjax")',
+                    type: 'POST',
+                    data: { 
+                        cartId: cartId,
+                        __RequestVerificationToken: token 
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Update the count and total
+                            $(`#count-${cartId}`).text(response.count);
+                            $(`#total-${cartId}`).text(`Total: ${formatCurrency(response.lineTotal)}`);
+                            $('#cart-total').text(formatCurrency(response.cartTotal));
+                            
+                            // Show success toast
+                            showToast('Success', response.message, 'success');
+                        } else {
+                            // Show error toast
+                            showToast('Error', response.error, 'danger');
+                        }
+                    },
+                    error: function() {
+                        showToast('Error', 'Failed to update quantity', 'danger');
+                    }
+                });
+            });
+            
+            // AJAX Minus button click
+            $('.minus-btn').on('click', function(e) {
+                e.preventDefault();
+                const cartId = $(this).data('cart-id');
+                const token = $('input[name="__RequestVerificationToken"]').first().val();
+                
+                $.ajax({
+                    url: '@Url.Action("MinusAjax")',
+                    type: 'POST',
+                    data: { 
+                        cartId: cartId,
+                        __RequestVerificationToken: token 
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            if (response.removed) {
+                                // Item was removed, remove the row
+                                $(`#cart-item-${cartId}`).fadeOut('fast', function() {
+                                    $(this).remove();
+                                    // If cart is now empty, refresh the page to show empty state
+                                    if ($('.list-group-item').length === 0) {
+                                        location.reload();
+                                    }
+                                });
+                            } else {
+                                // Just update the count and total
+                                $(`#count-${cartId}`).text(response.count);
+                                $(`#total-${cartId}`).text(`Total: ${formatCurrency(response.lineTotal)}`);
+                            }
+                            
+                            // Update cart total
+                            $('#cart-total').text(formatCurrency(response.cartTotal));
+                            
+                            // Show success toast
+                            showToast('Success', response.message, 'success');
+                        } else {
+                            // Show error toast
+                            showToast('Error', response.error, 'danger');
+                        }
+                    },
+                    error: function() {
+                        showToast('Error', 'Failed to update quantity', 'danger');
+                    }
+                });
+            });
+            
+            // Helper function to format currency
+            function formatCurrency(amount) {
+                return new Intl.NumberFormat('en-US', { 
+                    style: 'currency', 
+                    currency: 'EGP' 
+                }).format(amount);
+            }
+            
+            // Toast notification function
+            function showToast(title, message, type = 'info') {
+                // Check if toast container exists, if not create it
+                if ($('#toast-container').length === 0) {
+                    $('body').append('<div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>');
+                }
+                
+                // Create toast HTML
+                const toastHtml = `
+                    <div class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <strong>${title}:</strong> ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+                
+                // Append and show toast
+                const toastElement = $(toastHtml);
+                $('#toast-container').append(toastElement);
+                const toast = new bootstrap.Toast(toastElement[0], { delay: 3000 });
+                toast.show();
+            }
+        });
+    </script>
+}
 
