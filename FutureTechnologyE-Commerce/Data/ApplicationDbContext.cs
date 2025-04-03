@@ -43,10 +43,14 @@ namespace FutureTechnologyE_Commerce.Data
 				.IsUnique();
 
             modelBuilder.Entity<Category>().HasData(
-               new Category { CategoryID = 1, Name = "Electronics" },
+               new Category { CategoryID = 1, Name = "mouse" },
                new Category { CategoryID = 2, Name = "Laptops"},
-               new Category { CategoryID = 3, Name = "Smartphones"  }
-           );
+               new Category { CategoryID = 3, Name = "mousepad" },
+			   new Category { CategoryID = 4, Name = "Printer" },
+			   new Category { CategoryID = 5, Name = "Keypoard" }
+
+
+		   );
 
             modelBuilder.Entity<Brand>().HasData(
                 new Brand { BrandID = 1, Name = "Apple" },
