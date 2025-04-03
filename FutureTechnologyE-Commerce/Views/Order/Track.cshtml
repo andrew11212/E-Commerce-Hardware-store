@@ -1,0 +1,209 @@
+@model FutureTechnologyE_Commerce.Models.ViewModels.OrderTrackingViewModel
+@using FutureTechnologyE_Commerce.Utility
+
+@{
+    ViewData["Title"] = "Track Order";
+}
+
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="fw-bold">Track Order #@Model.OrderHeader.Id</h2>
+            <p class="text-muted">Placed on @Model.OrderHeader.OrderDate.ToString("MMMM d, yyyy")</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a asp-controller="Order" asp-action="Details" asp-route-id="@Model.OrderHeader.Id" class="btn btn-outline-primary me-2">
+                <i class="bi bi-info-circle me-1"></i>Order Details
+            </a>
+            <a asp-controller="Order" asp-action="Index" class="btn btn-primary">
+                <i class="bi bi-arrow-left me-1"></i>Orders
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Order Tracking Timeline -->
+            <div class="card shadow-sm border-0 rounded-3 mb-4">
+                <div class="card-body">
+                    <h4 class="mb-4">Order Status</h4>
+                    
+                    <div class="position-relative tracking-timeline">
+                        <!-- Vertical line -->
+                        <div class="position-absolute timeline-line"></div>
+                        
+                        @foreach (var statusEvent in Model.StatusHistory)
+                        {
+                            <div class="tracking-step mb-4 d-flex">
+                                <div class="tracking-step-icon @(statusEvent.Status == Model.OrderHeader.OrderStatus ? "current" : "")">
+                                    @{
+                                        string icon = "bi-circle";
+                                        
+                                        if (statusEvent.Status == "Order Placed")
+                                            icon = "bi-bag-check";
+                                        else if (statusEvent.Status == "Payment Confirmed")
+                                            icon = "bi-credit-card";
+                                        else if (statusEvent.Status == "Processing")
+                                            icon = "bi-box-seam";
+                                        else if (statusEvent.Status == "Shipped")
+                                            icon = "bi-truck";
+                                        else if (statusEvent.Status == "Cancelled")
+                                            icon = "bi-x-circle";
+                                    }
+                                    <i class="bi @icon"></i>
+                                </div>
+                                <div class="tracking-step-content ms-3">
+                                    <h5 class="mb-1">@statusEvent.Status</h5>
+                                    <p class="text-muted small mb-2">@statusEvent.Date.ToString("MMM d, yyyy h:mm tt")</p>
+                                    <p class="mb-0">@statusEvent.Description</p>
+                                </div>
+                            </div>
+                        }
+                        
+                        @if (Model.OrderHeader.OrderStatus != SD.Status_Cancelled && 
+                           Model.OrderHeader.OrderStatus != SD.Status_Shipped)
+                        {
+                            <div class="tracking-step mb-0 d-flex">
+                                <div class="tracking-step-icon future">
+                                    <i class="bi bi-truck"></i>
+                                </div>
+                                <div class="tracking-step-content ms-3 opacity-50">
+                                    <h5 class="mb-1">Shipped</h5>
+                                    <p class="text-muted small mb-2">Estimated</p>
+                                    <p class="mb-0">Your order will be shipped soon.</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    
+                    @if (Model.EstimatedDeliveryDate.HasValue && Model.OrderHeader.OrderStatus == SD.Status_Shipped)
+                    {
+                        <hr class="my-4" />
+                        <div class="alert alert-success bg-success-subtle border-0">
+                            <h5 class="mb-1"><i class="bi bi-calendar-check me-2"></i>Estimated Delivery Date</h5>
+                            <p class="mb-0">Your order should arrive by <strong>@Model.EstimatedDeliveryDate.Value.ToString("dddd, MMMM d, yyyy")</strong></p>
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            <!-- Order Items Summary -->
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body">
+                    <h4 class="mb-3">Order Items</h4>
+                    
+                    <div class="row">
+                        @foreach (var item in Model.OrderDetails)
+                        {
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="d-flex">
+                                    <div style="width: 60px; height: 60px;">
+                                        <img src="@item.Product.ImageUrl" class="img-fluid rounded" alt="@item.Product.Name" />
+                                    </div>
+                                    <div class="ms-3">
+                                        <h6 class="mb-1">@item.Product.Name</h6>
+                                        <p class="text-muted small mb-0">
+                                            Qty: @item.Count × EGP @item.Price.ToString("0.00")
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Order Info Card -->
+            <div class="card shadow-sm border-0 rounded-3 mb-4">
+                <div class="card-body">
+                    <h4 class="mb-3">Order Information</h4>
+                    
+                    <div class="mb-3">
+                        <h6 class="mb-1">Order Number</h6>
+                        <p class="mb-0">@Model.OrderHeader.Id</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6 class="mb-1">Order Date</h6>
+                        <p class="mb-0">@Model.OrderHeader.OrderDate.ToString("MMMM d, yyyy")</p>
+                    </div>
+                    
+                    <div class="mb-0">
+                        <h6 class="mb-1">Order Total</h6>
+                        <p class="mb-0">EGP @Model.OrderHeader.OrderTotal.ToString("0.00")</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Shipping Info Card -->
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body">
+                    <h4 class="mb-3">Shipping Information</h4>
+                    
+                    <h6 class="mb-1">@Model.OrderHeader.first_name @Model.OrderHeader.last_name</h6>
+                    <p class="mb-1">@Model.OrderHeader.street, Building @Model.OrderHeader.building</p>
+                    @if (!string.IsNullOrEmpty(Model.OrderHeader.floor))
+                    {
+                        <p class="mb-1">Floor: @Model.OrderHeader.floor</p>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.OrderHeader.apartment))
+                    {
+                        <p class="mb-1">Apartment: @Model.OrderHeader.apartment</p>
+                    }
+                    <p class="mb-1">@Model.OrderHeader.state, Egypt</p>
+                    <p class="mb-0">Phone: @Model.OrderHeader.phone_number</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .tracking-timeline {
+            padding-left: 30px;
+        }
+        
+        .timeline-line {
+            top: 0;
+            bottom: 0;
+            left: 15px;
+            width: 2px;
+            background-color: #e0e0e0;
+            z-index: 1;
+        }
+        
+        .tracking-step-icon {
+            position: relative;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            border: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            z-index: 2;
+            margin-left: -30px;
+        }
+        
+        .tracking-step-icon.current {
+            background-color: #4CAF50;
+            border-color: #4CAF50;
+            color: white;
+        }
+        
+        .tracking-step-icon.future {
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+            color: #adb5bd;
+        }
+        
+        .bg-success-subtle {
+            background-color: rgba(25, 135, 84, 0.1) !important;
+        }
+    </style>
+} 
