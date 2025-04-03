@@ -1,4 +1,6 @@
 ﻿@model FutureTechnologyE_Commerce.Models.Laptop
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
 
 @{
     ViewData["Title"] = Model.Name;
@@ -160,49 +162,92 @@
                         <span>Estimated delivery: 3-5 business days</span>
                     </div>
                 </div>
-                
+
                 <!-- Add to Cart Section -->
                 <div class="d-grid gap-2 mb-4">
-                    <div class="d-flex gap-3">
-                        <form asp-controller="Cart" asp-action="AddToCart" method="post" class="flex-grow-1">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="productId" value="@Model.ProductID" />
-                            <div class="input-group">
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <div class="d-flex gap-3">
+                            <div class="input-group" style="max-width: 200px;">
                                 <button class="btn btn-outline-secondary" type="button" id="btnMinus">
                                     <i class="bi bi-dash"></i>
                                 </button>
-                                <input type="number" name="count" class="form-control text-center" value="1" min="1" max="@Model.StockQuantity" id="quantity">
+                                <input type="number" name="quantity" class="form-control text-center" value="1" min="1" max="@Model.StockQuantity" id="quantity">
                                 <button class="btn btn-outline-secondary" type="button" id="btnPlus">
                                     <i class="bi bi-plus"></i>
                                 </button>
-                                <button type="submit" class="btn btn-primary btn-lg w-100 rounded-end" @(Model.StockQuantity == 0 ? "disabled" : "")>
+                            </div>
+
+                            <form asp-controller="Cart" asp-action="AddToCart" method="post" class="flex-grow-1">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="productId" value="@Model.ProductID" />
+                                <input type="hidden" name="count" value="1" id="hiddenQuantity" />
+                                <button type="submit" class="btn btn-primary btn-lg w-100 rounded-3" id="addToCartBtn" @(Model.StockQuantity == 0 ? "disabled" : "")>
                                     <i class="bi bi-cart-plus me-2"></i> Add to Cart
                                 </button>
+                            </form>
+                        </div>
+
+                        <!-- Cart Control Buttons - Only shown if product is in cart -->
+                        <div id="cartControlsContainer" class="d-none">
+                            <div class="d-flex gap-3 align-items-center">
+                                <div class="d-flex align-items-center flex-grow-1">
+                                    <form asp-controller="Cart" asp-action="MinusByProduct" method="post" class="me-2">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="productId" value="@Model.ProductID" />
+                                        <button type="button" class="btn btn-outline-primary rounded-circle" id="cartMinusBtn">
+                                            <i class="bi bi-dash"></i>
+                                        </button>
+                                    </form>
+
+                                    <span class="badge bg-light text-dark border px-3 py-2" id="cartCount">0</span>
+
+                                    <form asp-controller="Cart" asp-action="PlusByProduct" method="post" class="ms-2">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="productId" value="@Model.ProductID" />
+                                        <button type="button" class="btn btn-outline-primary rounded-circle" id="cartPlusBtn">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <a asp-controller="Cart" asp-action="Index" class="btn btn-success">
+                                    <i class="bi bi-cart me-2"></i> View Cart
+                                </a>
                             </div>
-                        </form>
-                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg">
-                            <i class="bi bi-arrow-left"></i>
+                        </div>
+                    }
+                    else
+                    {
+                        <a asp-controller="Cart" asp-action="RequestAddToCartAfterLogin"
+                           asp-route-productId="@Model.ProductID"
+                           class="btn btn-primary btn-lg rounded-3">
+                            <i class="bi bi-cart-plus me-2"></i> Add to Cart
                         </a>
-                    </div>
+                    }
                     <button class="btn btn-outline-primary rounded-3">
                         <i class="bi bi-heart me-2"></i> Add to Wishlist
                     </button>
                 </div>
 
+
                 <!-- Share Buttons -->
                 <div class="mt-4">
                     <p class="fw-semibold mb-2">Share this laptop:</p>
                     <div class="d-flex gap-2">
-                        <a href="#" class="btn btn-sm btn-outline-primary rounded-circle">
-                            <i class="bi bi-facebook"></i>
                         </a>
-                        <a href="#" class="btn btn-sm btn-outline-info rounded-circle">
-                            <i class="bi bi-twitter"></i>
+                        <a href="https://twitter.com/intent/tweet?url=@@encodedUrl&text=Check%20out%20@encodedName"
+                           class="btn btn-sm btn-outline-secondary rounded-circle"
+                           target="_blank">
+                            <i class="bi bi-twitter-x"></i>
                         </a>
-                        <a href="#" class="btn btn-sm btn-outline-success rounded-circle">
+                        <a href="https://wa.me/?text=Check%20out%20@@encodedName%20-%20@encodedUrl"
+                           class="btn btn-sm btn-outline-success rounded-circle"
+                           target="_blank">
                             <i class="bi bi-whatsapp"></i>
                         </a>
-                        <a href="#" class="btn btn-sm btn-outline-secondary rounded-circle">
+                        <a href="mailto:?subject=Check%20out%20@encodedName&body=Check%20out%20this%20product:%20@encodedName%20-%20@encodedUrl"
+                           class="btn btn-sm btn-outline-secondary rounded-circle">
                             <i class="bi bi-envelope"></i>
                         </a>
                     </div>
