@@ -1,0 +1,184 @@
+@model FutureTechnologyE_Commerce.Models.ViewModels.OrderDetailsViewModel
+@using FutureTechnologyE_Commerce.Utility
+
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="fw-bold">Order #@Model.OrderHeader.Id</h2>
+            <p class="text-muted">Placed on @Model.OrderHeader.OrderDate.ToString("MMMM d, yyyy")</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a asp-controller="Order" asp-action="Index" class="btn btn-outline-primary me-2">
+                <i class="bi bi-arrow-left me-1"></i>Orders
+            </a>
+            <a asp-controller="Order" asp-action="Track" asp-route-id="@Model.OrderHeader.Id" 
+               class="btn btn-primary">
+                <i class="bi bi-truck me-1"></i>Track
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Order Status -->
+            <div class="card shadow-sm border-0 rounded-3 mb-4">
+                <div class="card-body">
+                    <h4>Order Status</h4>
+                    @{
+                        string statusClass = "text-info";
+                        if (Model.OrderHeader.OrderStatus == SD.Status_Approved)
+                            statusClass = "text-warning";
+                        else if (Model.OrderHeader.OrderStatus == SD.Status_Processing)
+                            statusClass = "text-info";
+                        else if (Model.OrderHeader.OrderStatus == SD.Status_Shipped)
+                            statusClass = "text-success";
+                        else if (Model.OrderHeader.OrderStatus == SD.Status_Cancelled)
+                            statusClass = "text-danger";
+                    }
+                    <div class="d-flex align-items-center">
+                        <span class="@statusClass fs-5 me-2">
+                            <i class="bi bi-circle-fill"></i>
+                        </span>
+                        <h5 class="@statusClass mb-0">@Model.OrderHeader.OrderStatus</h5>
+                    </div>
+
+                    @if (Model.CanCancel)
+                    {
+                        <hr />
+                        <form asp-action="Cancel" method="post">
+                            <input type="hidden" name="id" value="@Model.OrderHeader.Id" />
+                            <button type="submit" class="btn btn-outline-danger" 
+                                    onclick="return confirm('Are you sure you want to cancel this order?')">
+                                <i class="bi bi-x-circle me-1"></i>Cancel Order
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
+
+            <!-- Items Ordered -->
+            <div class="card shadow-sm border-0 rounded-3 mb-4">
+                <div class="card-body">
+                    <h4 class="mb-4">Items Ordered</h4>
+                    
+                    @foreach (var item in Model.OrderDetails)
+                    {
+                        <div class="row mb-3 align-items-center">
+                            <div class="col-md-2 col-sm-3">
+                                <img src="@item.Product.ImageUrl" class="img-fluid rounded" alt="@item.Product.Name" />
+                            </div>
+                            <div class="col-md-6 col-sm-5">
+                                <h6 class="mb-1">@item.Product.Name</h6>
+                                <p class="text-muted small mb-0">
+                                    @if (!string.IsNullOrEmpty(item.Product.Brand))
+                                    {
+                                        <span>Brand: @item.Product.Brand</span>
+                                    }
+                                </p>
+                            </div>
+                            <div class="col-md-2 col-sm-2 text-center">
+                                <span class="badge bg-light text-dark">Qty: @item.Count</span>
+                            </div>
+                            <div class="col-md-2 col-sm-2 text-end">
+                                <span class="fw-bold">EGP @item.Price.ToString("0.00")</span>
+                            </div>
+                        </div>
+                        
+                        @if (Model.OrderDetails.Last() != item)
+                        {
+                            <hr class="my-3" />
+                        }
+                    }
+                </div>
+            </div>
+
+            @if (Model.CanReturn)
+            {
+                <!-- Return Request Form -->
+                <div class="card shadow-sm border-0 rounded-3 mb-4">
+                    <div class="card-body">
+                        <h4 class="mb-3">Request Return/Refund</h4>
+                        <form asp-action="RequestReturn" method="post">
+                            <input type="hidden" name="OrderId" value="@Model.OrderHeader.Id" />
+                            <div class="mb-3">
+                                <label for="returnReason" class="form-label">Reason for return</label>
+                                <textarea name="Reason" id="returnReason" class="form-control" rows="3" 
+                                          required minlength="10" maxlength="500"></textarea>
+                                <div class="form-text text-muted">Please provide details about why you want to return this order</div>
+                            </div>
+                            <button type="submit" class="btn btn-warning"
+                                    onclick="return confirm('Are you sure you want to request a return for this order?')">
+                                Submit Return Request
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Order Summary -->
+            <div class="card shadow-sm border-0 rounded-3 mb-4">
+                <div class="card-body">
+                    <h4 class="mb-3">Order Summary</h4>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Items Total:</span>
+                        <span>EGP @Model.OrderHeader.OrderTotal.ToString("0.00")</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping:</span>
+                        <span>Free</span>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>Order Total:</span>
+                        <span>EGP @Model.OrderHeader.OrderTotal.ToString("0.00")</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping Information -->
+            <div class="card shadow-sm border-0 rounded-3 mb-4">
+                <div class="card-body">
+                    <h4 class="mb-3">Shipping Information</h4>
+                    <h6 class="mb-1">@Model.OrderHeader.first_name @Model.OrderHeader.last_name</h6>
+                    <p class="mb-1">@Model.OrderHeader.street, Building @Model.OrderHeader.building</p>
+                    @if (!string.IsNullOrEmpty(Model.OrderHeader.floor))
+                    {
+                        <p class="mb-1">Floor: @Model.OrderHeader.floor</p>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.OrderHeader.apartment))
+                    {
+                        <p class="mb-1">Apartment: @Model.OrderHeader.apartment</p>
+                    }
+                    <p class="mb-1">@Model.OrderHeader.state, Egypt</p>
+                    <p class="mb-0">Phone: @Model.OrderHeader.phone_number</p>
+                </div>
+            </div>
+
+            <!-- Payment Information -->
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body">
+                    <h4 class="mb-3">Payment Information</h4>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Payment Status:</span>
+                        <span class="@(Model.OrderHeader.PaymentStatus == SD.Payment_Status_Approved ? "text-success" : "text-danger")">
+                            @Model.OrderHeader.PaymentStatus
+                        </span>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.OrderHeader.TransactionId))
+                    {
+                        <div class="d-flex justify-content-between mb-0">
+                            <span>Transaction ID:</span>
+                            <span class="text-muted">@Model.OrderHeader.TransactionId</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
