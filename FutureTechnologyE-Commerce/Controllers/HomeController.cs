@@ -41,6 +41,9 @@ namespace FutureTechnologyE_Commerce.Controllers
 					includeProperties: "User,Product"
 				);
 
+			// Get active promotions
+			var activePromotions = _unitOfWork.PromotionRepository.GetActivePromotions();
+
 			var viewModel = new HomeIndexViewModel
 			{
 				Products = (await _unitOfWork.ProductRepository.GetAllAsync(c => c.IsBestseller, includeProperties: "Category,Brand")), // Use the paginated list
@@ -49,7 +52,8 @@ namespace FutureTechnologyE_Commerce.Controllers
 				Laptops = (await _unitOfWork.LaptopRepository.GetAllAsync(null, includeProperties: "Category,Brand"))
 					.Take(5)
 					.ToList(),
-				TopReviews = topReviews.OrderByDescending(r => r.Rating).ThenByDescending(r => r.ReviewDate).Take(3).ToList()
+				TopReviews = topReviews.OrderByDescending(r => r.Rating).ThenByDescending(r => r.ReviewDate).Take(3).ToList(),
+				Promotions = activePromotions
 			};
 
 			return View(viewModel);
