@@ -71,10 +71,10 @@ namespace FutureTechnologyE_Commerce.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                // Get the order details
+                // Get the order details with Product and Brand information
                 var orderDetails = await _unitOfWork.OrderDetail.GetAllAsync(
                     od => od.OrderId == id, 
-                    includeProperties: "Product");
+                    includeProperties: "Product,Product.Brand");
 
                 var orderDetailsVM = new OrderDetailsViewModel
                 {
@@ -110,10 +110,10 @@ namespace FutureTechnologyE_Commerce.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                // Get the order details
+                // Get the order details with Product and Brand information
                 var orderDetails = await _unitOfWork.OrderDetail.GetAllAsync(
                     od => od.OrderId == id, 
-                    includeProperties: "Product");
+                    includeProperties: "Product,Product.Brand");
 
                 var trackingVM = new OrderTrackingViewModel
                 {
@@ -163,7 +163,7 @@ namespace FutureTechnologyE_Commerce.Controllers
                 // Restore product stock
                 var orderDetails = await _unitOfWork.OrderDetail.GetAllAsync(
                     od => od.OrderId == id, 
-                    includeProperties: "Product");
+                    includeProperties: "Product,Product.Brand");
 
                 foreach (var item in orderDetails)
                 {

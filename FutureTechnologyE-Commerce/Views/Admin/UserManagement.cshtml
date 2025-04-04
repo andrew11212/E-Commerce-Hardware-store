@@ -1,0 +1,179 @@
+@model FutureTechnologyE_Commerce.Models.ViewModels.UserManagementViewModel
+@{
+    ViewData["Title"] = "User Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    var pageCount = Math.Ceiling((double)Model.TotalUsers / Model.PageSize);
+}
+
+<div class="container p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary">
+            <i class="bi bi-people-fill me-2"></i>User Management
+        </h1>
+    </div>
+
+    <!-- Filter and Search -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label">Search</label>
+                    <div class="input-group">
+                        <input type="text" name="searchString" class="form-control" placeholder="Search by name, email..." value="@Model.SearchString">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">Role</label>
+                    <select name="roleFilter" class="form-select" onchange="this.form.submit()">
+                        @foreach (var role in Model.RolesList)
+                        {
+                            <option value="@role.Value" selected="@(role.Value == Model.RoleFilter)">@role.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <a href="@Url.Action("UserManagement")" class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-x-circle me-1"></i>Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Orders</th>
+                            <th>Total Spent</th>
+                            <th>Last Order</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Users != null && Model.Users.Any())
+                        {
+                            @foreach (var user in Model.Users)
+                            {
+                                <tr>
+                                    <td>@user.FirstName @user.LastName</td>
+                                    <td>
+                                        @user.Email
+                                        @if (user.EmailConfirmed)
+                                        {
+                                            <i class="bi bi-check-circle-fill text-success ms-1" title="Email verified"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-x-circle-fill text-danger ms-1" title="Email not verified"></i>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">@user.Role</span>
+                                    </td>
+                                    <td>@user.OrderCount</td>
+                                    <td>$@user.TotalSpent.ToString("N2")</td>
+                                    <td>
+                                        @(user.LastOrderDate.HasValue ? user.LastOrderDate.Value.ToString("MM/dd/yyyy") : "Never")
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a asp-action="EditUser" asp-route-id="@user.Id" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                    onclick="confirmDeleteUser('@user.Id', '@user.FirstName @user.LastName')"
+                                                    @(user.OrderCount > 0 ? "disabled" : "")
+                                                    title="@(user.OrderCount > 0 ? "Cannot delete users with orders" : "Delete user")">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center">No users found</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (pageCount > 1)
+            {
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("UserManagement", new { searchString = Model.SearchString, roleFilter = Model.RoleFilter, pageNumber = Model.PageNumber - 1 })">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        @for (int i = 1; i <= pageCount; i++)
+                        {
+                            <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("UserManagement", new { searchString = Model.SearchString, roleFilter = Model.RoleFilter, pageNumber = i })">
+                                    @i
+                                </a>
+                            </li>
+                        }
+
+                        <li class="page-item @(Model.PageNumber == pageCount ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("UserManagement", new { searchString = Model.SearchString, roleFilter = Model.RoleFilter, pageNumber = Model.PageNumber + 1 })">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Delete User Modal -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete user <span id="userName" class="fw-bold"></span>?</p>
+                <p class="text-danger">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="@Url.Action("DeleteUser")" id="deleteUserForm">
+                    <input type="hidden" name="id" id="deleteUserId" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDeleteUser(userId, userName) {
+            document.getElementById('deleteUserId').value = userId;
+            document.getElementById('userName').innerText = userName;
+            
+            const modal = new bootstrap.Modal(document.getElementById('deleteUserModal'));
+            modal.show();
+        }
+    </script>
+} 

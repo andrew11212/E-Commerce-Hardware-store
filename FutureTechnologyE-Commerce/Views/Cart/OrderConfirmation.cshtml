@@ -1,5 +1,5 @@
 ﻿<!-- OrderConfirmation.cshtml -->
-@model FutureTechnologyE_Commerce.Models.ViewModels.OrderConfirmationViewModel
+@model FutureTechnologyE_Commerce.Models.ViewModels.OrderDetailsViewModel
 
 <div class="container my-5 py-5">
     <div class="row justify-content-center">
@@ -10,8 +10,8 @@
                      style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);">
                     <i class="bi bi-check-circle-fill display-1 mb-3"></i>
                     <h3 class="fw-bold mb-0">Order Confirmed!</h3>
-                    <p class="lead">Your order #@Model.OrderId has been successfully placed</p>
-                    <small class="text-light">Placed on @Model.OrderDate.ToString("MMMM dd, yyyy")</small>
+                    <p class="lead">Your order #@Model.OrderHeader.Id has been successfully placed</p>
+                    <small class="text-light">Placed on @Model.OrderHeader.OrderDate.ToString("MMMM dd, yyyy")</small>
                 </div>
 
                 <!-- Order Details -->
@@ -24,21 +24,27 @@
                                     <h5 class="m-0 text-primary">Order Summary</h5>
                                 </div>
                                 <div class="list-group list-group-flush">
-                                    @foreach (var item in Model.OrderItems)
+                                    @foreach (var item in Model.OrderDetails)
                                     {
                                         <div class="list-group-item px-0">
                                             <div class="row align-items-center">
                                                 <div class="col-3">
-                                                    <img src="@item.ImageUrl"
+                                                    <img src="@(item.Product.ImageUrl ?? "/images/placeholder.png")"
                                                          class="img-fluid rounded-3"
                                                          style="aspect-ratio: 1/1; object-fit: cover;">
                                                 </div>
                                                 <div class="col-6">
-                                                    <h6 class="mb-1">@item.ProductName</h6>
-                                                    <small class="text-muted">Qty: @item.Quantity</small>
+                                                    <h6 class="mb-1">@item.Product.Name</h6>
+                                                    <small class="text-muted">Qty: @item.Count</small>
+                                                    @if (item.Product.Brand != null && !string.IsNullOrEmpty(item.Product.Brand.Name))
+                                                    {
+                                                        <p class="text-muted small mb-0">
+                                                            <span>Brand: @item.Product.Brand.Name</span>
+                                                        </p>
+                                                    }
                                                 </div>
                                                 <div class="col-3 text-end">
-                                                    <span class="fw-semibold">@item.Total.ToString("c")</span>
+                                                    <span class="fw-semibold">EGP @item.Price.ToString("0.00")</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -47,8 +53,43 @@
                                 <div class="card-footer bg-transparent">
                                     <div class="d-flex justify-content-between fw-bold">
                                         <span>Total</span>
-                                        <span>@Model.OrderTotal.ToString("c")</span>
+                                        <span>EGP @Model.OrderHeader.OrderTotal.ToString("0.00")</span>
                                     </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Payment Information -->
+                            <div class="card border-0 shadow-sm rounded-4 mt-4">
+                                <div class="card-header bg-light">
+                                    <h5 class="m-0 text-primary">Payment Information</h5>
+                                </div>
+                                <div class="card-body">
+                                    @if (Model.OrderHeader.PaymentMethod == FutureTechnologyE_Commerce.Utility.SD.Payment_Method_COD)
+                                    {
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="bi bi-cash-coin text-success fs-4 me-3"></i>
+                                            <div>
+                                                <h6 class="mb-0">Cash on Delivery</h6>
+                                                <small class="text-muted">Pay when your order arrives</small>
+                                            </div>
+                                        </div>
+                                        <div class="alert alert-info mt-3 mb-0">
+                                            <i class="bi bi-info-circle me-2"></i>
+                                            Please have the exact amount ready when your order arrives.
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="bi bi-credit-card text-primary fs-4 me-3"></i>
+                                            <div>
+                                                <h6 class="mb-0">Online Payment</h6>
+                                                <small class="text-muted">Payment Status: <span class="@(Model.OrderHeader.PaymentStatus == FutureTechnologyE_Commerce.Utility.SD.Payment_Status_Approved ? "text-success" : "text-warning")">
+                                                    @Model.OrderHeader.PaymentStatus
+                                                </span></small>
+                                            </div>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -63,17 +104,36 @@
                                     <p class="mb-0">
                                         <i class="bi bi-truck me-2"></i>
                                         Estimated Delivery: <br>
-                                        <strong>@Model.EstimatedDeliveryDate.ToString("MMMM dd, yyyy")</strong>
+                                        <strong>@Model.OrderHeader.OrderDate.AddDays(5).ToString("MMMM dd, yyyy")</strong>
                                     </p>
                                     <hr>
-                                    <p class="mb-0">
+                                    <p class="mb-2">
                                         <i class="bi bi-geo-alt me-2"></i>
-                                        Shipping to: <br>
-                                        @Model.ShippingAddress.FullName<br>
-                                        @Model.ShippingAddress.Street<br>
-                                        @Model.ShippingAddress.City, @Model.ShippingAddress.State<br>
-                                        @Model.ShippingAddress.PostalCode
+                                        Shipping to:
                                     </p>
+                                    <address class="mb-0">
+                                        <strong>@($"{Model.OrderHeader.first_name} {Model.OrderHeader.last_name}")</strong><br>
+                                        @Model.OrderHeader.street<br>
+                                        @(Model.OrderHeader.building != "" ? "Building " + Model.OrderHeader.building + "<br>" : "")
+                                        @(Model.OrderHeader.floor != "" ? "Floor " + Model.OrderHeader.floor + "<br>" : "")
+                                        @Model.OrderHeader.state, Egypt
+                                    </address>
+                                </div>
+                            </div>
+                            
+                            <!-- Order Status -->
+                            <div class="card border-0 shadow-sm rounded-4 mt-4">
+                                <div class="card-header bg-light">
+                                    <h5 class="m-0 text-primary">Order Status</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-clipboard-check fs-4 me-3 text-success"></i>
+                                        <div>
+                                            <h6 class="mb-0">@Model.OrderHeader.OrderStatus</h6>
+                                            <small class="text-muted">Last updated: @Model.OrderHeader.OrderDate.ToString("MMMM dd, yyyy")</small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -90,7 +150,7 @@
                             </a>
                         </div>
                         <div class="col-12 col-md-6">
-                            <a asp-controller="Order" asp-action="Track" asp-route-id="@Model.OrderId"
+                            <a asp-controller="Order" asp-action="Track" asp-route-id="@Model.OrderHeader.Id"
                                class="btn btn-primary w-100 rounded-pill"
                                style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);">
                                 Track Order <i class="bi bi-arrow-right ms-2"></i>

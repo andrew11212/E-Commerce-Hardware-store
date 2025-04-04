@@ -1,0 +1,179 @@
+@model FutureTechnologyE_Commerce.Models.ViewModels.OrderDetailsViewModel
+@using FutureTechnologyE_Commerce.Utility
+@{
+    ViewData["Title"] = "Order Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container p-4">
+    <div class="row mb-4">
+        <div class="col">
+            <a asp-action="OrderManagement" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-1"></i>Back to Orders
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="bi bi-cart-check me-2"></i>Order #@Model.OrderHeader.Id
+                    </h4>
+                    <div>
+                        <span class="badge bg-light text-dark me-2">@Model.OrderHeader.OrderDate.ToString("MM/dd/yyyy HH:mm")</span>
+                        @{
+                            var statusClass = Model.OrderHeader.OrderStatus switch
+                            {
+                                SD.Status_Pending => "bg-warning",
+                                SD.Status_Approved => "bg-info",
+                                SD.Status_Processing => "bg-info",
+                                SD.Status_Shipped => "bg-primary",
+                                SD.Status_Cancelled => "bg-danger",
+                                _ => "bg-secondary"
+                            };
+                        }
+                        <span class="badge @statusClass">@Model.OrderHeader.OrderStatus</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Customer Information</h5>
+                            <div class="border rounded p-3 mb-3">
+                                <p class="mb-1"><strong>Name:</strong> @Model.OrderHeader.first_name @Model.OrderHeader.last_name</p>
+                                <p class="mb-1"><strong>Email:</strong> @Model.OrderHeader.ApplicationUser?.Email</p>
+                                <p class="mb-1"><strong>Phone:</strong> @Model.OrderHeader.phone_number</p>
+                                <p class="mb-0"><strong>Payment Status:</strong> 
+                                    <span class="badge @(Model.OrderHeader.PaymentStatus == SD.Payment_Status_Approved ? "bg-success" : "bg-warning")">
+                                        @Model.OrderHeader.PaymentStatus
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Shipping Information</h5>
+                            <div class="border rounded p-3">
+                                <p class="mb-1"><strong>Address:</strong> @Model.OrderHeader.street</p>
+                                @if (!string.IsNullOrEmpty(Model.OrderHeader.building))
+                                {
+                                    <p class="mb-1"><strong>Building:</strong> @Model.OrderHeader.building</p>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.OrderHeader.apartment))
+                                {
+                                    <p class="mb-1"><strong>Apartment:</strong> @Model.OrderHeader.apartment</p>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.OrderHeader.floor))
+                                {
+                                    <p class="mb-1"><strong>Floor:</strong> @Model.OrderHeader.floor</p>
+                                }
+                                <p class="mb-1"><strong>State:</strong> @Model.OrderHeader.state</p>
+                                <p class="mb-0"><strong>Country:</strong> @Model.OrderHeader.country</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h5>Order Items</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.OrderDetails)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                @if (!string.IsNullOrEmpty(item.Product?.ImageUrl))
+                                                {
+                                                    <img src="@item.Product.ImageUrl" class="me-2" style="width:40px; height:40px; object-fit:cover;">
+                                                }
+                                                <div>
+                                                    <p class="mb-0 fw-bold">@item.Product?.Name</p>
+                                                    @if (item.Product?.Brand != null && !string.IsNullOrEmpty(item.Product.Brand.Name))
+                                                    {
+                                                        <small class="text-muted">@item.Product.Brand.Name</small>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>$@item.Price.ToString("N2")</td>
+                                        <td>@item.Count</td>
+                                        <td class="text-end">$@((item.Price * item.Count).ToString("N2"))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end fw-bold">Total:</td>
+                                    <td class="text-end fw-bold fs-5">$@Model.OrderHeader.OrderTotal.ToString("N2")</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Actions Card -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Order Actions</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Order Status Form -->
+                    <form method="post" asp-action="UpdateOrderStatus" class="row g-3 mb-3">
+                        <input type="hidden" name="orderId" value="@Model.OrderHeader.Id" />
+                        <div class="col-md-6">
+                            <label class="form-label">Update Order Status</label>
+                            <select name="newStatus" class="form-select">
+                                <option value="@SD.Status_Pending" selected="@(Model.OrderHeader.OrderStatus == SD.Status_Pending)">Pending</option>
+                                <option value="@SD.Status_Approved" selected="@(Model.OrderHeader.OrderStatus == SD.Status_Approved)">Approved</option>
+                                <option value="@SD.Status_Processing" selected="@(Model.OrderHeader.OrderStatus == SD.Status_Processing)">Processing</option>
+                                <option value="@SD.Status_Shipped" selected="@(Model.OrderHeader.OrderStatus == SD.Status_Shipped)">Shipped</option>
+                                <option value="@SD.Status_Cancelled" selected="@(Model.OrderHeader.OrderStatus == SD.Status_Cancelled)">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i>Update Status
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr>
+
+                    <!-- Shipping Information (if status is shipped) -->
+                    @if (Model.OrderHeader.OrderStatus == SD.Status_Shipped && Model.OrderHeader.ShippingDate != default(DateTime))
+                    {
+                        <div class="mb-3">
+                            <h6>Shipping Information</h6>
+                            <p><strong>Shipped on:</strong> @Model.OrderHeader.ShippingDate.ToString("MM/dd/yyyy HH:mm")</p>
+                        </div>
+                    }
+
+                    <!-- Cancellation Information (if cancelled) -->
+                    @if (Model.OrderHeader.OrderStatus == SD.Status_Cancelled)
+                    {
+                        <div class="alert alert-danger mb-0">
+                            <h6 class="alert-heading">Order Cancelled</h6>
+                            <p class="mb-0">This order has been cancelled and inventory has been restored.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
