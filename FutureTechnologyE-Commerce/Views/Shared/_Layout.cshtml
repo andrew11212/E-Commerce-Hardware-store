@@ -1,6 +1,11 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 
+@using Microsoft.AspNetCore.Identity
+@using FutureTechnologyE_Commerce.Models
+@using FutureTechnologyE_Commerce.Utility
+@inject SignInManager<ApplicationUser> SignInManager
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -489,6 +494,57 @@
                             <i class="bi bi-box me-1"></i>My Orders
                         </a>
                     </li>
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle fw-semibold d-flex align-items-center" href="#" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-2"></i>
+                            User Management
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark py-2">
+                            <li class="px-3 py-2 text-light small fw-bold text-uppercase">My Account</li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-area="Identity" 
+                                    asp-page="/Account/Manage/Index">
+                                    <i class="bi bi-person-gear me-2"></i>
+                                    <span>Profile</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-area="Identity" 
+                                    asp-page="/Account/Manage/Email">
+                                    <i class="bi bi-envelope me-2"></i>
+                                    <span>Email</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-area="Identity" 
+                                    asp-page="/Account/Manage/ChangePassword">
+                                    <i class="bi bi-key me-2"></i>
+                                    <span>Password</span>
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider my-2">
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-controller="Order" 
+                                    asp-action="Index">
+                                    <i class="bi bi-box2 me-2"></i>
+                                    <span>My Orders</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-controller="Cart" 
+                                    asp-action="Index">
+                                    <i class="bi bi-cart me-2"></i>
+                                    <span>My Cart</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    }
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle fw-semibold d-flex align-items-center" href="#" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
@@ -565,9 +621,43 @@
                     </li>
                 </ul>
 
-
-
                 <div class="d-flex align-items-center ms-3">
+                    @if (User.IsInRole(SD.Role_Admin))
+                    {
+                        <li class="nav-item dropdown ms-3 me-3 list-unstyled">
+                            <a class="nav-link dropdown-toggle fw-semibold d-flex align-items-center" href="#" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                <span>Admin Panel</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark py-2">
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Admin" asp-action="Dashboard">
+                                        <i class="bi bi-graph-up me-2"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Admin" asp-action="UserManagement">
+                                        <i class="bi bi-people me-2"></i>
+                                        <span>User Management</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Admin" asp-action="OrderManagement">
+                                        <i class="bi bi-list-check me-2"></i>
+                                        <span>Order Management</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Admin" asp-action="SalesAnalytics">
+                                        <i class="bi bi-bar-chart me-2"></i>
+                                        <span>Sales Analytics</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
                     <partial name="_LoginPartial" />
                 </div>
             </div>

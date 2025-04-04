@@ -69,6 +69,25 @@
                             </div>
                         </div>
 
+                        <!-- Payment Method Selection -->
+                        <div class="mb-4">
+                            <h5 class="mb-3 fw-bold text-capitalize">Payment Method</h5>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="SelectedPaymentMethod" id="paymentMethodOnline" value="OnlinePayment" checked>
+                                <label class="form-check-label d-flex align-items-center" for="paymentMethodOnline">
+                                    <i class="bi bi-credit-card-2-front me-2 fs-5"></i>
+                                    <span>Credit/Debit Card (Online Payment)</span>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="SelectedPaymentMethod" id="paymentMethodCOD" value="CashOnDelivery">
+                                <label class="form-check-label d-flex align-items-center" for="paymentMethodCOD">
+                                    <i class="bi bi-cash-coin me-2 fs-5"></i>
+                                    <span>Cash on Delivery (COD)</span>
+                                </label>
+                            </div>
+                        </div>
+
                         <!-- Order Summary -->
                         <div class="card rounded-3 border-0 shadow-sm mb-4">
                             <div class="card-body p-4">
@@ -91,8 +110,8 @@
 
                         <!-- Submit Button -->
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-lg btn-primary rounded-pill py-3">
-                                <i class="bi bi-lock-fill me-2"></i> Place Order Securely
+                            <button type="submit" id="submitOrderBtn" class="btn btn-lg btn-primary rounded-pill py-3">
+                                <i class="bi bi-lock-fill me-2"></i> Place Order with Card Payment
                             </button>
                         </div>
                     </form>
@@ -195,6 +214,26 @@
                 }
             });
         });
+        
+        // Handle payment method selection
+        const paymentMethodOnline = document.getElementById('paymentMethodOnline');
+        const paymentMethodCOD = document.getElementById('paymentMethodCOD');
+        const submitOrderBtn = document.getElementById('submitOrderBtn');
+        
+        function updateButtonText() {
+            if (paymentMethodOnline.checked) {
+                submitOrderBtn.innerHTML = '<i class="bi bi-lock-fill me-2"></i> Place Order with Card Payment';
+            } else if (paymentMethodCOD.checked) {
+                submitOrderBtn.innerHTML = '<i class="bi bi-cash-coin me-2"></i> Place Order with Cash on Delivery';
+            }
+        }
+        
+        // Initial setup
+        updateButtonText();
+        
+        // Add event listeners to radio buttons
+        paymentMethodOnline.addEventListener('change', updateButtonText);
+        paymentMethodCOD.addEventListener('change', updateButtonText);
     });
 </script>
 

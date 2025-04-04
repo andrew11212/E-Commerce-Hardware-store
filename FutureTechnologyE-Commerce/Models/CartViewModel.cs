@@ -7,6 +7,7 @@
 
 		public OrderHeader OrderHeader { get; set; } = default!;
 		public OrderDetail OrderDetail { get; set; } = default!;
-
+		
+		public string SelectedPaymentMethod { get; set; } = string.Empty;
 	}
 }
