@@ -16,6 +16,8 @@ using Microsoft.Extensions.Options;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore;
+using FutureTechnologyE_Commerce.Models.ViewModels;
 
 namespace FutureTechnologyE_Commerce.Controllers
 {
@@ -429,12 +431,14 @@ namespace FutureTechnologyE_Commerce.Controllers
 				var userId = GetValidatedUserId();
 				if (userId == null) return Json(new { success = false, error = "Not authorized" });
 
-				var cart = await _unitOfWork.CartRepositery.GetAsync(c => c.Id == cartId && c.ApplicationUserId == userId, "Product");
+				// Get the cart item without including the product
+				var cart = await _unitOfWork.CartRepositery.GetAsync(c => c.Id == cartId && c.ApplicationUserId == userId);
 				if (cart == null)
 				{
 					return Json(new { success = false, error = "Cart item not found" });
 				}
 
+				// Get the product separately
 				var product = await _unitOfWork.ProductRepository.GetAsync(p => p.ProductID == cart.ProductId);
 				if (product == null)
 				{
@@ -453,7 +457,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 				await _unitOfWork.SaveAsync();
 
 				// Return updated count and total price
-				double price = Math.Round((double)cart.Product.Price, 2);
+				double price = Math.Round((double)product.Price, 2);
 				double lineTotal = Math.Round(price * cart.Count, 2);
 				
 				// Get updated cart total
@@ -484,13 +488,26 @@ namespace FutureTechnologyE_Commerce.Controllers
 				var userId = GetValidatedUserId();
 				if (userId == null) return Json(new { success = false, error = "Not authorized" });
 
-				var cart = await _unitOfWork.CartRepositery.GetAsync(c => c.Id == cartId && c.ApplicationUserId == userId, "Product");
+				// Get the cart item without including the product
+				var cart = await _unitOfWork.CartRepositery.GetAsync(c => c.Id == cartId && c.ApplicationUserId == userId);
 				if (cart == null)
 				{
 					return Json(new { success = false, error = "Cart item not found" });
 				}
 
+				double price = 0;
 				bool removed = false;
+				
+				// If count is greater than 1, we'll need the product price
+				if (cart.Count > 1)
+				{
+					var product = await _unitOfWork.ProductRepository.GetAsync(p => p.ProductID == cart.ProductId);
+					if (product != null)
+					{
+						price = Math.Round((double)product.Price, 2);
+					}
+				}
+
 				// If count is 1, remove the item
 				if (cart.Count <= 1)
 				{
@@ -522,7 +539,6 @@ namespace FutureTechnologyE_Commerce.Controllers
 				else
 				{
 					// Return updated count and total price
-					double price = Math.Round((double)cart.Product.Price, 2);
 					double lineTotal = Math.Round(price * cart.Count, 2);
 					
 					return Json(new { 
@@ -551,14 +567,15 @@ namespace FutureTechnologyE_Commerce.Controllers
 				var userId = GetValidatedUserId();
 				if (userId == null) return Json(new { success = false, error = "Not authorized" });
 
-				// Find existing cart item for this product
-				var cart = await _unitOfWork.CartRepositery.GetAsync(c => c.ApplicationUserId == userId && c.ProductId == productId);
+				// Get the product first
 				var product = await _unitOfWork.ProductRepository.GetAsync(p => p.ProductID == productId);
-				
 				if (product == null)
 				{
 					return Json(new { success = false, error = "Product not found" });
 				}
+				
+				// Find existing cart item for this product
+				var cart = await _unitOfWork.CartRepositery.GetAsync(c => c.ApplicationUserId == userId && c.ProductId == productId);
 
 				bool isNew = false;
 				if (cart == null)
@@ -573,8 +590,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 					{
 						ApplicationUserId = userId,
 						ProductId = productId,
-						Count = 1,
-						Product = product // Set the product for later use
+						Count = 1
 					};
 					await _unitOfWork.CartRepositery.AddAsync(cart);
 					isNew = true;
@@ -589,8 +605,6 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 					// Increment count
 					cart.Count++;
-					// Set product if not already set
-					cart.Product = cart.Product ?? product;
 					await _unitOfWork.CartRepositery.UpdateAsync(cart);
 				}
 
@@ -631,8 +645,8 @@ namespace FutureTechnologyE_Commerce.Controllers
 				var userId = GetValidatedUserId();
 				if (userId == null) return Json(new { success = false, error = "Not authorized" });
 
-				// Find existing cart item for this product
-				var cart = await _unitOfWork.CartRepositery.GetAsync(c => c.ApplicationUserId == userId && c.ProductId == productId, "Product");
+				// Find existing cart item for this product - without including the Product
+				var cart = await _unitOfWork.CartRepositery.GetAsync(c => c.ApplicationUserId == userId && c.ProductId == productId);
 				
 				if (cart == null)
 				{
@@ -641,6 +655,18 @@ namespace FutureTechnologyE_Commerce.Controllers
 				}
 
 				bool removed = false;
+				double price = 0;
+				
+				// Get the product price if we need it
+				if (cart.Count > 1)
+				{
+					var product = await _unitOfWork.ProductRepository.GetAsync(p => p.ProductID == productId);
+					if (product != null)
+					{
+						price = Math.Round((double)product.Price, 2);
+					}
+				}
+				
 				// If count is 1, remove the item
 				if (cart.Count <= 1)
 				{
@@ -674,7 +700,6 @@ namespace FutureTechnologyE_Commerce.Controllers
 				else
 				{
 					// Return updated count and total price
-					double price = Math.Round((double)cart.Product.Price, 2);
 					double lineTotal = Math.Round(price * cart.Count, 2);
 					
 					return Json(new { 
@@ -780,6 +805,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 				var userId = GetValidatedUserId();
 				if (userId == null) return Unauthorized();
 
+				// Get cart items with product info for display and validation
 				var cartItems = (await _unitOfWork.CartRepositery.GetAllAsync(c => c.ApplicationUserId == userId, "Product")).ToList();
 
 				if (!cartItems.Any())
@@ -796,22 +822,34 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 				using (IDbContextTransaction transaction = _unitOfWork.BeginTransaction())
 				{
+					// Check stock and update product quantities
 					foreach (var cart in cartItems)
 					{
-						var product = await _unitOfWork.ProductRepository.GetAsync(p => p.ProductID == cart.ProductId);
-						if (product == null || product.StockQuantity < cart.Count)
+						// Instead of fetching the product again, use the one already loaded with the cart
+						var product = cart.Product;
+						if (product.StockQuantity < cart.Count)
 						{
-							TempData["Error"] = $"Item {cart.Product?.Name ?? "unknown"} is out of stock";
+							TempData["Error"] = $"Item {product.Name ?? "unknown"} is out of stock";
 							return RedirectToAction("Index");
 						}
-						product.StockQuantity -= cart.Count;
-						await _unitOfWork.ProductRepository.UpdateAsync(product); // Assuming UbdateAsync exists or should be UpdateAsync
+						
+						// Get a clean reference to update the product stock
+						var productToUpdate = await _unitOfWork.ProductRepository.GetAsync(p => p.ProductID == cart.ProductId);
+						if (productToUpdate == null)
+						{
+							TempData["Error"] = $"Product not found for cart item {cart.Id}";
+							return RedirectToAction("Index");
+						}
+						
+						productToUpdate.StockQuantity -= cart.Count;
+						await _unitOfWork.ProductRepository.UpdateAsync(productToUpdate);
 					}
 
 					var user = await _unitOfWork.applciationUserRepository.GetAsync(u => u.Id == userId);
 					if (user == null) return NotFound("User not found");
 
 					CartVM.OrderHeader.ApplicationUserId = userId;
+					CartVM.OrderHeader.PaymentMethod = CartVM.SelectedPaymentMethod;
 					SetOrderAndPaymentStatus(CartVM.OrderHeader);
 					PopulateOrderHeaderFromUser(CartVM.OrderHeader, user);
 
@@ -829,7 +867,18 @@ namespace FutureTechnologyE_Commerce.Controllers
 						};
 						await _unitOfWork.OrderDetail.AddAsync(orderDetail);
 					}
-					await _unitOfWork.CartRepositery.RemoveRangeAsync(cartItems);
+					
+					// Instead of using RemoveRangeAsync with the AsNoTracking entities,
+					// remove each cart item individually by getting a fresh reference
+					foreach (var cartId in cartItems.Select(c => c.Id).ToList())
+					{
+						// Get a fresh, tracked reference to the cart item
+						var cart = await _unitOfWork.CartRepositery.GetAsync(c => c.Id == cartId);
+						if (cart != null)
+						{
+							await _unitOfWork.CartRepositery.RemoveAsync(cart);
+						}
+					}
 					await _unitOfWork.SaveAsync();
 
 					transaction.Commit();
@@ -838,11 +887,44 @@ namespace FutureTechnologyE_Commerce.Controllers
 				var currentUser = await _unitOfWork.applciationUserRepository.GetAsync(u => u.Id == userId);
 				if (currentUser == null) return NotFound("User not found");
 
-				return await ProcessPaymentAsync(currentUser);
+				// Handle different payment methods
+				if (CartVM.SelectedPaymentMethod == SD.Payment_Method_COD)
+				{
+					return await ProcessCashOnDeliveryAsync(CartVM.OrderHeader.Id);
+				}
+				else
+				{
+					return await ProcessPaymentAsync(currentUser);
+				}
 			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Order processing failed for userId: {UserId}", GetValidatedUserId());
+				TempData["Error"] = "Order processing failed. Please try again.";
+				return RedirectToAction("Checkout");
+			}
+		}
+
+		// Method to handle Cash on Delivery processing
+		private async Task<IActionResult> ProcessCashOnDeliveryAsync(int orderId)
+		{
+			try
+			{
+				// Update order status for COD
+				var orderHeader = await _unitOfWork.OrderHeader.GetAsync(o => o.Id == orderId);
+				if (orderHeader == null) throw new Exception($"Order not found with id {orderId}");
+
+				orderHeader.PaymentStatus = SD.Payment_Status_Delayed_Payment;
+				orderHeader.OrderStatus = SD.Status_Approved;
+				await _unitOfWork.OrderHeader.UpdateAsync(orderHeader);
+				await _unitOfWork.SaveAsync();
+
+				_logger.LogInformation("Cash on Delivery order processed for orderId: {OrderId}", orderId);
+				return RedirectToAction("OrderConfirmation", new { orderId });
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Cash on Delivery processing failed for orderId: {OrderId}", orderId);
 				TempData["Error"] = "Order processing failed. Please try again.";
 				return RedirectToAction("Checkout");
 			}
@@ -1084,15 +1166,26 @@ namespace FutureTechnologyE_Commerce.Controllers
 		{
 			try
 			{
-				var orderHeader = await _unitOfWork.OrderHeader.GetAsync(o => o.Id == orderId);
+				var orderHeader = await _unitOfWork.OrderHeader.GetAsync(o => o.Id == orderId, includeProperties: "ApplicationUser");
 				if (orderHeader == null)
 				{
 					_logger.LogWarning("Order with id {OrderId} not found in Cart/OrderConfirmation", orderId);
 					TempData["Error"] = "Order not found.";
 					return RedirectToAction("Index");
 				}
+				
+				// Get order details with product AND brand information
+				var orderDetails = await _unitOfWork.OrderDetail.GetAllAsync(d => d.OrderId == orderId, includeProperties: "Product,Product.Brand");
+				
+				// Return OrderDetailsViewModel to match what the view expects
+				var viewModel = new OrderDetailsViewModel
+				{
+					OrderHeader = orderHeader,
+					OrderDetails = orderDetails.ToList()
+				};
+				
 				_logger.LogInformation("Order confirmation displayed for orderId: {OrderId}", orderId);
-				return View(orderId);
+				return View(viewModel);
 			}
 			catch (Exception ex)
 			{

@@ -38,7 +38,7 @@ namespace FutureTechnologyE_Commerce.Repository
 			{
 				foreach (var property in includeProperties.Split(',', StringSplitOptions.RemoveEmptyEntries))
 				{
-					query = query.Include(property.Trim()).AsNoTracking();
+					query = query.Include(property.Trim());
 				}
 			}
 
@@ -50,7 +50,7 @@ namespace FutureTechnologyE_Commerce.Repository
 			IQueryable<T> query = Set;
 			foreach (var property in includeProperties)
 			{
-				query = query.Include(property).AsNoTracking();
+				query = query.Include(property);
 			}
 			return await query.FirstOrDefaultAsync(filter);
 		}

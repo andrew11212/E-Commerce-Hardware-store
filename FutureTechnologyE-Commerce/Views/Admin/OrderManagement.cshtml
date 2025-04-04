@@ -1,0 +1,170 @@
+@model IEnumerable<FutureTechnologyE_Commerce.Models.OrderHeader>
+@{
+    ViewData["Title"] = "Order Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+    var pageCount = Math.Ceiling((double)ViewBag.TotalOrders / ViewBag.PageSize);
+    var searchString = ViewBag.SearchString ?? "";
+    var status = ViewBag.Status ?? "";
+    var startDate = ViewBag.StartDate as DateTime?;
+    var endDate = ViewBag.EndDate as DateTime?;
+    var pageNumber = ViewBag.PageNumber;
+}
+
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary">
+            <i class="bi bi-cart-check-fill me-2"></i>Order Management
+        </h1>
+    </div>
+
+    <!-- Filter and Search -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Search</label>
+                    <input type="text" name="searchString" class="form-control" placeholder="Order ID, name or email..." value="@searchString">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        @foreach (var option in ViewBag.StatusOptions)
+                        {
+                            <option value="@option.Value" selected="@(option.Value == status)">@option.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" name="startDate" class="form-control" value="@(startDate?.ToString("yyyy-MM-dd"))">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">End Date</label>
+                    <input type="date" name="endDate" class="form-control" value="@(endDate?.ToString("yyyy-MM-dd"))">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="bi bi-search me-1"></i>Search
+                    </button>
+                    <a href="@Url.Action("OrderManagement")" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle me-1"></i>Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Total</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var order in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-action="OrderDetails" asp-route-id="@order.Id" class="fw-bold text-primary">#@order.Id</a>
+                                    </td>
+                                    <td>@order.OrderDate.ToString("MM/dd/yyyy HH:mm")</td>
+                                    <td>
+                                        @if (order.ApplicationUser != null)
+                                        {
+                                            @order.ApplicationUser.first_name @order.ApplicationUser.last_name
+                                        }
+                                        else
+                                        {
+                                            @order.first_name @order.last_name
+                                        }
+                                    </td>
+                                    <td>@order.phone_number</td>
+                                    <td>$@order.OrderTotal.ToString("N2")</td>
+                                    <td>
+                                        @{
+                                            var paymentClass = order.PaymentStatus switch
+                                            {
+                                                "Pending" => "bg-warning",
+                                                "Approved" => "bg-success",
+                                                "Rejected" => "bg-danger",
+                                                _ => "bg-secondary"
+                                            };
+                                        }
+                                        <span class="badge @paymentClass">@order.PaymentStatus</span>
+                                    </td>
+                                    <td>
+                                        @{
+                                            var statusClass = order.OrderStatus switch
+                                            {
+                                                "Pending" => "bg-warning",
+                                                "Approved" => "bg-info",
+                                                "Processing" => "bg-info",
+                                                "Shipped" => "bg-primary",
+                                                "Cancelled" => "bg-danger",
+                                                _ => "bg-secondary"
+                                            };
+                                        }
+                                        <span class="badge @statusClass">@order.OrderStatus</span>
+                                    </td>
+                                    <td>
+                                        <a asp-action="OrderDetails" asp-route-id="@order.Id" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center">No orders found</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (pageCount > 1)
+            {
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item @(pageNumber == 1 ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("OrderManagement", new { searchString, status, startDate, endDate, pageNumber = pageNumber - 1 })">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        @for (int i = 1; i <= pageCount; i++)
+                        {
+                            <li class="page-item @(i == pageNumber ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("OrderManagement", new { searchString, status, startDate, endDate, pageNumber = i })">
+                                    @i
+                                </a>
+                            </li>
+                        }
+
+                        <li class="page-item @(pageNumber == pageCount ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("OrderManagement", new { searchString, status, startDate, endDate, pageNumber = pageNumber + 1 })">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div> 
