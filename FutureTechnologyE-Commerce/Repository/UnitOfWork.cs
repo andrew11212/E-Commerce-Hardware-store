@@ -71,5 +71,26 @@ namespace FutureTechnologyE_Commerce.Repository
 		{
 			return context.Database.BeginTransaction();
 		}
+		
+		public async Task<IDbContextTransaction> BeginTransactionAsync()
+		{
+			return await context.Database.BeginTransactionAsync();
+		}
+		
+		public async Task CommitTransactionAsync(IDbContextTransaction transaction)
+		{
+			if (transaction != null)
+			{
+				await Task.Run(() => transaction.Commit());
+			}
+		}
+		
+		public async Task RollbackTransactionAsync(IDbContextTransaction transaction)
+		{
+			if (transaction != null)
+			{
+				await Task.Run(() => transaction.Rollback());
+			}
+		}
 	}
 }

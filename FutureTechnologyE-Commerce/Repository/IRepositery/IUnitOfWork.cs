@@ -26,7 +26,12 @@ namespace FutureTechnologyE_Commerce.Repository.IRepository
         public IInventoryRepository InventoryRepository { get; }
         public IInventoryLogRepository InventoryLogRepository { get; }
 
-		IDbContextTransaction BeginTransaction(); // Add this line
+		IDbContextTransaction BeginTransaction();
+		
+		Task<IDbContextTransaction> BeginTransactionAsync();
+		Task CommitTransactionAsync(IDbContextTransaction transaction);
+		Task RollbackTransactionAsync(IDbContextTransaction transaction);
+		
 		public Task SaveAsync();
 	}
 }

@@ -9,6 +9,6 @@ namespace FutureTechnologyE_Commerce.Repository.IRepository
 {
 	public interface IApplciationUserRepository : IRepository<ApplicationUser>
 	{
-
+		Task UpdateAsync(ApplicationUser user);
 	}
 }

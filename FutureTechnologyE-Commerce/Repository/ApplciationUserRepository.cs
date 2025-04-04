@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FutureTechnologyE_Commerce.Data;
 using FutureTechnologyE_Commerce.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 namespace FutureTechnologyE_Commerce.Repository
 {
 	public class ApplciationUserRepository : Repositery<ApplicationUser>, IApplciationUserRepository
@@ -17,6 +18,12 @@ namespace FutureTechnologyE_Commerce.Repository
 		{
 			this.context = context;
 		}
-
+		public async Task UpdateAsync(ApplicationUser user)
+		{
+			context.Attach(user);
+			context.Entry(user).State = EntityState.Modified;
+			// The actual saving to the database will be done in the UnitOfWork
+			await Task.CompletedTask;
+		}
 	}
 }
