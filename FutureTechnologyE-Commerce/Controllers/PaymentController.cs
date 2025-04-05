@@ -60,51 +60,82 @@ namespace FutureTechnologyE_Commerce.Controllers
 				throw new ArgumentNullException("Paymob HmacSecret is not configured");
 		}
 
+		// Method for session-based payment flow (no order created until payment success)
 		[Authorize]
-		public async Task<IActionResult> PaymentInit(int orderId)
+		public async Task<IActionResult> InitializePaymentOnly()
 		{
-			// 1. Get order details
-			var orderHeader = await _unitOfWork.OrderHeader.GetAsync(o => o.Id == orderId);
-			if (orderHeader == null)
+			try
 			{
-				_logger.LogError("Order not found: {OrderId}", orderId);
-				return NotFound();
+				// 1. Retrieve checkout data from session
+				var checkoutDataJson = HttpContext.Session.GetString("CheckoutData");
+				if (string.IsNullOrEmpty(checkoutDataJson))
+				{
+					_logger.LogError("Checkout data not found in session");
+					return RedirectToAction("Error", "Home", new { message = "Checkout information not found. Please try again." });
+				}
+				
+				// 2. Deserialize checkout data
+				var checkoutData = JsonSerializer.Deserialize<JsonElement>(checkoutDataJson);
+				var orderTotal = checkoutData.GetProperty("OrderTotal").GetDouble();
+				var userInfo = checkoutData.GetProperty("UserInfo");
+				
+				// 3. Authenticate with Paymob
+				var authResponse = await GetPaymobAuthToken();
+				if (authResponse?.Token == null)
+				{
+					_logger.LogError("Failed to authenticate with Paymob");
+					return RedirectToAction("Error", "Home", new { message = "Payment service unavailable" });
+				}
+				
+				// 4. Create temporary billing data for Paymob
+				var billingData = new
+				{
+					first_name = userInfo.GetProperty("FirstName").GetString(),
+					last_name = userInfo.GetProperty("LastName").GetString(),
+					email = userInfo.GetProperty("Email").GetString(),
+					phone_number = userInfo.GetProperty("PhoneNumber").GetString(),
+					street = userInfo.GetProperty("Street").GetString(),
+					building = userInfo.GetProperty("Building").GetString(),
+					apartment = userInfo.GetProperty("Apartment").GetString() ?? "NA",
+					floor = userInfo.GetProperty("Floor").GetString() ?? "NA",
+					state = userInfo.GetProperty("State").GetString(),
+					country = userInfo.GetProperty("Country").GetString(),
+					shipping_method = "NA",
+					postal_code = "NA",
+					city = userInfo.GetProperty("State").GetString()
+				};
+				
+				// 5. Register with Paymob
+				var paymobOrderId = await RegisterOrderWithPaymob(authResponse.Token, orderTotal);
+				if (paymobOrderId == null)
+				{
+					_logger.LogError("Failed to register with Paymob");
+					return RedirectToAction("Error", "Home", new { message = "Payment service unavailable" });
+				}
+				
+				// 6. Get payment key
+				var paymentKeyToken = await GetPaymentKey(authResponse.Token, paymobOrderId.Value, orderTotal, billingData);
+				if (paymentKeyToken == null)
+				{
+					_logger.LogError("Failed to get payment key from Paymob");
+					return RedirectToAction("Error", "Home", new { message = "Payment service unavailable" });
+				}
+				
+				// 7. Store paymob order ID in TempData for retrieval in callback
+				TempData["PaymobOrderId"] = paymobOrderId.Value;
+				
+				// 8. Redirect to Paymob iframe
+				return Redirect($"https://accept.paymob.com/api/acceptance/iframes/{_paymob.IframeId}?payment_token={paymentKeyToken}");
 			}
-
-			// 2. Authenticate with Paymob to get auth token
-			var authResponse = await GetPaymobAuthToken();
-			if (authResponse?.Token == null)
+			catch (Exception ex)
 			{
-				_logger.LogError("Failed to authenticate with Paymob");
-				return RedirectToAction("Error", "Home", new { message = "Payment service unavailable" });
+				_logger.LogError(ex, "Error initializing direct payment");
+				return RedirectToAction("Error", "Home", new { message = "Payment initialization failed. Please try again." });
 			}
-
-			// 3. Register order with Paymob
-			var paymobOrderId = await RegisterOrderWithPaymob(authResponse.Token, orderHeader);
-			if (paymobOrderId == null)
-			{
-				_logger.LogError("Failed to register order with Paymob");
-				return RedirectToAction("Error", "Home", new { message = "Payment service unavailable" });
-			}
-
-			// 4. Save Paymob order ID to our order
-			orderHeader.PaymobOrderId = paymobOrderId.Value;
-			await _unitOfWork.SaveAsync();
-
-			// 5. Get payment key
-			var paymentKeyToken = await GetPaymentKey(authResponse.Token, paymobOrderId.Value, orderHeader);
-			if (paymentKeyToken == null)
-			{
-				_logger.LogError("Failed to get payment key from Paymob");
-				return RedirectToAction("Error", "Home", new { message = "Payment service unavailable" });
-			}
-
-			// 6. Redirect to payment iframe
-			return Redirect($"https://accept.paymob.com/api/acceptance/iframes/{_paymob.IframeId}?payment_token={paymentKeyToken}");
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> Success(string order_id)
+		public IActionResult Success(string order_id)
 		{
 			_logger.LogInformation("Payment success callback received for order: {OrderId}", order_id);
 			
@@ -115,28 +146,29 @@ namespace FutureTechnologyE_Commerce.Controllers
 				return RedirectToAction("Error", "Home", new { message = "Invalid payment information" });
 			}
 
-			// Find our order by Paymob order ID
-			var orderHeader = await _unitOfWork.OrderHeader.GetAsync(o => o.PaymobOrderId == paymobOrderId);
-			if (orderHeader == null)
+			// Get the checkout data from session
+			var checkoutDataJson = HttpContext.Session.GetString("CheckoutData");
+			if (string.IsNullOrEmpty(checkoutDataJson))
 			{
-				_logger.LogError("Order not found for Paymob order ID: {PaymobOrderId}", paymobOrderId);
-				return RedirectToAction("Error", "Home", new { message = "Order not found" });
+				_logger.LogError("Checkout data not found in session");
+				return RedirectToAction("Error", "Home", new { message = "Payment session expired. Please try again." });
 			}
 
-			// Update order status
-			orderHeader.PaymentStatus = SD.Payment_Status_Approved;
-			orderHeader.OrderStatus = SD.Status_Approved;
-			orderHeader.PaymentDate = DateTime.Now;
-			await _unitOfWork.SaveAsync();
-
-			_logger.LogInformation("Payment successful for order: {OrderId}", orderHeader.Id);
-			return RedirectToAction("OrderConfirmation", "Checkout", new { id = orderHeader.Id });
+			// Create the order now after successful payment
+			var txnId = "pm_" + Guid.NewGuid().ToString("N").Substring(0, 16);
+			return RedirectToAction("CreateOrderAfterPayment", "Checkout", new { 
+				transactionId = txnId, 
+				paymobOrderId = paymobOrderId 
+			});
 		}
 
 		[HttpGet]
-		public IActionResult Failure()
+		public IActionResult Failure(string order_id)
 		{
-			_logger.LogWarning("Payment failure callback received");
+			_logger.LogWarning("Payment failure callback received for order: {OrderId}", order_id);
+			
+			// Clear checkout data from session
+			HttpContext.Session.Remove("CheckoutData");
 			return RedirectToAction("Index", "Cart", new { error = "Payment failed. Please try again." });
 		}
 
@@ -170,38 +202,17 @@ namespace FutureTechnologyE_Commerce.Controllers
 					}
 				}
 
-				// Extract order data
+				// Extract payment data
 				var obj = payload.GetProperty("obj");
 				var success = obj.GetProperty("success").GetBoolean();
-				var orderId = obj.GetProperty("order").GetProperty("id").GetInt32();
+				var paymobOrderId = obj.GetProperty("order").GetProperty("id").GetInt32();
 				var txnId = obj.GetProperty("id").GetString();
 
-				// Find order by Paymob order ID
-				var orderHeader = await _unitOfWork.OrderHeader.GetAsync(o => o.PaymobOrderId == orderId);
-				if (orderHeader == null)
-				{
-					_logger.LogError("Order not found for Paymob order ID: {PaymobOrderId}", orderId);
-					return NotFound("Order not found");
-				}
-
-				if (success)
-				{
-					// Update order status for successful transaction
-					orderHeader.PaymentStatus = SD.Payment_Status_Approved;
-					orderHeader.OrderStatus = SD.Status_Approved;
-					orderHeader.PaymentDate = DateTime.Now;
-					orderHeader.TransactionId = txnId;
-					
-					_logger.LogInformation("Payment webhook confirmed successful payment for order: {OrderId}", orderHeader.Id);
-				}
-				else
-				{
-					// Mark payment as rejected
-					orderHeader.PaymentStatus = SD.Payment_Status_Rejected;
-					_logger.LogWarning("Payment webhook received failed payment for order: {OrderId}", orderHeader.Id);
-				}
-
-				await _unitOfWork.SaveAsync();
+				// For webhook, we don't need to do anything since orders are created only after
+				// successful payment via the success callback/redirect
+				_logger.LogInformation("Payment webhook received for Paymob order ID: {PaymobOrderId}, Success: {Success}", 
+					paymobOrderId, success);
+				
 				return Ok();
 			}
 			catch (Exception ex)
@@ -213,7 +224,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 
 		[HttpGet]
 		[AllowAnonymous]
-		public async Task<IActionResult> Callback(
+		public IActionResult Callback(
 			[FromQuery] string hmac,
 			[FromQuery] string amount_cents,
 			[FromQuery] string success,
@@ -240,22 +251,15 @@ namespace FutureTechnologyE_Commerce.Controllers
 					return RedirectToAction("Error", "Home", new { message = "Invalid payment information" });
 				}
 
-				// Find order by Paymob order ID
-				var orderHeader = await _unitOfWork.OrderHeader.GetAsync(o => o.PaymobOrderId == paymobOrderId);
-				if (orderHeader == null)
-				{
-					_logger.LogError("Order not found for Paymob order ID: {PaymobOrderId}", paymobOrderId);
-					return RedirectToAction("Error", "Home", new { message = "Order not found" });
-				}
-
-				// For successful payments, redirect to success page
+				// Handle success/failure
 				if (isSuccess)
 				{
 					return RedirectToAction("Success", new { order_id = paymobOrderId });
 				}
-				
-				// For failed payments, redirect to failure page
-				return RedirectToAction("Failure");
+				else
+				{
+					return RedirectToAction("Failure", new { order_id = paymobOrderId });
+				}
 			}
 			catch (Exception ex)
 			{
@@ -292,7 +296,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 			}
 		}
 
-		private async Task<int?> RegisterOrderWithPaymob(string authToken, OrderHeader orderHeader)
+		private async Task<int?> RegisterOrderWithPaymob(string authToken, double orderTotal)
 		{
 			try
 			{
@@ -300,7 +304,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 				{
 					auth_token = authToken,
 					delivery_needed = false,
-					amount_cents = (int)(orderHeader.OrderTotal * 100),
+					amount_cents = (int)(orderTotal * 100),
 					currency = "EGP",
 					items = new List<object>()
 				};
@@ -322,32 +326,17 @@ namespace FutureTechnologyE_Commerce.Controllers
 			}
 		}
 
-		private async Task<string?> GetPaymentKey(string authToken, int paymobOrderId, OrderHeader orderHeader)
+		private async Task<string?> GetPaymentKey(string authToken, int paymobOrderId, double orderTotal, object billingData)
 		{
 			try
 			{
 				var requestData = new
 				{
 					auth_token = authToken,
-					amount_cents = (int)(orderHeader.OrderTotal * 100),
+					amount_cents = (int)(orderTotal * 100),
 					expiration = 3600,
 					order_id = paymobOrderId,
-					billing_data = new
-					{
-						apartment = orderHeader.apartment ?? "NA",
-						email = orderHeader.email,
-						floor = orderHeader.floor ?? "NA",
-						first_name = orderHeader.first_name,
-						street = orderHeader.street,
-						building = orderHeader.building,
-						phone_number = orderHeader.phone_number,
-						shipping_method = "NA",
-						postal_code = "NA",
-						city = orderHeader.state,
-						country = orderHeader.country,
-						last_name = orderHeader.last_name,
-						state = orderHeader.state
-					},
+					billing_data = billingData,
 					currency = "EGP",
 					integration_id = int.Parse(_paymob.IntegrationId),
 					lock_order_when_paid = true
