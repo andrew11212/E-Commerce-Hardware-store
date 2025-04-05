@@ -215,8 +215,17 @@ namespace FutureTechnologyE_Commerce.Controllers
 				await _unitOfWork.SaveAsync();
 			}
 
+			// Create OrderDetailsViewModel to match what the view expects
+			var orderDetails = await _unitOfWork.OrderDetail.GetAllAsync(d => d.OrderId == id, includeProperties: "Product");
+			
+			var orderVM = new OrderDetailsViewModel
+			{
+				OrderHeader = orderHeader,
+				OrderDetails = orderDetails.ToList()
+			};
+
 			_logger.LogInformation("Order {OrderId} confirmed", id);
-			return View(id);
+			return View(orderVM);
 		}
 		
 		[HttpGet]
