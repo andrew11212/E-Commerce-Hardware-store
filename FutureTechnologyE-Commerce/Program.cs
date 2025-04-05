@@ -66,6 +66,8 @@ namespace FutureTechnologyE_Commerce
 				builder.Services.AddRazorPages();
 				builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 				builder.Services.AddScoped<IEmailSender, EmailSender>();
+				builder.Services.AddScoped<PaymentHealthMonitor>();
+				builder.Services.AddScoped<FutureTechnologyE_Commerce.Services.PaymentService>();
 				builder.Services.AddDistributedMemoryCache();
 				builder.Services.AddSession(options =>
 				{
@@ -74,6 +76,13 @@ namespace FutureTechnologyE_Commerce
 					options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 					options.Cookie.SameSite = SameSiteMode.Strict;
 					options.Cookie.IsEssential = true;
+				});
+
+				// Register HttpClient services
+				builder.Services.AddHttpClient();
+				builder.Services.AddHttpClient("PaymobClient", client => {
+					client.BaseAddress = new Uri("https://accept.paymob.com/api/");
+					client.DefaultRequestHeaders.Add("Accept", "application/json");
 				});
 
 				// Configure rate limiting
