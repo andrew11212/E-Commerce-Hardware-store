@@ -115,7 +115,7 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-6 text-end">
-                            <a asp-action="Checkout" class="btn btn-lg btn-primary w-100 rounded-pill py-3 @(Model.CartList.Any() ? "" : "disabled")">
+                            <a asp-controller="Checkout" asp-action="Index" class="btn btn-lg btn-primary w-100 rounded-pill py-3 @(Model.CartList.Any() ? "" : "disabled")">
                                 Checkout Now - <span id="cart-total">@Model.OrderHeader.OrderTotal.ToString("c")</span>
                             </a>
                         </div>

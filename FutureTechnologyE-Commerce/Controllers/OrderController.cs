@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace FutureTechnologyE_Commerce.Controllers
 {
@@ -244,6 +245,148 @@ namespace FutureTechnologyE_Commerce.Controllers
                 return RedirectToAction(nameof(Details), new { id = returnRequest.OrderId });
             }
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> ValidateOrder()
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized();
+                }
+
+                // Get cart items
+                var cartItems = (await _unitOfWork.CartRepositery.GetAllAsync(c => c.ApplicationUserId == userId, "Product")).ToList();
+                if (!cartItems.Any())
+                {
+                    TempData["Error"] = "Your cart is empty";
+                    return RedirectToAction("Index", "Cart");
+                }
+
+                // Set the price for each cart item
+                foreach (var cart in cartItems)
+                {
+                    cart.price = Math.Round((double)cart.Product.Price, 2);
+                }
+
+                // Get user data
+                var user = await _unitOfWork.applciationUserRepository.GetAsync(u => u.Id == userId);
+                if (user == null)
+                {
+                    _logger.LogWarning("User not found in Order/ValidateOrder for userId: {UserId}", userId);
+                    return NotFound("User not found");
+                }
+
+                // Create and populate order header
+                var orderHeader = new OrderHeader
+                {
+                    ApplicationUserId = userId,
+                    PaymentMethod = Request.Form["PaymentMethod"],
+                    PaymentStatus = SD.Payment_Status_Pending,
+                    OrderStatus = SD.Status_Pending,
+                    OrderDate = DateTime.UtcNow,
+                    OrderTotal = Math.Round(cartItems.Sum(cart => cart.price * cart.Count), 2),
+                    first_name = SanitizeInput(user.first_name),
+                    last_name = SanitizeInput(user.last_name),
+                    street = SanitizeInput(user.street),
+                    building = SanitizeInput(user.building),
+                    phone_number = SanitizePhoneNumber(user.PhoneNumber),
+                    email = SanitizeInput(user.Email),
+                    state = SanitizeInput(user.state),
+                    floor = SanitizeInput(user.floor)
+                };
+
+                using (var transaction = _unitOfWork.BeginTransaction())
+                {
+                    // Check stock and update product quantities
+                    foreach (var cart in cartItems)
+                    {
+                        // Instead of fetching the product again, use the one already loaded with the cart
+                        var product = cart.Product;
+                        if (product.StockQuantity < cart.Count)
+                        {
+                            TempData["Error"] = $"Item {product.Name ?? "unknown"} is out of stock";
+                            return RedirectToAction("Index", "Cart");
+                        }
+
+                        // Get a clean reference to update the product stock
+                        var productToUpdate = await _unitOfWork.ProductRepository.GetAsync(p => p.ProductID == cart.ProductId);
+                        if (productToUpdate == null)
+                        {
+                            TempData["Error"] = $"Product not found for cart item {cart.Id}";
+                            return RedirectToAction("Index", "Cart");
+                        }
+
+                        productToUpdate.StockQuantity -= cart.Count;
+                        await _unitOfWork.ProductRepository.UpdateAsync(productToUpdate);
+                    }
+
+                    // Save order header
+                    await _unitOfWork.OrderHeader.AddAsync(orderHeader);
+                    await _unitOfWork.SaveAsync(); // Save to get the order ID
+
+                    // Create order details
+                    foreach (var cart in cartItems)
+                    {
+                        OrderDetail orderDetail = new()
+                        {
+                            OrderId = orderHeader.Id,
+                            ProductId = cart.ProductId,
+                            Price = cart.price,
+                            Count = cart.Count
+                        };
+                        await _unitOfWork.OrderDetail.AddAsync(orderDetail);
+                    }
+
+                    // Remove cart items
+                    foreach (var cartId in cartItems.Select(c => c.Id).ToList())
+                    {
+                        var cart = await _unitOfWork.CartRepositery.GetAsync(c => c.Id == cartId);
+                        if (cart != null)
+                        {
+                            await _unitOfWork.CartRepositery.RemoveAsync(cart);
+                        }
+                    }
+                    await _unitOfWork.SaveAsync();
+
+                    // Commit the transaction
+                    transaction.Commit();
+                }
+
+                // Redirect to payment or confirmation based on payment method
+                if (orderHeader.PaymentMethod == SD.Payment_Method_COD)
+                {
+                    return RedirectToAction("Initialize", "Payment", 
+                        new { orderId = orderHeader.Id, paymentMethod = SD.Payment_Method_COD });
+                }
+                else
+                {
+                    return RedirectToAction("Initialize", "Payment", 
+                        new { orderId = orderHeader.Id, paymentMethod = SD.Payment_Method_Online });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in Order/ValidateOrder for userId: {UserId}", 
+                    User.FindFirstValue(ClaimTypes.NameIdentifier));
+                TempData["Error"] = "Order validation failed. Please try again.";
+                return RedirectToAction("Checkout", "Cart");
+            }
+        }
+
+        // Helper methods
+        private string SanitizeInput(string input) =>
+            string.IsNullOrWhiteSpace(input) ? " " : Regex.Replace(input.Trim(), @"[<>&'""\\/]", "").Substring(0, Math.Min(255, input.Trim().Length));
+
+        private string SanitizePhoneNumber(string phoneNumber) =>
+            string.IsNullOrWhiteSpace(phoneNumber) ? " " :
+            Regex.Replace(phoneNumber.Trim(), @"[^0-9+]", "").StartsWith("+") ?
+            phoneNumber.Substring(0, Math.Min(20, phoneNumber.Length)) :
+            ("+20" + phoneNumber).Substring(0, Math.Min(20, phoneNumber.Length + 3));
 
         #region Helper Methods
         private string? GetValidatedUserId()
