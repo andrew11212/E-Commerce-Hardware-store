@@ -13,8 +13,6 @@ namespace FutureTechnologyE_Commerce.Data
 		}
 		public DbSet<Product> Products { get; set; }
 		public DbSet<Laptop> Laptops { get; set; }
-		public DbSet<Mouse> Mice { get; set; }
-		public DbSet<Keyboard> Keyboards { get; set; }
 		public DbSet<Category> Categories { get; set; }
 		public DbSet<Brand> Brands { get; set; }
 		public DbSet<Review> Reviews { get; set; }
@@ -37,8 +35,7 @@ namespace FutureTechnologyE_Commerce.Data
 
 			// Use Table-Per-Type (TPT) for product inheritance
 			modelBuilder.Entity<Laptop>().ToTable("Laptops");
-			modelBuilder.Entity<Mouse>().ToTable("Mice");
-			modelBuilder.Entity<Keyboard>().ToTable("Keyboards");
+			
 
 			// Ensure a user can only review a product once
 			modelBuilder.Entity<Review>()
