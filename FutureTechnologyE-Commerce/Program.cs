@@ -12,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using System.Threading.RateLimiting;
+using System.Globalization;
+using FutureTechnologyE_Commerce.Services;
 
 namespace FutureTechnologyE_Commerce
 {
@@ -66,6 +68,8 @@ namespace FutureTechnologyE_Commerce
 				builder.Services.AddRazorPages();
 				builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 				builder.Services.AddScoped<IEmailSender, EmailSender>();
+				builder.Services.AddScoped<ISMSSender, SMSSender>();
+				builder.Services.AddScoped<INotificationService, NotificationService>();
 				builder.Services.AddScoped<PaymentHealthMonitor>();
 				builder.Services.AddScoped<FutureTechnologyE_Commerce.Services.PaymentService>();
 				builder.Services.AddDistributedMemoryCache();
@@ -118,10 +122,24 @@ namespace FutureTechnologyE_Commerce
 
 				var app = builder.Build();
 				var supportedCultures = new[] { "en-US", "ar-EG" };
+				
+				// Configure custom culture for EGP currency
+				var customCulture = new System.Globalization.CultureInfo("en-US");
+				customCulture.NumberFormat.CurrencySymbol = "EGP";
+				customCulture.NumberFormat.CurrencyPositivePattern = 2; // Format as "EGP 123.45"
+				
 				var localizationOptions = new RequestLocalizationOptions()
-					.SetDefaultCulture(supportedCultures[0])
+					.SetDefaultCulture("en-US")  // Back to en-US with custom provider
 					.AddSupportedCultures(supportedCultures)
 					.AddSupportedUICultures(supportedCultures);
+
+				// Add custom culture provider for EGP currency
+				localizationOptions.RequestCultureProviders.Insert(0, new Microsoft.AspNetCore.Localization.CustomRequestCultureProvider(context =>
+				{
+					// Apply custom culture with EGP currency symbol
+					System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+					return Task.FromResult(new ProviderCultureResult("en-US"));
+				}));
 
 				app.UseRequestLocalization(localizationOptions);
 				// Configure the HTTP request pipeline.

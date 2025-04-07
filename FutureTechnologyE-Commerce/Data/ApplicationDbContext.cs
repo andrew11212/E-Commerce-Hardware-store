@@ -22,6 +22,7 @@ namespace FutureTechnologyE_Commerce.Data
 		public DbSet<Product> products { get; set; }
 		public DbSet<Inventory> Inventories { get; set; }
 		public DbSet<InventoryLog> InventoryLogs { get; set; }
+		public DbSet<Notification> Notifications { get; set; }
 
 		public DbSet<ApplicationUser> applicationUsers { get; set; }
 

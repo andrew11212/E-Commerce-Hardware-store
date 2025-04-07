@@ -44,7 +44,7 @@
                                 <div class="col-8 col-md-4">
                                     <h6 class="mb-1 text-truncate">@item.Product.Name</h6>
                                     <div class="d-flex align-items-center gap-2">
-                                        <span class="text-primary fw-bold item-price" data-price="@item.price">@item.price.ToString("c")</span>
+                                        <span class="text-primary fw-bold item-price" data-price="@item.price">EGP @item.price.ToString("0.00")</span>
                                     </div>
                                 </div>
 
@@ -70,7 +70,7 @@
                                         </form>
                                     </div>
                                     <div class="mt-2 small text-success fw-bold item-total" id="total-@item.Id">
-                                        Total: @((item.price * item.Count).ToString("c"))
+                                        Total: EGP @((item.price * item.Count).ToString("0.00"))
                                     </div>
                                 </div>
 
@@ -116,7 +116,7 @@
                         </div>
                         <div class="col-12 col-md-6 text-end">
                             <a asp-controller="Checkout" asp-action="Index" class="btn btn-lg btn-primary w-100 rounded-pill py-3 @(Model.CartList.Any() ? "" : "disabled")">
-                                Checkout Now - <span id="cart-total">@Model.OrderHeader.OrderTotal.ToString("c")</span>
+                                Checkout Now - <span id="cart-total">EGP @Model.OrderHeader.OrderTotal.ToString("0.00")</span>
                             </a>
                         </div>
                     </div>
