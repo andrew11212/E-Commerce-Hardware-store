@@ -37,6 +37,8 @@ namespace FutureTechnologyE_Commerce.Repository
         public IInventoryRepository InventoryRepository { get; private set; }
         
         public IInventoryLogRepository InventoryLogRepository { get; private set; }
+        
+        public INotificationRepository NotificationRepository { get; private set; }
 
 		public UnitOfWork(ApplicationDbContext context)
 		{
@@ -56,6 +58,7 @@ namespace FutureTechnologyE_Commerce.Repository
             PromotionRepository = new PromotionRepository(context);
             InventoryRepository = new InventoryRepository(context);
             InventoryLogRepository = new InventoryLogRepository(context);
+            NotificationRepository = new NotificationRepository(context);
         }
 		public async Task SaveAsync()
 		{

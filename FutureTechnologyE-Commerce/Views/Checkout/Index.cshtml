@@ -112,24 +112,38 @@
                                 <div class="mb-3">
                                     @foreach (var item in Model.CartList)
                                     {
-                                        <div class="d-flex justify-content-between mb-2">
-                                            <span>@item.Product.Name x @item.Count</span>
-                                            <span>@((item.price * item.Count).ToString("C"))</span>
+                                        <div class="d-flex justify-content-between mb-2 py-2 border-bottom">
+                                            <div class="d-flex align-items-center">
+                                                <img src="@(item.Product.ImageUrl ?? "/images/product-placeholder.jpg")" alt="@item.Product.Name" 
+                                                    class="me-2" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                                                <div>
+                                                    <span class="d-inline-block text-truncate" style="max-width: 200px;" title="@item.Product.Name">
+                                                        @item.Product.Name
+                                                    </span>
+                                                    <div class="small text-muted">Qty: @item.Count</div>
+                                                </div>
+                                            </div>
+                                            <span class="fw-bold ms-3">EGP @((item.Product.Price * item.Count).ToString("0.00"))</span>
                                         </div>
                                     }
                                 </div>
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>Subtotal</span>
-                                    <span>@Model.OrderHeader.OrderTotal.ToString("C")</span>
+                                <div class="d-flex justify-content-between mb-2 mt-3">
+                                    <span class="text-muted">Subtotal</span>
+                                    <span class="fw-semibold">EGP @Model.OrderHeader.OrderTotal.ToString("0.00")</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span>Shipping</span>
-                                    <span>Free</span>
+                                    <span class="text-muted">Shipping</span>
+                                    <span class="fw-semibold text-success">Free</span>
                                 </div>
                                 <hr class="my-3">
                                 <div class="d-flex justify-content-between fw-bold text-capitalize">
-                                    <span>Total</span>
-                                    <span>@Model.OrderHeader.OrderTotal.ToString("C")</span>
+                                    <span class="h5 mb-0">Total</span>
+                                    <span class="h5 mb-0 text-primary">EGP @Model.OrderHeader.OrderTotal.ToString("0.00")</span>
+                                </div>
+                                
+                                <div class="alert alert-light mt-3 mb-0">
+                                    <i class="bi bi-truck me-2 text-primary"></i>
+                                    <small>Estimated delivery: <strong>@DateTime.Now.AddDays(5).ToString("MMM dd, yyyy")</strong></small>
                                 </div>
                             </div>
                         </div>

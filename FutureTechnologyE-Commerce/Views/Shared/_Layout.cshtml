@@ -393,6 +393,42 @@
         .navbar-nav .dropdown-item:hover i {
             transform: scale(1.2);
         }
+
+        /* Notification styles */
+        .notifications-dropdown {
+            width: 350px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 0;
+        }
+        
+        .notification-item {
+            transition: background-color 0.2s ease;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+        
+        .notification-item:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        .notification-icon {
+            width: 40px;
+            text-align: center;
+            font-size: 1.25rem;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.45rem;
+            border-radius: 50%;
+            background-color: #dc3545;
+            color: white;
+            transform: translate(25%, -25%);
+        }
     </style>
     
     @await RenderSectionAsync("Styles", required: false)
@@ -468,6 +504,30 @@
                     <i class="bi bi-heart fs-4"></i>
                     <span class="text-light small mb-0">Wishlist</span>
                 </a> *@
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <li class="nav-item dropdown mx-2 position-relative">
+                        <a class="nav-link" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-bell fs-5"></i>
+                            <span id="notification-count" class="notification-badge" style="display: none;">0</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end shadow-sm notifications-dropdown" aria-labelledby="notificationsDropdown">
+                            <div class="dropdown-header d-flex justify-content-between align-items-center py-2 bg-light">
+                                <h6 class="mb-0">Notifications</h6>
+                                <a href="@Url.Action("Index", "Notifications")" class="text-decoration-none small">View All</a>
+                            </div>
+                            <div class="dropdown-divider my-0"></div>
+                            <div id="notifications-container">
+                                <div class="text-center p-3">
+                                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="text-muted mb-0 mt-2">Loading notifications...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                }
                 <a class="nav-link icon-text-link" asp-controller="Cart" asp-action="Index"
                     style="color: var(--text-color);">
                     <i class="bi bi-cart fs-4" style="color: var(--primary);"></i>
@@ -763,6 +823,78 @@
             });
         });
     </script>
+
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <script>
+            $(document).ready(function() {
+                // Load notifications on page load
+                loadNotifications();
+                
+                // Load notifications when dropdown is opened
+                $('#notificationsDropdown').on('show.bs.dropdown', function() {
+                    loadNotifications();
+                });
+                
+                // Mark notification as read when clicked
+                $(document).on('click', '.notification-item', function(e) {
+                    // Don't trigger if clicking buttons or links
+                    if ($(e.target).closest('button, a').length === 0) {
+                        const notificationId = $(this).data('notification-id');
+                        const actionUrl = $(this).data('action-url');
+                        
+                        // Mark as read via AJAX
+                        $.post('@Url.Action("MarkAsRead", "Notifications")', {
+                            id: notificationId,
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        });
+                        
+                        // Navigate if action URL is available
+                        if (actionUrl && actionUrl !== '#') {
+                            window.location.href = actionUrl;
+                        }
+                    }
+                });
+                
+                // Mark all as read
+                $(document).on('click', '#markAllAsReadBtn', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    $.post('@Url.Action("MarkAllAsRead", "Notifications")', {
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    }, function() {
+                        loadNotifications();
+                    });
+                });
+                
+                // Check for new notifications every minute
+                setInterval(updateNotificationCount, 60000);
+                
+                // Initial count check
+                updateNotificationCount();
+                
+                function loadNotifications() {
+                    $('#notifications-container').load('@Url.Action("GetNotificationsPartial", "Notifications")', function() {
+                        updateNotificationCount();
+                    });
+                }
+                
+                function updateNotificationCount() {
+                    $.get('@Url.Action("GetUnreadCount", "Notifications")', function(data) {
+                        const count = data.count;
+                        const countElement = $('#notification-count');
+                        
+                        if (count > 0) {
+                            countElement.text(count).show();
+                        } else {
+                            countElement.text('0').hide();
+                        }
+                    });
+                }
+            });
+        </script>
+    }
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

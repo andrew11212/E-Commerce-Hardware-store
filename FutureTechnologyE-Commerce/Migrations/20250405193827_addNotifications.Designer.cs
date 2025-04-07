@@ -4,6 +4,7 @@ using FutureTechnologyE_Commerce.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FutureTechnologyE_Commerce.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250405193827_addNotifications")]
+    partial class addNotifications
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -143,7 +146,7 @@ namespace FutureTechnologyE_Commerce.Migrations
 
                     b.HasKey("BrandID");
 
-                    b.ToTable("Brands", (string)null);
+                    b.ToTable("Brands");
 
                     b.HasData(
                         new
@@ -178,7 +181,7 @@ namespace FutureTechnologyE_Commerce.Migrations
 
                     b.HasIndex("ParentCategoryID");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
 
                     b.HasData(
                         new
@@ -238,7 +241,7 @@ namespace FutureTechnologyE_Commerce.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Inventories", (string)null);
+                    b.ToTable("Inventories");
                 });
 
             modelBuilder.Entity("FutureTechnologyE_Commerce.Models.InventoryLog", b =>
@@ -275,7 +278,7 @@ namespace FutureTechnologyE_Commerce.Migrations
 
                     b.HasIndex("InventoryId");
 
-                    b.ToTable("InventoryLogs", (string)null);
+                    b.ToTable("InventoryLogs");
                 });
 
             modelBuilder.Entity("FutureTechnologyE_Commerce.Models.Notification", b =>
@@ -333,7 +336,7 @@ namespace FutureTechnologyE_Commerce.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("FutureTechnologyE_Commerce.Models.OrderDetail", b =>
@@ -362,7 +365,7 @@ namespace FutureTechnologyE_Commerce.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("orderDetails", (string)null);
+                    b.ToTable("orderDetails");
                 });
 
             modelBuilder.Entity("FutureTechnologyE_Commerce.Models.OrderHeader", b =>
@@ -459,7 +462,7 @@ namespace FutureTechnologyE_Commerce.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("orderHeaders", (string)null);
+                    b.ToTable("orderHeaders");
                 });
 
             modelBuilder.Entity("FutureTechnologyE_Commerce.Models.Product", b =>
@@ -502,7 +505,7 @@ namespace FutureTechnologyE_Commerce.Migrations
 
                     b.HasIndex("CategoryID");
 
-                    b.ToTable("Product", (string)null);
+                    b.ToTable("Product");
 
                     b.UseTptMappingStrategy();
 
@@ -584,7 +587,7 @@ namespace FutureTechnologyE_Commerce.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Promotions", (string)null);
+                    b.ToTable("Promotions");
                 });
 
             modelBuilder.Entity("FutureTechnologyE_Commerce.Models.Review", b =>
@@ -619,7 +622,7 @@ namespace FutureTechnologyE_Commerce.Migrations
                     b.HasIndex("ProductID", "UserID")
                         .IsUnique();
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("FutureTechnologyE_Commerce.Models.ShopingCart", b =>
@@ -646,7 +649,7 @@ namespace FutureTechnologyE_Commerce.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("shopingCarts", (string)null);
+                    b.ToTable("shopingCarts");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
