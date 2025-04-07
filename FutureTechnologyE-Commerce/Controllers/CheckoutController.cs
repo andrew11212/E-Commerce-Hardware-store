@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Storage;
 using FutureTechnologyE_Commerce.Models.ViewModels;
 using System.Text.Json;
+using FutureTechnologyE_Commerce.Services;
 
 namespace FutureTechnologyE_Commerce.Controllers
 {
@@ -22,16 +23,19 @@ namespace FutureTechnologyE_Commerce.Controllers
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly ILogger<CheckoutController> _logger;
+		private readonly INotificationService _notificationService;
 
 		[BindProperty]
 		public CartViewModel CartVM { get; set; } = new CartViewModel();
 
 		public CheckoutController(
 			IUnitOfWork unitOfWork,
-			ILogger<CheckoutController> logger)
+			ILogger<CheckoutController> logger,
+			INotificationService notificationService)
 		{
 			_unitOfWork = unitOfWork;
 			_logger = logger;
+			_notificationService = notificationService;
 		}
 
 		public async Task<IActionResult> Index()
@@ -215,6 +219,46 @@ namespace FutureTechnologyE_Commerce.Controllers
 				await _unitOfWork.SaveAsync();
 			}
 
+			// Send confirmation notifications
+			try
+			{
+				// Create in-app notification
+				Notification notification = new Notification
+				{
+					Title = "Order Confirmed",
+					Message = $"Your order #{id} has been confirmed and is being processed.",
+					Type = SD.Notification_Type_Order,
+					UserId = orderHeader.ApplicationUserId,
+					OrderId = id,
+					IconClass = SD.Notification_Icon_Order,
+					Priority = SD.Notification_Priority_Medium,
+					ActionUrl = $"/Order/Details/{id}"
+				};
+
+				await _unitOfWork.NotificationRepository.AddAsync(notification);
+				await _unitOfWork.SaveAsync();
+
+				// Get user details for email/SMS notifications
+				var user = await _unitOfWork.applciationUserRepository.GetAsync(u => u.Id == orderHeader.ApplicationUserId);
+				
+				if (user != null)
+				{
+					// Send email and SMS notifications
+					await _notificationService.SendOrderConfirmationAsync(
+						orderHeader.email,
+						orderHeader.phone_number,
+						$"{orderHeader.first_name} {orderHeader.last_name}",
+						id,
+						DateTime.Now.AddDays(5) // Estimated delivery date
+					);
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error sending order confirmation notifications for order {OrderId}", id);
+				// Continue with order confirmation even if notification fails
+			}
+
 			// Create OrderDetailsViewModel to match what the view expects
 			var orderDetails = await _unitOfWork.OrderDetail.GetAllAsync(d => d.OrderId == id, includeProperties: "Product");
 			
@@ -306,6 +350,32 @@ namespace FutureTechnologyE_Commerce.Controllers
 						HttpContext.Session.Remove("CheckoutData");
 						
 						_logger.LogInformation("Order successfully created after payment: {OrderId}", orderHeader.Id);
+
+						// Create in-app notification
+						Notification notification = new Notification
+						{
+							Title = "Order Confirmed",
+							Message = $"Your order #{orderHeader.Id} has been confirmed and is being processed.",
+							Type = SD.Notification_Type_Order,
+							UserId = userId,
+							OrderId = orderHeader.Id,
+							IconClass = SD.Notification_Icon_Order,
+							Priority = SD.Notification_Priority_Medium,
+							ActionUrl = $"/Order/Details/{orderHeader.Id}"
+						};
+
+						await _unitOfWork.NotificationRepository.AddAsync(notification);
+						await _unitOfWork.SaveAsync();
+
+						// Send email and SMS notifications
+						await _notificationService.SendOrderConfirmationAsync(
+							orderHeader.email,
+							orderHeader.phone_number,
+							$"{orderHeader.first_name} {orderHeader.last_name}",
+							orderHeader.Id,
+							DateTime.Now.AddDays(5) // Estimated delivery date
+						);
+
 						return RedirectToAction("OrderConfirmation", new { id = orderHeader.Id });
 					}
 					catch (Exception ex)

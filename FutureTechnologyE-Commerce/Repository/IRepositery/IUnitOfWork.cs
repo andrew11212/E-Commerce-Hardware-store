@@ -25,6 +25,7 @@ namespace FutureTechnologyE_Commerce.Repository.IRepository
         public IPromotionRepository PromotionRepository { get; }
         public IInventoryRepository InventoryRepository { get; }
         public IInventoryLogRepository InventoryLogRepository { get; }
+        public INotificationRepository NotificationRepository { get; }
 
 		IDbContextTransaction BeginTransaction();
 		

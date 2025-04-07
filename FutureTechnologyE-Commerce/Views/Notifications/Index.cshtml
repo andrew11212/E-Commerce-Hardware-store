@@ -1,0 +1,217 @@
+@model IEnumerable<FutureTechnologyE_Commerce.Models.Notification>
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0">Notifications</h1>
+                
+                <div>
+                    <form asp-action="MarkAllAsRead" method="post" id="markAllAsReadForm" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="bi bi-check-all me-2"></i>Mark All as Read
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-bell-slash text-muted mb-3" style="font-size: 3rem;"></i>
+                            <h5>No notifications yet</h5>
+                            <p class="text-muted">When you receive notifications, they will appear here.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var notification in Model)
+                            {
+                                <div class="list-group-item notification-item p-3 @(notification.IsRead ? "bg-light" : "")" 
+                                     data-notification-id="@notification.Id"
+                                     data-action-url="@(string.IsNullOrEmpty(notification.ActionUrl) ? "#" : notification.ActionUrl)">
+                                    
+                                    <div class="d-flex">
+                                        <div class="notification-icon me-3 pt-1">
+                                            <i class="bi @notification.IconClass @GetPriorityClass(notification.Priority) fs-4"></i>
+                                        </div>
+                                        <div class="notification-content flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                                <h5 class="mb-1 notification-title">@notification.Title</h5>
+                                                <div>
+                                                    <span class="badge bg-secondary me-2" title="Notification Type">@notification.Type</span>
+                                                    <small class="text-muted notification-time" title="@notification.CreatedDate.ToString("MMM dd, yyyy HH:mm")">
+                                                        @notification.CreatedDate.ToString("MMM dd, yyyy HH:mm")
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <p class="mb-2 notification-message">
+                                                @notification.Message
+                                            </p>
+                                            <div class="d-flex justify-content-end">
+                                                @if (!notification.IsRead)
+                                                {
+                                                    <form asp-action="MarkAsRead" method="post" class="mark-as-read-form">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="id" value="@notification.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-outline-secondary me-2">
+                                                            <i class="bi bi-check me-1"></i>Mark as Read
+                                                        </button>
+                                                    </form>
+                                                }
+                                                @if (!string.IsNullOrEmpty(notification.ActionUrl))
+                                                {
+                                                    <a href="@notification.ActionUrl" class="btn btn-sm btn-primary">
+                                                        <i class="bi bi-arrow-right me-1"></i>View Details
+                                                    </a>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (ViewBag.TotalPages > 1)
+    {
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav aria-label="Notifications pagination">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1 })" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                            </li>
+                        }
+                        
+                        <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1 })" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Handle mark as read form submission
+            $('.mark-as-read-form').on('submit', function (e) {
+                e.preventDefault();
+                
+                const form = $(this);
+                const notificationItem = form.closest('.notification-item');
+                
+                $.ajax({
+                    url: '@Url.Action("MarkAsRead", "Notifications")',
+                    type: 'POST',
+                    data: form.serialize(),
+                    success: function (result) {
+                        if (result.success) {
+                            notificationItem.addClass('bg-light');
+                            form.remove();
+                            
+                            // Update unread count in navbar
+                            updateNotificationCount();
+                        }
+                    }
+                });
+            });
+            
+            // Handle mark all as read form submission
+            $('#markAllAsReadForm').on('submit', function (e) {
+                e.preventDefault();
+                
+                const form = $(this);
+                
+                $.ajax({
+                    url: '@Url.Action("MarkAllAsRead", "Notifications")',
+                    type: 'POST',
+                    data: form.serialize(),
+                    success: function (result) {
+                        if (result.success) {
+                            $('.notification-item').addClass('bg-light');
+                            $('.mark-as-read-form').remove();
+                            
+                            // Update unread count in navbar
+                            updateNotificationCount();
+                        }
+                    }
+                });
+            });
+            
+            // Handle notification item click to navigate to action URL
+            $('.notification-item').on('click', function (e) {
+                // Don't navigate if clicking on buttons
+                if ($(e.target).closest('button, a').length === 0) {
+                    const actionUrl = $(this).data('action-url');
+                    const notificationId = $(this).data('notification-id');
+                    
+                    // Mark as read
+                    $.post('@Url.Action("MarkAsRead", "Notifications")', {
+                        id: notificationId,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    });
+                    
+                    // Navigate if action URL is available
+                    if (actionUrl && actionUrl !== '#') {
+                        window.location.href = actionUrl;
+                    }
+                }
+            });
+            
+            function updateNotificationCount() {
+                $.get('@Url.Action("GetUnreadCount", "Notifications")', function (data) {
+                    const count = data.count;
+                    const countElement = $('#notification-count');
+                    
+                    if (count > 0) {
+                        countElement.text(count).show();
+                    } else {
+                        countElement.text('0').hide();
+                    }
+                });
+            }
+        });
+    </script>
+}
+
+@functions {
+    string GetPriorityClass(string priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "high" => "text-danger",
+            "medium" => "text-primary",
+            "low" => "text-success",
+            _ => "text-primary"
+        };
+    }
+} 
