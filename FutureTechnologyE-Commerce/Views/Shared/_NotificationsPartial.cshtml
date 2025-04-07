@@ -1,0 +1,76 @@
+@model IEnumerable<FutureTechnologyE_Commerce.Models.Notification>
+
+@if(!Model.Any())
+{
+    <div class="text-center p-3">
+        <i class="bi bi-bell-slash text-muted mb-2" style="font-size: 1.5rem;"></i>
+        <p class="text-muted mb-0">No unread notifications</p>
+    </div>
+}
+else
+{
+    foreach (var notification in Model)
+    {
+        <div class="dropdown-item notification-item py-2 @(notification.IsRead ? "bg-light" : "")" 
+            data-notification-id="@notification.Id"
+            data-action-url="@(string.IsNullOrEmpty(notification.ActionUrl) ? "#" : notification.ActionUrl)">
+            
+            <div class="d-flex align-items-start">
+                <div class="notification-icon me-3">
+                    <i class="bi @notification.IconClass @GetPriorityClass(notification.Priority)"></i>
+                </div>
+                <div class="notification-content flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <h6 class="mb-0 notification-title">@notification.Title</h6>
+                        <small class="text-muted notification-time" title="@notification.CreatedDate.ToString("g")">
+                            @GetTimeAgo(notification.CreatedDate)
+                        </small>
+                    </div>
+                    <p class="mb-0 notification-message text-dark small">
+                        @notification.Message
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+    
+    <div class="dropdown-divider"></div>
+    <div class="dropdown-item text-center">
+        <a href="@Url.Action("Index", "Notifications")" class="text-primary">View all notifications</a>
+    </div>
+    <div class="dropdown-divider"></div>
+    <div class="dropdown-item text-center">
+        <button id="markAllAsReadBtn" class="btn btn-sm btn-light">
+            Mark all as read
+        </button>
+    </div>
+}
+
+@functions {
+    string GetTimeAgo(DateTime dateTime)
+    {
+        var span = DateTime.Now - dateTime;
+        
+        if (span.TotalDays > 30)
+            return $"{(int)(span.TotalDays / 30)}mo ago";
+        if (span.TotalDays > 1)
+            return $"{(int)span.TotalDays}d ago";
+        if (span.TotalHours > 1)
+            return $"{(int)span.TotalHours}h ago";
+        if (span.TotalMinutes > 1)
+            return $"{(int)span.TotalMinutes}m ago";
+        
+        return "Just now";
+    }
+    
+    string GetPriorityClass(string priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "high" => "text-danger",
+            "medium" => "text-primary",
+            "low" => "text-success",
+            _ => "text-primary"
+        };
+    }
+} 
