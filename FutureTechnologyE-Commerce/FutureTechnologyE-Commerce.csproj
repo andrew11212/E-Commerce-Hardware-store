@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\images\placeholder.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\images\placeholder.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Repository\ApplciationUserRepository.cs" />
     <Content Include="Repository\CategoryRepository.cs" />
     <Content Include="Repository\IRepositery\IApplciationUserRepository.cs" />
@@ -48,6 +56,10 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\promotions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\images\placeholder.svg" />
   </ItemGroup>
 
 </Project>
