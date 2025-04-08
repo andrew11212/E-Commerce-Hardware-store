@@ -1,58 +1,21 @@
-﻿@model FutureTechnologyE_Commerce.Models.ViewModels.HomeIndexViewModel
+@model FutureTechnologyE_Commerce.Models.ViewModels.HomeIndexViewModel
 
 @{
-    ViewData["Title"] = string.IsNullOrEmpty(Model.Category) ? "All Products" : 
-                        Model.Category.ToLower() == "mouse" ? "Mouse" :
-                        Model.Category.ToLower() == "keyboard" ? "Keyboards" :
-                        Model.Category.ToLower() == "mousepad" ? "Mousepads" :
-                        Model.Category.ToLower() == "printer" ? "Printers" : 
-                        $"{Model.Category} Products";
+    ViewData["Title"] = "Accessories";
 }
 
 <div class="container my-5">
     <div class="row g-4">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
             <h1 class="display-6 fw-bold mb-3 mb-md-0">@ViewData["Title"]</h1>
-            <form asp-action="@(string.IsNullOrEmpty(Model.Category) ? "GetAllProducts" : "GetFilteredProducts")" method="get" class="d-flex">
-                <input type="hidden" name="pageNumber" value="1" />
-                @if (!string.IsNullOrEmpty(Model.Category))
-                {
-                    <input type="hidden" name="categoryFilter" value="@Model.Category" />
-                }
+            <form asp-action="GetAllAccessories" method="get" class="d-flex">
                 <input type="text" name="searchString" value="@Model.SearchString"
                        class="form-control me-2" placeholder="Search products..." />
                 <button type="submit" class="btn btn-outline-primary">Search</button>
             </form>
         </div>
 
-        <!-- Category Filters -->
-        <div class="mb-4">
-            <form asp-action="GetFilteredProducts" method="get" id="categoryFilterForm" class="d-flex align-items-center">
-                <input type="hidden" name="pageNumber" value="1" />
-                <input type="hidden" name="searchString" value="@Model.SearchString" />
-                <label for="categoryFilter" class="me-2 fw-bold">Filter by Category:</label>
-                <select name="categoryFilter" id="categoryFilter" class="form-select" style="max-width: 200px;" onchange="document.getElementById('categoryFilterForm').submit();">
-                    <option value="">All Products</option>
-                    @if (Model.CategoryOptions != null)
-                    {
-                        foreach (var category in Model.CategoryOptions)
-                        {
-                            string displayName = category == "Mouse" ? "Mouse" : $"{category}s";
-                            if (Model.Category?.ToLower() == category.ToLower())
-                            {
-                                <option value="@category" selected>@displayName</option>
-                            }
-                            else
-                            {
-                                <option value="@category">@displayName</option>
-                            }
-                        }
-                    }
-                </select>
-            </form>
-        </div>
-
-        @foreach (var item in Model.Products)
+        @foreach (var item in Model.Accessories)
         {
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="card h-100 border-0 shadow rounded-3 overflow-hidden product-card">
@@ -63,18 +26,9 @@
                              onerror="this.src='/images/placeholder.svg'">
                         
                         <div class="product-overlay">
-                            @if (item.GetType().Name == "Laptop")
-                            {
-                                <a asp-controller="Laptops" asp-action="Details" asp-route-id="@item.ProductID" class="btn btn-light btn-sm">
-                                    View Details
-                                </a>
-                            }
-                            else
-                            {
-                                <a asp-controller="Home" asp-action="Details" asp-route-id="@item.ProductID" class="btn btn-light btn-sm">
-                                    View Details
-                                </a>
-                            }
+                            <a asp-controller="Home" asp-action="Details" asp-route-id="@item.ProductID" class="btn btn-light btn-sm">
+                                View Details
+                            </a>
                         </div>
 
                         <div class="badge-container">
@@ -122,39 +76,43 @@
             </div>
         }
 
-        <nav aria-label="Page navigation" class="mt-4">
-            <!-- Pagination Controls -->
-            <div class="pagination mt-4 d-flex justify-content-center flex-wrap gap-2">
-                @{
-                    int totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
-                    string currentAction = string.IsNullOrEmpty(Model.Category) ? "GetAllProducts" : "GetFilteredProducts";
-                }
-                @if (Model.PageNumber > 1)
-                {
-                    <a asp-action="@currentAction" 
-                       asp-route-pageNumber="@(Model.PageNumber - 1)" 
-                       asp-route-searchString="@Model.SearchString"
-                       asp-route-categoryFilter="@Model.Category"
-                       class="btn btn-outline-primary">Previous</a>
-                }
-                @for (int i = 1; i <= totalPages; i++)
-                {
-                    <a asp-action="@currentAction" 
-                       asp-route-pageNumber="@i" 
-                       asp-route-searchString="@Model.SearchString"
-                       asp-route-categoryFilter="@Model.Category"
-                       class="btn btn-outline-primary @(i == Model.PageNumber ? "active" : "")">@i</a>
-                }
-                @if (Model.PageNumber < totalPages)
-                {
-                    <a asp-action="@currentAction" 
-                       asp-route-pageNumber="@(Model.PageNumber + 1)" 
-                       asp-route-searchString="@Model.SearchString"
-                       asp-route-categoryFilter="@Model.Category"
-                       class="btn btn-outline-primary">Next</a>
-                }
-            </div>
-        </nav>
+        @if (Model.TotalCount > 0)
+        {
+            <nav aria-label="Accessories pagination" class="mt-4">
+                <div class="pagination d-flex justify-content-center flex-wrap gap-2">
+                    @{
+                        int totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+                        int startPage = Math.Max(1, Model.PageNumber - 2);
+                        int endPage = Math.Min(totalPages, startPage + 4);
+                        startPage = Math.Max(1, endPage - 4);
+                    }
+
+                    @if (Model.PageNumber > 1)
+                    {
+                        <a asp-action="GetAllAccessories" 
+                           asp-route-pageNumber="@(Model.PageNumber - 1)" 
+                           asp-route-searchString="@Model.SearchString"
+                           class="btn btn-outline-primary">Previous</a>
+                    }
+
+                    @for (int i = startPage; i <= endPage; i++)
+                    {
+                        <a asp-action="GetAllAccessories" 
+                           asp-route-pageNumber="@i" 
+                           asp-route-searchString="@Model.SearchString"
+                           class="btn btn-outline-primary @(i == Model.PageNumber ? "active" : "")">@i</a>
+                    }
+
+                    @if (Model.PageNumber < totalPages)
+                    {
+                        <a asp-action="GetAllAccessories" 
+                           asp-route-pageNumber="@(Model.PageNumber + 1)" 
+                           asp-route-searchString="@Model.SearchString"
+                           class="btn btn-outline-primary">Next</a>
+                    }
+                </div>
+            </nav>
+        }
     </div>
 </div>
 
@@ -163,10 +121,10 @@
         transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-        }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
 
     .text-truncate-2 {
         display: -webkit-box;
@@ -179,10 +137,10 @@
         transition: opacity 0.2s;
     }
 
-        .addToCartForm.loading {
-            opacity: 0.7;
-            pointer-events: none;
-        }
+    .addToCartForm.loading {
+        opacity: 0.7;
+        pointer-events: none;
+    }
 
     .badge-container {
         position: absolute;
@@ -243,7 +201,32 @@
         background-color: rgba(108, 117, 125, 0.9) !important;
     }
 
-    @@media (max-width: 768px) {
+    .card-img-wrapper {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(2px);
+        overflow: hidden;
+        height: 0;
+        width: 100%;
+        transition: .5s ease;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .card:hover .product-overlay {
+        height: 100%;
+    }
+
+    @media (max-width: 768px) {
         .card-title {
             font-size: 1.1rem;
         }
@@ -262,4 +245,4 @@
             });
         });
     </script>
-}
+} 

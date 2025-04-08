@@ -261,7 +261,7 @@
                     <div class="category-card h-100">
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
-                                <img src="/images/category-notebook.jpg" class="card-img-top" alt="Notebooks"
+                                <img src="/images/bag.jpg" class="card-img-top" alt="Notebooks "
                                      onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Notebook" class="btn btn-light btn-sm">
@@ -287,7 +287,7 @@
     <div class="container">
         <div class="section-header mb-4">
             <h2 class="section-title">Best Seller</h2>
-            <a asp-action="GetAllProducts" asp-controller="Home" class="btn btn-outline-primary">
+            <a asp-action="GetFilteredProducts" asp-controller="Home" asp-route-categoryFilter="bestseller" class="btn btn-outline-primary">
                 View All <i class="bi bi-arrow-right ms-2"></i>
             </a>
         </div>
@@ -316,14 +316,21 @@
                                             </a>
                                         }
                                     </div>
-                                    @if (product.StockQuantity > 0)
-                                    {
-                                        <span class="badge bg-success position-absolute top-0 end-0 m-3">In Stock</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger position-absolute top-0 end-0 m-3">Sold Out</span>
-                                    }
+                                    <div class="badge-container ">
+                                        <div class="left-badges">
+                                            <span class="badge bg-warning">Bestseller</span>
+                                        </div>
+                                        <div class="right-badges">
+                                            @if (product.StockQuantity > 0)
+                                            {
+                                                <span class="badge bg-success">In Stock</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Sold Out</span>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title text-truncate-2">@product.Name</h5>
@@ -389,14 +396,24 @@
                                             View Details
                                         </a>
                                     </div>
-                                    @if (laptop.StockQuantity > 0)
-                                    {
-                                        <span class="badge bg-success position-absolute top-0 end-0 m-3">In Stock</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger position-absolute top-0 end-0 m-3">Sold Out</span>
-                                    }
+                                    <div class="badge-container">
+                                        <div class="left-badges">
+                                            @if (laptop.IsBestseller)
+                                            {
+                                                <span class="badge bg-warning">Bestseller</span>
+                                            }
+                                        </div>
+                                        <div class="right-badges">
+                                            @if (laptop.StockQuantity > 0)
+                                            {
+                                                <span class="badge bg-success">In Stock</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Sold Out</span>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title text-truncate-2">@laptop.Name</h5>
@@ -562,14 +579,24 @@
                                             </a>
                                         }
                                     </div>
-                                    @if (product.StockQuantity > 0)
-                                    {
-                                        <span class="badge bg-success position-absolute top-0 end-0 m-3">In Stock</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger position-absolute top-0 end-0 m-3">Sold Out</span>
-                                    }
+                                    <div class="badge-container">
+                                        <div class="left-badges">
+                                            @if (product.IsBestseller)
+                                            {
+                                                <span class="badge bg-warning">Bestseller</span>
+                                            }
+                                        </div>
+                                        <div class="right-badges">
+                                            @if (product.StockQuantity > 0)
+                                            {
+                                                <span class="badge bg-success">In Stock</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Sold Out</span>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title text-truncate-2">@product.Name</h5>
@@ -635,14 +662,24 @@
                                             View Details
                                         </a>
                                     </div>
-                                    @if (product.StockQuantity > 0)
-                                    {
-                                        <span class="badge bg-success position-absolute top-0 end-0 m-3">In Stock</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger position-absolute top-0 end-0 m-3">Sold Out</span>
-                                    }
+                                    <div class="badge-container">
+                                        <div class="left-badges">
+                                            @if (product.IsBestseller)
+                                            {
+                                                <span class="badge bg-warning">Bestseller</span>
+                                            }
+                                        </div>
+                                        <div class="right-badges">
+                                            @if (product.StockQuantity > 0)
+                                            {
+                                                <span class="badge bg-success">In Stock</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Sold Out</span>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title text-truncate-2">@product.Name</h5>
@@ -708,14 +745,24 @@
                                             View Details
                                         </a>
                                     </div>
-                                    @if (product.StockQuantity > 0)
-                                    {
-                                        <span class="badge bg-success position-absolute top-0 end-0 m-3">In Stock</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger position-absolute top-0 end-0 m-3">Sold Out</span>
-                                    }
+                                    <div class="badge-container">
+                                        <div class="left-badges">
+                                            @if (product.IsBestseller)
+                                            {
+                                                <span class="badge bg-warning">Bestseller</span>
+                                            }
+                                        </div>
+                                        <div class="right-badges">
+                                            @if (product.StockQuantity > 0)
+                                            {
+                                                <span class="badge bg-success">In Stock</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Sold Out</span>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title text-truncate-2">@product.Name</h5>
@@ -781,14 +828,24 @@
                                             View Details
                                         </a>
                                     </div>
-                                    @if (product.StockQuantity > 0)
-                                    {
-                                        <span class="badge bg-success position-absolute top-0 end-0 m-3">In Stock</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger position-absolute top-0 end-0 m-3">Sold Out</span>
-                                    }
+                                    <div class="badge-container">
+                                        <div class="left-badges">
+                                            @if (product.IsBestseller)
+                                            {
+                                                <span class="badge bg-warning">Bestseller</span>
+                                            }
+                                        </div>
+                                        <div class="right-badges">
+                                            @if (product.StockQuantity > 0)
+                                            {
+                                                <span class="badge bg-success">In Stock</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Sold Out</span>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title text-truncate-2">@product.Name</h5>
@@ -854,14 +911,24 @@
                                             View Details
                                         </a>
                                     </div>
-                                    @if (product.StockQuantity > 0)
-                                    {
-                                        <span class="badge bg-success position-absolute top-0 end-0 m-3">In Stock</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger position-absolute top-0 end-0 m-3">Sold Out</span>
-                                    }
+                                    <div class="badge-container">
+                                        <div class="left-badges">
+                                            @if (product.IsBestseller)
+                                            {
+                                                <span class="badge bg-warning">Bestseller</span>
+                                            }
+                                        </div>
+                                        <div class="right-badges">
+                                            @if (product.StockQuantity > 0)
+                                            {
+                                                <span class="badge bg-success">In Stock</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Sold Out</span>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="card-body d-flex flex-column">
                                     <h5 class="card-title text-truncate-2">@product.Name</h5>
@@ -1378,6 +1445,57 @@
         height: 3px;
         background-color: var(--primary-color);
         border-radius: 2px;
+    }
+
+    .badge-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem;
+        pointer-events: none;
+    }
+    
+    .left-badges, .right-badges {
+        display: flex;
+        flex-direction: column;
+        gap: 0.375rem;
+        align-items: flex-start;
+    }
+
+    .right-badges {
+        align-items: flex-end;
+    }
+
+    .badge {
+        margin: 0;
+        font-weight: 500;
+        padding: 0.5em 1em;
+        border-radius: 6px;
+        backdrop-filter: blur(4px);
+        position: relative;
+        max-width: 100px;
+        text-align: center;
+        font-size: 0.85rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .badge.bg-warning {
+        background-color: rgba(255, 193, 7, 0.9) !important;
+        color: #212529;
+    }
+
+    .badge.bg-success {
+        background-color: rgba(46, 204, 113, 0.9) !important;
+    }
+
+    .badge.bg-danger {
+        background-color: rgba(231, 76, 60, 0.9) !important;
     }
 </style>
 
