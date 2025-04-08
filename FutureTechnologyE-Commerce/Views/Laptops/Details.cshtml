@@ -23,19 +23,15 @@
 <section class="container py-5">
     <div class="row g-4">
         <!-- Laptop Images -->
-        <div class="col-lg-6 mb-4">
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                <div class="product-image-wrapper position-relative">
-                    @if (Model.IsBestseller)
-                    {
-                        <span class="badge bg-warning position-absolute top-0 start-0 m-3 py-2 px-3 rounded-pill">Bestseller</span>
-                    }
-                    <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : "/images/placeholder.png")"
-                         class="img-fluid w-100"
-                         alt="@Model.Name"
-                         style="aspect-ratio: 4/3; object-fit: contain; background-color: white;">
-                </div>
-            </div>
+        <div class="col-md-5">
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img src="@Model.ImageUrl" class="product-detail-image shadow-sm" alt="@Model.Name" />
+            }
+            else
+            {
+                <img src="/images/placeholder.jpg" class="product-detail-image shadow-sm" alt="No image available" />
+            }
         </div>
 
         <!-- Laptop Info -->

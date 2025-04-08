@@ -9,11 +9,11 @@
         <div class="col-md-5">
             @if (!string.IsNullOrEmpty(Model.ImageUrl))
             {
-                <img src="@Model.ImageUrl" class="img-fluid border rounded" alt="@Model.Name" />
+                <img src="@Model.ImageUrl" class="product-detail-image shadow-sm" alt="@Model.Name" />
             }
             else
             {
-                <img src="/images/placeholder.jpg" class="img-fluid border rounded" alt="No image available" />
+                <img src="/images/placeholder.jpg" class="product-detail-image shadow-sm" alt="No image available" />
             }
         </div>
         <div class="col-md-7">
