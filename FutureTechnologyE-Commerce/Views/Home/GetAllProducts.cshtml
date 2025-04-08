@@ -55,12 +55,27 @@
         @foreach (var item in Model.Products)
         {
             <div class="col-12 col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow rounded-3 overflow-hidden">
-                    <div class="position-relative">
+                <div class="card h-100 border-0 shadow rounded-3 overflow-hidden product-card">
+                    <div class="card-img-wrapper">
                         <img src="@item.ImageUrl"
-                             class="card-img-top img-fluid object-fit-cover"
-                             style="aspect-ratio: 16/9; object-position: center"
-                             alt="@item.Name">
+                             class="card-img-top"
+                             alt="@item.Name"
+                             onerror="this.src='/images/placeholder.svg'">
+                        
+                        <div class="product-overlay">
+                            @if (item.GetType().Name == "Laptop")
+                            {
+                                <a asp-controller="Laptops" asp-action="Details" asp-route-id="@item.ProductID" class="btn btn-light btn-sm">
+                                    View Details
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-controller="Home" asp-action="Details" asp-route-id="@item.ProductID" class="btn btn-light btn-sm">
+                                    View Details
+                                </a>
+                            }
+                        </div>
 
                         <div class="position-absolute top-0 end-0 m-3">
                             <span class="badge bg-primary">@item.Category.Name</span>
@@ -74,7 +89,6 @@
                         <div class="d-flex justify-content-between align-items-center mt-auto">
                             <div>
                                 <span class="h5 text-primary fw-bold">EGP @item.Price.ToString("0.00")</span>
-                                }
                             </div>
 
                             <form asp-controller="Cart" asp-action="AddToCart" method="post" class="addToCartForm">
