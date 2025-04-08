@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = string.IsNullOrEmpty(Model.Category) ? "All Products" : 
-                        Model.Category.ToLower() == "mouse" ? "Mice" :
+                        Model.Category.ToLower() == "mouse" ? "Mouse" :
                         Model.Category.ToLower() == "keyboard" ? "Keyboards" :
                         Model.Category.ToLower() == "mousepad" ? "Mousepads" :
                         Model.Category.ToLower() == "printer" ? "Printers" : 
@@ -37,7 +37,7 @@
                     {
                         foreach (var category in Model.CategoryOptions)
                         {
-                            string displayName = category == "Mouse" ? "Mice" : $"{category}s";
+                            string displayName = category == "Mouse" ? "Mouse" : $"{category}s";
                             if (Model.Category?.ToLower() == category.ToLower())
                             {
                                 <option value="@category" selected>@displayName</option>
