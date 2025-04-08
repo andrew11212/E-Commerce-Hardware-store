@@ -160,17 +160,27 @@ namespace FutureTechnologyE_Commerce.Controllers
 				{
 					searchString = searchString.Trim().ToLower();
 					query = query.Where(p => p.Name.ToLower().Contains(searchString) ||
-											p.Description.ToLower().Contains(searchString));
+											p.Description.ToLower().Contains(searchString) ||
+											(p.Category != null && p.Category.Name.ToLower().Contains(searchString)) ||
+											(p.Brand != null && p.Brand.Name.ToLower().Contains(searchString)));
 				}
 
 				// Calculate total count for pagination
 				int totalCount = await query.CountAsync();
 
-				// Apply paging
-				var products = await query
-					.Skip((pageNumber - 1) * pageSize)
-					.Take(pageSize)
-					.ToListAsync();
+				// Apply sorting (can be extended based on DataTables parameters)
+				query = query.OrderBy(p => p.Name);
+
+				// Apply paging if pageSize is valid
+				if (pageSize > 0)
+				{
+					query = query
+						.Skip((pageNumber - 1) * pageSize)
+						.Take(pageSize);
+				}
+
+				// Execute query and get products
+				var products = await query.ToListAsync();
 
 				// Project the results into the desired format
 				var data = products.Select(p => new
@@ -182,8 +192,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 					categoryName = p.Category?.Name ?? "N/A",
 					brandName = p.Brand?.Name ?? "N/A",
 					stockQuantity = p.StockQuantity,
-					isBestseller =p.IsBestseller
-
+					isBestseller = p.IsBestseller
 				}).ToList();
 
 				// Return JSON with data and total count

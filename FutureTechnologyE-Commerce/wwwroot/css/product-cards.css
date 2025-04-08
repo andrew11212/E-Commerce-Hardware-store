@@ -1,0 +1,91 @@
+/* Product Card Image Standardization */
+
+/* Card image wrapper */
+.card-img-wrapper {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1/1; /* Square aspect ratio */
+  border-radius: 12px 12px 0 0;
+  background-color: #ffffff;
+}
+
+/* Product image within cards */
+.card-img-top {
+  width: 100%;
+  height: 100%;
+  object-fit: contain !important; /* Ensure image maintains aspect ratio */
+  padding: 0.5rem;
+  transition: transform 0.5s ease;
+}
+
+/* Product overlay for hover effects */
+.product-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 12px 12px 0 0;
+}
+
+/* Hover effects */
+.card:hover .product-overlay {
+  opacity: 1;
+}
+
+.card:hover .card-img-top {
+  transform: scale(1.05);
+}
+
+/* Product card specific styles */
+.product-card {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.product-card .card {
+  height: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Details page product image */
+.product-detail-image {
+  width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 1rem;
+  transition: transform 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .card-img-wrapper {
+    aspect-ratio: 4/3; /* Slightly wider on small devices */
+  }
+
+  .product-detail-image {
+    max-height: 300px;
+  }
+}
+
+/* Related products */
+.related-product-img {
+  height: 180px;
+  object-fit: contain !important;
+  background-color: #ffffff;
+  padding: 0.5rem;
+  transition: transform 0.3s ease;
+}

@@ -23,19 +23,16 @@
 <section class="container py-5">
     <div class="row g-4">
         <!-- Product Images -->
-        <div class="col-lg-6 mb-4">
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                <div class="product-image-wrapper position-relative">
-                    @if (Model.IsBestseller)
-                    {
-                        <span class="badge bg-warning position-absolute top-0 start-0 m-3 py-2 px-3 rounded-pill">Bestseller</span>
-                    }
-                    <img src="@Model.ImageUrl"
-                         class="img-fluid w-100"
-                         alt="@Model.Name"
-                         onerror="this.src='/images/placeholder.png'"
-                         style="aspect-ratio: 4/3; object-fit: contain; background-color: white;">
-                </div>
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <div class="position-relative bg-white rounded-4 shadow-sm p-3 text-center product-img-container">
+                @if (Model.IsBestseller)
+                {
+                    <span class="badge bg-warning position-absolute top-0 start-0 m-3 py-2 px-3 rounded-pill">Bestseller</span>
+                }
+                <img src="@Model.ImageUrl" 
+                     alt="@Model.Name" 
+                     class="product-detail-image"
+                     onerror="this.src='/images/placeholder.png'">
             </div>
         </div>
 
@@ -416,20 +413,18 @@
                                 {
                                     <a asp-controller="Laptops" asp-action="Details" asp-route-id="@product.ProductID">
                                         <img src="@product.ImageUrl"
-                                             class="card-img-top"
+                                             class="card-img-top related-product-img"
                                              alt="@product.Name"
-                                             onerror="this.src='/images/placeholder.png'"
-                                             style="height: 200px; object-fit: contain; background-color: white;">
+                                             onerror="this.src='/images/placeholder.png'">
                                     </a>
                                 }
                                 else
                                 {
                                     <a asp-controller="Home" asp-action="Details" asp-route-id="@product.ProductID">
                                         <img src="@product.ImageUrl"
-                                             class="card-img-top"
+                                             class="card-img-top related-product-img"
                                              alt="@product.Name"
-                                             onerror="this.src='/images/placeholder.png'"
-                                             style="height: 200px; object-fit: contain; background-color: white;">
+                                             onerror="this.src='/images/placeholder.png'">
                                     </a>
                                 }
                                 <button class="btn btn-sm rounded-circle position-absolute top-0 end-0 m-2 p-2 bg-white text-primary shadow-sm wishlist-btn">
