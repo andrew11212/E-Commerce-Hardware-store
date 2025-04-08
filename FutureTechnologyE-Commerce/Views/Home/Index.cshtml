@@ -177,7 +177,7 @@
                     <div class="category-card h-100">
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
-                                <img src="~/images/product01.png" />" class="card-img-top" alt="Laptops"
+                                <img src="~/images/lab.jpg" class="card-img-top" alt="Laptops"
                                 onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetAllLaptops" class="btn btn-light btn-sm">
@@ -198,7 +198,7 @@
                     <div class="category-card h-100">
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
-                                <img src="/images/category-mouse.jpg" class="card-img-top" alt="Mouse"
+                                <img src="~/images/IMG-20250408-WA0021.jpg" class="card-img-top" alt="Mouse"
                                      onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Mouse" class="btn btn-light btn-sm">
@@ -219,8 +219,8 @@
                     <div class="category-card h-100">
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
-                                <img src="/images/placeholder.svg" class="card-img-top" alt="Storage"
-                                     onerror="this.src='/images/placeholder.svg'">
+                                <img src="~/images/hard.jpg"  class="card-img-top" alt="Storage"
+                                onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Storage" class="btn btn-light btn-sm">
                                         View All
@@ -240,8 +240,8 @@
                     <div class="category-card h-100">
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
-                                <img src="/images/category-printer.jpg" class="card-img-top" alt="Printers"
-                                     onerror="this.src='/images/placeholder.svg'">
+                                <img src="~/images/printer.jpg" class="card-img-top" alt="Printers"
+                                onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Printer" class="btn btn-light btn-sm">
                                         View All
@@ -455,7 +455,7 @@
                     <div class="category-card h-100">
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
-                                <img src="/images/category-mouse.jpg" class="card-img-top" alt="Mouse"
+                                <img src="/images/IMG-20250408-WA0021.jpg" class="card-img-top" alt="Mouse"
                                      onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Mouse" class="btn btn-light btn-sm">
@@ -476,7 +476,7 @@
                     <div class="category-card h-100">
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
-                                <img src="/images/category-keyboard.jpg" class="card-img-top" alt="Keyboard"
+                                <img src="/images/kepoard.jpg" class="card-img-top" alt="Keyboard"
                                      onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Keyboard" class="btn btn-light btn-sm">
@@ -497,7 +497,7 @@
                     <div class="category-card h-100">
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
-                                <img src="/images/category-notebook.jpg" class="card-img-top" alt="Notebooks"
+                                <img src="/images/lab.jpg" class="card-img-top" alt="Notebooks"
                                      onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Notebook" class="btn btn-light btn-sm">
@@ -518,7 +518,7 @@
                     <div class="category-card h-100">
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
-                                <img src="/images/category-storage.jpg" class="card-img-top" alt="Storage"
+                                <img src="/images/hard.jpg" class="card-img-top" alt="Storage"
                                      onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Storage" class="btn btn-light btn-sm">
@@ -1135,14 +1135,16 @@
     .card-img-wrapper {
         position: relative;
         overflow: hidden;
-        aspect-ratio: 4/3;
+        aspect-ratio: 1/1;
         border-radius: 12px 12px 0 0;
+        background-color: #ffffff;
     }
 
     .card-img-top {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain !important;
+        padding: 0.5rem;
         transition: transform 0.5s ease;
     }
 
