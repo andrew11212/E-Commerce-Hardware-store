@@ -39,7 +39,6 @@
                             <div class="d-flex justify-content-between align-items-center mt-auto">
                                 <div>
                                     <span class="h5 text-primary fw-bold">EGP @item.Price.ToString("0.00")</span>
-                                    }
                                 </div>
 
                                 <form asp-controller="Cart" asp-action="AddToCart" method="post" class="addToCartForm">
@@ -57,27 +56,46 @@
                 </div>
             }
 
-            <nav aria-label="Page navigation" class="mt-4">
-                <!-- Pagination Controls -->
-                <div class="pagination mt-4 d-flex justify-content-center flex-wrap gap-2">
-                    @{
-                        int totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
-                    }
-                    @if (Model.PageNumber > 1)
-                    {
-                        <a asp-action="" GetAllAccessories"" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-searchString="@Model.SearchString" class="btn btn-outline-primary">Previous</a>
-                    }
-                    @for (int i = 1; i <= totalPages; i++)
-                    {
-                        <a asp-action="" GetAllAccessories"" asp-route-pageNumber="@i" asp-route-searchString="@Model.SearchString"
-                           class="btn btn-outline-primary @(i == Model.PageNumber ? "active" : "")">@i</a>
-                    }
-                    @if (Model.PageNumber < totalPages)
-                    {
-                        <a asp-action="" GetAllAccessories"" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-searchString="@Model.SearchString" class="btn btn-outline-primary">Next</a>
-                    }
-                </div>
-            </nav>
+            @if (Model.TotalCount > 0)
+            {
+                <nav aria-label="Accessories pagination" class="mt-4">
+                    <div class="d-flex justify-content-center">
+                        <ul class="pagination">
+                            @{
+                                int totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+                                int startPage = Math.Max(1, Model.PageNumber - 2);
+                                int endPage = Math.Min(totalPages, startPage + 4);
+                                startPage = Math.Max(1, endPage - 4);
+                            }
+
+                            @if (Model.PageNumber > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="GetAllAccessories" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-searchString="@Model.SearchString" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            }
+
+                            @for (int i = startPage; i <= endPage; i++)
+                            {
+                                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                                    <a class="page-link" asp-action="GetAllAccessories" asp-route-pageNumber="@i" asp-route-searchString="@Model.SearchString">@i</a>
+                                </li>
+                            }
+
+                            @if (Model.PageNumber < totalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="GetAllAccessories" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-searchString="@Model.SearchString" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </nav>
+            }
         </div>
     </div>
 </div>
@@ -106,6 +124,20 @@
                     opacity: 0.7;
                     pointer-events: none;
                 }
+
+            .pagination {
+                margin-bottom: 0;
+            }
+
+            .page-link {
+                color: var(--bs-primary);
+                border: 1px solid var(--bs-primary);
+            }
+
+            .page-item.active .page-link {
+                background-color: var(--bs-primary);
+                border-color: var(--bs-primary);
+            }
 
             @@media (max-width: 768px) {
                 .card-title {

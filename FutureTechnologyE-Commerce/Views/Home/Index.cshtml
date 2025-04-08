@@ -19,7 +19,7 @@
                     <div class="carousel-item @(firstPromotion ? "active" : "")">
                         <div class="carousel-content">
                             <img src="@promotion.ImageUrl" alt="@promotion.Title"
-                                 class="carousel-image" onerror="this.src='/images/placeholder.avif'">
+                                 class="carousel-image" onerror="this.src='/images/placeholder.svg'">
                             <div class="carousel-overlay"></div>
                             <div class="carousel-caption">
                                 <h2 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown">@promotion.Title</h2>
@@ -133,7 +133,7 @@
                             <div class="card shadow-hover">
                                 <div class="promotion-img-wrapper">
                                     <img src="@promotion.ImageUrl" class="card-img-top" alt="@promotion.Title"
-                                         onerror="this.src='/images/placeholder.avif'">
+                                         onerror="this.src='/images/placeholder.svg'">
                                     <div class="promotion-overlay">
                                         @if (promotion.ProductId.HasValue)
                                         {
@@ -178,7 +178,7 @@
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
                                 <img src="~/images/product01.png" />" class="card-img-top" alt="Laptops"
-                                onerror="this.src='/images/placeholder.avif'">
+                                onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetAllLaptops" class="btn btn-light btn-sm">
                                         View All
@@ -199,7 +199,7 @@
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
                                 <img src="/images/category-mouse.jpg" class="card-img-top" alt="Mouse"
-                                     onerror="this.src='/images/placeholder.avif'">
+                                     onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Mouse" class="btn btn-light btn-sm">
                                         View All
@@ -219,8 +219,8 @@
                     <div class="category-card h-100">
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
-                                <img src="/images/placeholder.avif" class="card-img-top" alt="Storage"
-                                     onerror="this.src='/images/placeholder.avif'">
+                                <img src="/images/placeholder.svg" class="card-img-top" alt="Storage"
+                                     onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Storage" class="btn btn-light btn-sm">
                                         View All
@@ -241,7 +241,7 @@
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
                                 <img src="/images/category-printer.jpg" class="card-img-top" alt="Printers"
-                                     onerror="this.src='/images/placeholder.avif'">
+                                     onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Printer" class="btn btn-light btn-sm">
                                         View All
@@ -262,7 +262,7 @@
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
                                 <img src="/images/category-notebook.jpg" class="card-img-top" alt="Notebooks"
-                                     onerror="this.src='/images/placeholder.avif'">
+                                     onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Notebook" class="btn btn-light btn-sm">
                                         View All
@@ -301,7 +301,7 @@
                             <div class="card shadow-hover">
                                 <div class="card-img-wrapper">
                                     <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name"
-                                         onerror="this.src='/images/placeholder.avif'">
+                                         onerror="this.src='/images/placeholder.svg'">
                                     <div class="product-overlay">
                                         @if (product.GetType().Name == "Laptop")
                                         {
@@ -383,7 +383,7 @@
                             <div class="card shadow-hover">
                                 <div class="card-img-wrapper">
                                     <img src="@laptop.ImageUrl" class="card-img-top" alt="@laptop.Name"
-                                         onerror="this.src='/images/placeholder.avif'">
+                                         onerror="this.src='/images/placeholder.svg'">
                                     <div class="product-overlay">
                                         <a asp-controller="Laptops" asp-action="Details" asp-route-id="@laptop.ProductID" class="btn btn-light btn-sm">
                                             View Details
@@ -456,7 +456,7 @@
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
                                 <img src="/images/category-mouse.jpg" class="card-img-top" alt="Mouse"
-                                     onerror="this.src='/images/placeholder.avif'">
+                                     onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Mouse" class="btn btn-light btn-sm">
                                         View All
@@ -477,7 +477,7 @@
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
                                 <img src="/images/category-keyboard.jpg" class="card-img-top" alt="Keyboard"
-                                     onerror="this.src='/images/placeholder.avif'">
+                                     onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Keyboard" class="btn btn-light btn-sm">
                                         View All
@@ -498,7 +498,7 @@
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
                                 <img src="/images/category-notebook.jpg" class="card-img-top" alt="Notebooks"
-                                     onerror="this.src='/images/placeholder.avif'">
+                                     onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Notebook" class="btn btn-light btn-sm">
                                         View All
@@ -519,7 +519,7 @@
                         <div class="card shadow-hover">
                             <div class="card-img-wrapper">
                                 <img src="/images/category-storage.jpg" class="card-img-top" alt="Storage"
-                                     onerror="this.src='/images/placeholder.avif'">
+                                     onerror="this.src='/images/placeholder.svg'">
                                 <div class="product-overlay">
                                     <a asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Storage" class="btn btn-light btn-sm">
                                         View All
@@ -547,7 +547,7 @@
                             <div class="card shadow-hover">
                                 <div class="card-img-wrapper">
                                     <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name"
-                                         onerror="this.src='/images/placeholder.avif'">
+                                         onerror="this.src='/images/placeholder.svg'">
                                     <div class="product-overlay">
                                         @if (product.GetType().Name == "Laptop")
                                         {
@@ -629,7 +629,7 @@
                             <div class="card shadow-hover">
                                 <div class="card-img-wrapper">
                                     <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name"
-                                         onerror="this.src='/images/placeholder.avif'">
+                                         onerror="this.src='/images/placeholder.svg'">
                                     <div class="product-overlay">
                                         <a asp-controller="Home" asp-action="Details" asp-route-id="@product.ProductID" class="btn btn-light btn-sm">
                                             View Details
@@ -702,7 +702,7 @@
                             <div class="card shadow-hover">
                                 <div class="card-img-wrapper">
                                     <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name"
-                                         onerror="this.src='/images/placeholder.avif'">
+                                         onerror="this.src='/images/placeholder.svg'">
                                     <div class="product-overlay">
                                         <a asp-controller="Home" asp-action="Details" asp-route-id="@product.ProductID" class="btn btn-light btn-sm">
                                             View Details
@@ -775,7 +775,7 @@
                             <div class="card shadow-hover">
                                 <div class="card-img-wrapper">
                                     <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name"
-                                         onerror="this.src='/images/placeholder.avif'">
+                                         onerror="this.src='/images/placeholder.svg'">
                                     <div class="product-overlay">
                                         <a asp-controller="Home" asp-action="Details" asp-route-id="@product.ProductID" class="btn btn-light btn-sm">
                                             View Details
@@ -848,7 +848,7 @@
                             <div class="card shadow-hover">
                                 <div class="card-img-wrapper">
                                     <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name"
-                                         onerror="this.src='/images/placeholder.avif'">
+                                         onerror="this.src='/images/placeholder.svg'">
                                     <div class="product-overlay">
                                         <a asp-controller="Home" asp-action="Details" asp-route-id="@product.ProductID" class="btn btn-light btn-sm">
                                             View Details
