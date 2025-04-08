@@ -93,69 +93,167 @@
             font-size: 1.5rem;
         }
 
+        /* Additional Search UI Enhancements */
+        @@keyframes placeholderShimmer {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
         .search-container {
             position: relative;
-            max-width: 500px;
+            max-width: 750px;
             width: 100%;
+            transition: all 0.3s ease;
         }
-
-        .search-container .input-group {
-            border-radius: 4px;
-            overflow: hidden;
+        
+        .search-container form {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-
-        .search-container .btn-light {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-right: none;
-            color: #333;
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-            font-size: 0.9rem;
+        
+        /* Form focus effect */
+        .search-container form:focus-within {
+            transform: translateY(-2px);
         }
-
-        .search-container .dropdown-menu {
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin-top: 1px;
+        
+        /* Filter section styling */
+        .search-container .filter-section {
+            width: 200px;
+            transition: all 0.3s ease;
+            position: relative;
         }
-
-        .search-container .dropdown-item {
-            paddng 05rem 1rem;
-            font-size: 0.9rem;
-            color: #333;
-        }
-
-        .search-container .dropdown-item:hover,
-        .search-container .dropdown-item:focus {
-            background-color: #f8f9fa;
-            color: #333;
+        
+        /* Dropdown styling */
+        .search-container .form-select {
+            border: 1px solid #e2e8f0;
+            padding: 0.7rem 1rem;
             font-weight: 500;
+            color: #333;
+            border-radius: 50px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            background-position: right 0.75rem center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234a90e2' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-size: 14px;
         }
-
+        
+        .search-container .form-select:focus {
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.25);
+            outline: none;
+        }
+        
+        .search-container .form-select:hover {
+            border-color: #4a90e2;
+            transform: translateY(-1px);
+        }
+        
+        /* Input group styling */
+        .search-container .input-group {
+            border-radius: 50px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+            flex-grow: 1;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .search-container .input-group:focus-within {
+            box-shadow: 0 5px 20px rgba(0, 123, 255, 0.15);
+        }
+        
+        /* Input field styling */
         .search-container .form-control {
-            border: 1px solid #dee2e6;
-            border-left: none;
-            border-right: none;
+            border: 1px solid #e2e8f0;
             box-shadow: none;
+            padding: 0.7rem 1.2rem;
+            height: calc(2.7rem + 2px);
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            color: #333;
+            background-color: #fff;
         }
-
+        
         .search-container .form-control:focus {
             box-shadow: none;
-            border-color: #dee2e6;
+            border-color: #4a90e2;
+            outline: none;
         }
-
+        
+        .search-container .form-control:hover {
+            border-color: #4a90e2;
+        }
+        
+        /* Placeholder animation */
+        .search-container .form-control::placeholder {
+            transition: all 0.3s ease;
+            animation: placeholderShimmer 3s infinite ease-in-out;
+        }
+        
+        .search-container .form-control:focus::placeholder {
+            opacity: 0.7;
+            transform: translateX(5px);
+        }
+        
+        /* Search button styling */
         .search-container .btn-primary {
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
-            background-color: #0d6efd;
-            border-color: #0d6efd;
+            background: linear-gradient(135deg, #4a90e2, #357ABD);
+            border: none;
+            padding: 0 1.5rem;
+            transition: all 0.3s ease;
+            height: calc(2.7rem + 2px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
+        
+        /* Button icon styling */
+        .search-container .btn-primary i {
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+        
+        /* Button hover animation */
+        @@keyframes searchButtonPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
         .search-container .btn-primary:hover {
-            background-color: #0b5ed7;
-            border-color: #0a58ca;
+            background: linear-gradient(135deg, #357ABD, #2A6BAD);
+            animation: searchButtonPulse 1.5s infinite ease-in-out;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .search-container .btn-primary:hover i {
+            transform: scale(1.1);
+        }
+        
+        /* Mobile responsiveness */
+        @@media (max-width: 768px) {
+            .search-container form {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .search-container .filter-section {
+                width: 100%;
+                margin-right: 0 !important;
+            }
+            
+            .search-container .input-group,
+            .search-container .form-control,
+            .search-container .btn-primary {
+                height: calc(2.5rem + 2px);
+            }
         }
 
         /* Main Navigation */
@@ -430,6 +528,20 @@
             color: white;
             transform: translate(25%, -25%);
         }
+
+        .search-container .input-group.focused {
+            box-shadow: 0 5px 20px rgba(0, 123, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .search-container .form-select.changed {
+            animation: flash 0.3s ease;
+        }
+        
+        @@keyframes flash {
+            0% { background-color: #e6f0ff; }
+            100% { background-color: transparent; }
+        }
     </style>
     
     @await RenderSectionAsync("Styles", required: false)
@@ -475,30 +587,30 @@
             <a class="navbar-brand" asp-controller="Home" asp-action="Index">
                 <b>Future Technology Store</b>
             </a>
-            <form asp-controller="Home" asp-action="GetAllProducts" method="get" class="search-container">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false" id="searchCategoryDropdown">
-                            All
-                        </button>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#" data-value="">All</a>
-                            <a class="dropdown-item" href="#" data-value="Accessories">Accessories</a>
-                            <a class="dropdown-item" href="#" data-value="Laptops">Laptops</a>
-                            <a class="dropdown-item" href="#" data-value="Gaming">Gaming</a>
-                            <a class="dropdown-item" href="#" data-value="Office">Office Needs</a>
-                        </div>
+            
+            <div class="search-container mx-auto">
+                <form method="get" action="@Url.Content("~/Home/GetAllProducts")" id="searchForm" class="d-flex align-items-center">
+                    <input type="hidden" name="pageNumber" value="1" />
+                    <div class="filter-section me-2">
+                        <select name="categoryFilter" id="categoryFilter" class="form-select">
+                            <option value="">All Products</option>
+                            <option value="Accessories">Accessories</option>
+                            <option value="Laptops">Laptops</option>
+                            <option value="Mouse">Mouse</option>
+                            <option value="Keyboard">Keyboards</option>
+                            <option value="Storage">Storage</option>
+                            <option value="Printer">Printers</option>
+                            <option value="Bestseller">Best Sellers</option>
+                        </select>
                     </div>
-                    <input name="searchString" class="form-control" type="search" placeholder="Search products...">
-                    <input type="hidden" name="category" id="selectedCategory" value="">
-                    <div class="input-group-append">
-                        <button class="btn btn-primary" type="submit">
+                    <div class="input-group">
+                        <input name="searchString" class="form-control" type="search" placeholder="Search products..." aria-label="Search products" style="border-radius: 50px 0 0 50px;">
+                        <button class="btn btn-primary" type="submit" style="border-radius: 0 50px 50px 0;" aria-label="Search">
                             <i class="bi bi-search"></i>
                         </button>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
 
             <div class="d-flex align-items-center gap-3">
                 @* <a class="nav-link text-light icon-text-link" asp-controller="Wishlist" asp-action="Index">
@@ -781,19 +893,8 @@
     <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
     <script>
-        // Category dropdown functionality
+        // Category filter functionality
         $(document).ready(function () {
-            // Handle dropdown item selection for search
-            $('.dropdown-item').click(function (e) {
-                var selectedValue = $(this).data('value');
-                if (selectedValue !== undefined) {
-                    e.preventDefault();
-                    var selectedText = $(this).text().trim();
-                    $('#searchCategoryDropdown').text(selectedText);
-                    $('#selectedCategory').val(selectedValue);
-                }
-            });
-
             // Fix the Content Management dropdown positioning
             $('.navbar-nav .dropdown').on('show.bs.dropdown', function () {
                 $(this).find('.dropdown-menu').css({
@@ -824,6 +925,83 @@
                         'opacity': 0,
                         'margin-top': '0'
                     });
+                }
+            });
+            
+            // Search form enhancements
+            const searchInput = $('input[name="searchString"]');
+            const searchForm = $('#searchForm');
+            const categoryFilter = $('#categoryFilter');
+            
+            // Add focus effect
+            searchInput.on('focus', function() {
+                $(this).closest('.input-group').addClass('focused');
+            });
+            
+            searchInput.on('blur', function() {
+                $(this).closest('.input-group').removeClass('focused');
+            });
+            
+            // Visual feedback on category change
+            categoryFilter.on('change', function() {
+                $(this).addClass('changed');
+                setTimeout(() => {
+                    $(this).removeClass('changed');
+                }, 300);
+            });
+            
+            // Handle search form submission
+            $('#searchForm').on('submit', function(e) {
+                e.preventDefault();
+                const selectedCategory = $('#categoryFilter').val();
+                const searchText = $('input[name="searchString"]').val();
+                const form = $(this);
+                
+                console.log('Form submit - Category:', selectedCategory, 'Search:', searchText);
+                
+                if (selectedCategory === "") {
+                    // All Products
+                    form.attr('action', '@Url.Content("~/Home/GetAllProducts")');
+                } else if (selectedCategory === "Laptops") {
+                    // Redirect to Laptops with search
+                    form.attr('action', '@Url.Content("~/Home/GetAllLaptops")');
+                } else {
+                    // Other categories
+                    form.attr('action', '@Url.Content("~/Home/GetFilteredProducts")');
+                }
+                
+                form.off('submit').submit();
+            });
+            
+            // Handle category filter change
+            $('#categoryFilter').change(function() {
+                const selectedCategory = $(this).val();
+                console.log('Selected category:', selectedCategory);
+                const form = $(this).closest('form');
+                
+                // Special handling for specific categories
+                if (selectedCategory === "") {
+                    // All Products
+                    console.log('Redirecting to All Products');
+                    window.location.href = '@Url.Content("~/Home/GetAllProducts")';
+                    return false;
+                } else if (selectedCategory === "Laptops") {
+                    // Laptops
+                    console.log('Redirecting to Laptops');
+                    window.location.href = '@Url.Content("~/Home/GetAllLaptops")';
+                    return false;
+                } else if (selectedCategory === "Bestseller") {
+                    // Best Sellers needs to use GetFilteredProducts action
+                    console.log('Submitting form for Best Sellers');
+                    form.attr('action', '@Url.Content("~/Home/GetFilteredProducts")');
+                    form.submit();
+                    return false;
+                } else {
+                    // For other categories (Mouse, Keyboard, Storage, Printer, Accessories)
+                    console.log('Submitting form for category:', selectedCategory);
+                    form.attr('action', '@Url.Content("~/Home/GetFilteredProducts")');
+                    form.submit();
+                    return false;
                 }
             });
         });
