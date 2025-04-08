@@ -210,7 +210,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 		public async Task<IActionResult> GetAllAccessories(int pageNumber = 1, string searchString = "")
 		{
 			// Get all products that belong to the Accessories category
-			var query = _unitOfWork.ProductRepository.GetQueryable(p => p.Category.Name == "Accessories", includeProperties: "Category,Brand");
+			var query = _unitOfWork.ProductRepository.GetQueryable(p => p.Category.ParentCategory.Name == "Accessories", includeProperties: "Category,Brand");
 
 			if (!string.IsNullOrEmpty(searchString))
 			{
