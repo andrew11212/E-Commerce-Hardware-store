@@ -556,129 +556,133 @@
                     </li>
                     @if (SignInManager.IsSignedIn(User))
                     {
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle fw-semibold d-flex align-items-center" href="#" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle me-2"></i>
-                            User Management
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark py-2">
-                            <li class="px-3 py-2 text-light small fw-bold text-uppercase">My Account</li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" asp-area="Identity" 
-                                    asp-page="/Account/Manage/Index">
-                                    <i class="bi bi-person-gear me-2"></i>
-                                    <span>Profile</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" asp-area="Identity" 
-                                    asp-page="/Account/Manage/Email">
-                                    <i class="bi bi-envelope me-2"></i>
-                                    <span>Email</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" asp-area="Identity" 
-                                    asp-page="/Account/Manage/ChangePassword">
-                                    <i class="bi bi-key me-2"></i>
-                                    <span>Password</span>
-                                </a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider my-2">
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" asp-controller="Order" 
-                                    asp-action="Index">
-                                    <i class="bi bi-box2 me-2"></i>
-                                    <span>My Orders</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" asp-controller="Cart" 
-                                    asp-action="Index">
-                                    <i class="bi bi-cart me-2"></i>
-                                    <span>My Cart</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle fw-semibold d-flex align-items-center" href="#" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle me-2"></i>
+                                User Management
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark py-2">
+                                <li class="px-3 py-2 text-light small fw-bold text-uppercase">My Account</li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-area="Identity"
+                                       asp-page="/Account/Manage/Index">
+                                        <i class="bi bi-person-gear me-2"></i>
+                                        <span>Profile</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-area="Identity"
+                                       asp-page="/Account/Manage/Email">
+                                        <i class="bi bi-envelope me-2"></i>
+                                        <span>Email</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-area="Identity"
+                                       asp-page="/Account/Manage/ChangePassword">
+                                        <i class="bi bi-key me-2"></i>
+                                        <span>Password</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider my-2">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Order"
+                                       asp-action="Index">
+                                        <i class="bi bi-box2 me-2"></i>
+                                        <span>My Orders</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Cart"
+                                       asp-action="Index">
+                                        <i class="bi bi-cart me-2"></i>
+                                        <span>My Cart</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                     }
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle fw-semibold d-flex align-items-center" href="#" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-gear-fill me-2"></i>
-                            Content Management
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark py-2">
-                            <li class="px-3 py-2 text-light small fw-bold text-uppercase">Manage Products</li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" asp-controller="Product"
-                                    asp-action="Index">
-                                    <i class="bi bi-box-seam me-2"></i>
-                                    <span>All Products</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" asp-controller="Promotions"
-                                    asp-action="Index">
-                                    <i class="bi bi-megaphone me-2"></i>
-                                    <span>Promotions</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" asp-controller="Laptops"
-                                    asp-action="Index">
-                                    <i class="bi bi-laptop me-2"></i>
-                                    <span>Laptops</span>
-                                </a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider my-2">
-                            </li>
-                            <li class="px-3 py-2 text-light small fw-bold text-uppercase">Manage Inventory</li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" asp-controller="Inventory"
-                                    asp-action="Index">
-                                    <i class="bi bi-box2-fill me-2"></i>
-                                    <span>Stock Management</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" asp-controller="Inventory"
-                                    asp-action="LowStock">
-                                    <i class="bi bi-exclamation-triangle me-2"></i>
-                                    <span>Low Stock Alerts</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" asp-controller="Inventory"
-                                    asp-action="BulkUpdate">
-                                    <i class="bi bi-arrow-repeat me-2"></i>
-                                    <span>Bulk Update</span>
-                                </a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider my-2">
-                            </li>
-                            <li class="px-3 py-2 text-light small fw-bold text-uppercase">Manage Categories</li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" asp-controller="Category"
-                                    asp-action="Index">
-                                    <i class="bi bi-tags me-2"></i>
-                                    <span>Categories</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" asp-controller="Brands"
-                                    asp-action="Index">
-                                    <i class="bi bi-award me-2"></i>
-                                    <span>Brands</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+                    @if (User.IsInRole(SD.Role_Admin))
+            {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle fw-semibold d-flex align-items-center" href="#" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-gear-fill me-2"></i>
+                                Content Management
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark py-2">
+                                <li class="px-3 py-2 text-light small fw-bold text-uppercase">Manage Products</li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Product"
+                                       asp-action="Index">
+                                        <i class="bi bi-box-seam me-2"></i>
+                                        <span>Add Products</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Promotions"
+                                       asp-action="Index">
+                                        <i class="bi bi-megaphone me-2"></i>
+                                        <span>Add Promotions</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Laptops"
+                                       asp-action="Index">
+                                        <i class="bi bi-laptop me-2"></i>
+                                        <span>Add Laptops</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider my-2">
+                                </li>
+                                <li class="px-3 py-2 text-light small fw-bold text-uppercase">Manage Inventory</li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Inventory"
+                                       asp-action="Index">
+                                        <i class="bi bi-box2-fill me-2"></i>
+                                        <span>Stock Management</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Inventory"
+                                       asp-action="LowStock">
+                                        <i class="bi bi-exclamation-triangle me-2"></i>
+                                        <span>Low Stock Alerts</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Inventory"
+                                       asp-action="BulkUpdate">
+                                        <i class="bi bi-arrow-repeat me-2"></i>
+                                        <span>Bulk Update</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider my-2">
+                                </li>
+                                <li class="px-3 py-2 text-light small fw-bold text-uppercase">Manage Categories</li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Category"
+                                       asp-action="Index">
+                                        <i class="bi bi-tags me-2"></i>
+                                        <span>Add Categories</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Brands"
+                                       asp-action="Index">
+                                        <i class="bi bi-award me-2"></i>
+                                        <span>Add Brands</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+            }
                 </ul>
 
                 <div class="d-flex align-items-center ms-3">

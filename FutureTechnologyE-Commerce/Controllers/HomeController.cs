@@ -48,7 +48,14 @@ namespace FutureTechnologyE_Commerce.Controllers
 			{
 				Products = (await _unitOfWork.ProductRepository.GetAllAsync(c => c.IsBestseller, includeProperties: "Category,Brand")), // Use the paginated list
 				SearchString = searchString,
-				Accessories = (await _unitOfWork.ProductRepository.GetAllAsync(c => c.Category.Name == "Accessories", includeProperties: "Category,Brand")),
+				Accessories = (await _unitOfWork.ProductRepository.GetAllAsync(c => 
+					c.Category.Name.ToLower() == "mouse" || 
+					c.Category.Name.ToLower() == "keyboard" || 
+					c.Category.Name.ToLower() == "mousepad" || 
+					c.Category.Name.ToLower() == "storage" ||
+					c.Category.Name.ToLower() == "notebook" ||
+					c.Category.Name.ToLower() == "accessories", 
+					includeProperties: "Category,Brand")),
 				Laptops = (await _unitOfWork.LaptopRepository.GetAllAsync(null, includeProperties: "Category,Brand"))
 					.Take(5)
 					.ToList(),
@@ -106,7 +113,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 				query = query.Where(p => p.Category.Name.Contains(category));
 			}
 
-			int pageSize = 4;
+			int pageSize = 9;
 			int totalCount = await query.CountAsync();
 			var products = await query
 				.Skip((pageNumber - 1) * pageSize)
@@ -132,7 +139,10 @@ namespace FutureTechnologyE_Commerce.Controllers
 		public async Task<IActionResult> GetFilteredProducts(int pageNumber = 1, string searchString = "", string categoryFilter = "")
 		{
 			// Define the predefined category options
-			var categoryOptions = new List<string> { "Mouse", "Keyboard", "Mousepad", "Printer" };
+			var categoryOptions = new List<string> { 
+				"Mouse", "Keyboard", "Mousepad", "Printer", "Storage", "Notebook", 
+				"Headphones", "Webcam", "Accessories"
+			};
 			
 			// Prepare the query with includes
 			var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand");
@@ -145,17 +155,37 @@ namespace FutureTechnologyE_Commerce.Controllers
 										 (p.Brand != null && p.Brand.Name.ToLower().Contains(searchString)));
 			}
 
-			// Apply category filter if it's valid
-			if (!string.IsNullOrEmpty(categoryFilter) && categoryOptions.Any(c => c.ToLower() == categoryFilter.ToLower()))
+			// Apply category filter if provided
+			if (!string.IsNullOrEmpty(categoryFilter))
 			{
 				categoryFilter = categoryFilter.Trim();
 				
-				// Filter based on category name - case insensitive comparison
-				query = query.Where(p => p.Category.Name.ToLower().Contains(categoryFilter.ToLower()));
+				// Special case for "Bestseller" filter
+				if (categoryFilter.ToLower() == "bestseller")
+				{
+					query = query.Where(p => p.IsBestseller);
+				}
+				// Special case for "Accessories" filter - get all accessory categories
+				else if (categoryFilter.ToLower() == "accessories")
+				{
+					query = query.Where(p => 
+						p.Category.Name.ToLower() == "mouse" || 
+						p.Category.Name.ToLower() == "keyboard" || 
+						p.Category.Name.ToLower() == "headphones" || 
+						p.Category.Name.ToLower() == "webcam" ||
+						p.Category.Name.ToLower() == "accessories"
+					);
+				}
+				// Regular category filter
+				else
+				{
+					// Filter based on category name - case insensitive comparison
+					query = query.Where(p => p.Category.Name.ToLower().Contains(categoryFilter.ToLower()));
+				}
 			}
 
 			// Pagination setup
-			int pageSize = 4;
+			int pageSize = 9;
 			int totalCount = await query.CountAsync();
 			var filteredProducts = await query
 				.Skip((pageNumber - 1) * pageSize)
@@ -188,7 +218,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 				query = query.Where(p => p.Name.ToLower().Contains(searchString) ||
 										 (p.Brand != null && p.Brand.Name.ToLower().Contains(searchString)));
 			}
-			int pageSize = 4;
+			int pageSize = 9;
 			int totalCount = await query.CountAsync();
 			var accessoriesProducts = await query
 				.Skip((pageNumber - 1) * pageSize)
@@ -216,7 +246,7 @@ namespace FutureTechnologyE_Commerce.Controllers
 				query = query.Where(c => c.Brand.Name.ToLower().Contains(searchString) || c.Name.ToLower().Contains(searchString));
 			}
 
-			int pageSize = 4;
+			int pageSize = 9;
 			int totalCount = await query.CountAsync();
 			var laptops = await query
 				.Skip((pageNumber - 1) * pageSize)
