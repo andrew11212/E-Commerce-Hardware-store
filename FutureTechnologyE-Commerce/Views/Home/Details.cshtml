@@ -136,33 +136,6 @@
                         </div>
                         
                         <!-- Cart Control Buttons - Only shown if product is in cart -->
-                        <div id="cartControlsContainer" class="d-none">
-                            <div class="d-flex gap-3 align-items-center">
-                                <div class="d-flex align-items-center flex-grow-1">
-                                    <form asp-controller="Cart" asp-action="MinusByProduct" method="post" class="me-2">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="productId" value="@Model.ProductID" />
-                                        <button type="button" class="btn btn-outline-primary rounded-circle" id="cartMinusBtn">
-                                            <i class="bi bi-dash"></i>
-                                        </button>
-                                    </form>
-                                    
-                                    <span class="badge bg-light text-dark border px-3 py-2" id="cartCount">0</span>
-                                    
-                                    <form asp-controller="Cart" asp-action="PlusByProduct" method="post" class="ms-2">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="productId" value="@Model.ProductID" />
-                                        <button type="button" class="btn btn-outline-primary rounded-circle" id="cartPlusBtn">
-                                            <i class="bi bi-plus"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                                
-                                <a asp-controller="Cart" asp-action="Index" class="btn btn-success">
-                                    <i class="bi bi-cart me-2"></i> View Cart
-                                </a>
-                            </div>
-                        </div>
                     }
                     else
                     {
