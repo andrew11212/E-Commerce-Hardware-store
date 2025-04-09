@@ -60,6 +60,23 @@ namespace FutureTechnologyE_Commerce.Controllers
 					return NotFound();
 				}
 
+				// Get related laptops from the same category
+				var relatedProducts = (await _unitOfWork.LaptopRepository
+					.GetAllAsync(l => l.CategoryID == laptop.CategoryID && 
+									l.ProductID != laptop.ProductID,
+									includeProperties: "Category,Brand"))
+					.Take(4)
+					.ToList();
+
+				// Get reviews for this laptop
+				var reviews = _unitOfWork.ReviewRepository.GetReviewsByProductId(laptop.ProductID);
+				var averageRating = _unitOfWork.ReviewRepository.GetAverageRatingByProductId(laptop.ProductID);
+
+				// Pass data to the view
+				ViewBag.RelatedProducts = relatedProducts;
+				ViewBag.Reviews = reviews;
+				ViewBag.AverageRating = averageRating;
+
 				return View(laptop);
 			}
 			catch (Exception ex)

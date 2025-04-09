@@ -41,13 +41,43 @@
                 <h1 class="display-5 fw-bold mb-2">@Model.Name</h1>
                 <div class="d-flex align-items-center mb-3">
                     <div class="text-warning me-2">
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-fill"></i>
-                        <i class="bi bi-star-half"></i>
+                        @if (ViewBag.AverageRating > 0)
+                        {
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= Math.Floor(ViewBag.AverageRating))
+                                {
+                                    <i class="bi bi-star-fill"></i>
+                                }
+                                else if (i - 0.5 <= ViewBag.AverageRating)
+                                {
+                                    <i class="bi bi-star-half"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-star"></i>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            @for (int i = 0; i < 5; i++)
+                            {
+                                <i class="bi bi-star"></i>
+                            }
+                        }
                     </div>
-                    <div class="text-muted small">4.5/5 (Reviews)</div>
+                    <div class="text-muted small">
+                        @if (ViewBag.AverageRating > 0)
+                        {
+                            <span>@Math.Round(ViewBag.AverageRating, 1)/5</span>
+                            <span>(@ViewBag.Reviews.Count() @(ViewBag.Reviews.Count() == 1 ? "Review" : "Reviews"))</span>
+                        }
+                        else
+                        {
+                            <span>No reviews yet</span>
+                        }
+                    </div>
                 </div>
                 
                 <!-- Price Information -->
@@ -346,32 +376,203 @@
     </div>
 </section>
 
+<!-- Review Section -->
+<section class="container py-5">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <h3 class="fs-4 fw-bold mb-0">Customer Reviews</h3>
+        </div>
+        <div class="card-body">
+            @if (ViewBag.Reviews != null && ViewBag.Reviews.Count > 0)
+            {
+                <div class="mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="me-3">
+                            <span class="display-5 fw-bold">@Math.Round(ViewBag.AverageRating, 1)</span>
+                            <span class="text-muted">/5</span>
+                        </div>
+                        <div>
+                            <div class="text-warning mb-1">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= Math.Floor(ViewBag.AverageRating))
+                                    {
+                                        <i class="bi bi-star-fill"></i>
+                                    }
+                                    else if (i - 0.5 <= ViewBag.AverageRating)
+                                    {
+                                        <i class="bi bi-star-half"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-star"></i>
+                                    }
+                                }
+                            </div>
+                            <small class="text-muted">Based on @ViewBag.Reviews.Count reviews</small>
+                        </div>
+                    </div>
+                </div>
+
+                <hr />
+
+                @foreach (var review in ViewBag.Reviews)
+                {
+                    <div class="mb-4 p-3 border rounded-3 review-card">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center">
+                                <div class="review-avatar me-3">
+                                    <i class="bi bi-person-circle fs-3"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">@review.User.FirstName @review.User.LastName</div>
+                                    <div class="text-muted small">@review.ReviewDate.ToString("MMMM dd, yyyy")</div>
+                                </div>
+                            </div>
+                            <div class="text-warning">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="bi @(i <= review.Rating ? "bi-star-fill" : "bi-star")"></i>
+                                }
+                            </div>
+                        </div>
+                        <p class="mb-0">@review.Comment</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-chat-dots-fill display-1 text-muted opacity-25"></i>
+                    <p class="lead mt-3">No reviews yet</p>
+                    <p class="text-muted">Be the first to review this product</p>
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <a asp-controller="Review" asp-action="Create" asp-route-productId="@Model.ProductID" class="btn btn-primary">
+                            <i class="bi bi-pencil-square me-2"></i> Write a Review
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Sign in to Write a Review
+                        </a>
+                    }
+                </div>
+            }
+            
+            @if (SignInManager.IsSignedIn(User) && ViewBag.Reviews != null && ViewBag.Reviews.Count > 0)
+            {
+                <div class="text-center mt-4">
+                    <a asp-controller="Review" asp-action="Create" asp-route-productId="@Model.ProductID" class="btn btn-primary">
+                        <i class="bi bi-pencil-square me-2"></i> Write a Review
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Related Products Section -->
+<section class="container-fluid bg-light py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0">Related Products</h2>
+            <a asp-controller="Home" asp-action="GetAllLaptops" class="btn btn-outline-primary">View All</a>
+        </div>
+        <div class="row g-4">
+            @if (ViewBag.RelatedProducts != null && ViewBag.RelatedProducts.Count > 0)
+            {
+                @foreach (var product in ViewBag.RelatedProducts)
+                {
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <div class="card h-100 border-0 shadow-sm rounded-4 product-card">
+                            <div class="position-relative">
+                                <a asp-controller="Laptops" asp-action="Details" asp-route-id="@product.ProductID">
+                                    <img src="@product.ImageUrl"
+                                         class="card-img-top related-product-img"
+                                         alt="@product.Name"
+                                         onerror="this.src='/images/placeholder.png'">
+                                </a>
+                                
+                                @if (product.IsBestseller)
+                                {
+                                    <span class="badge bg-danger position-absolute top-0 start-0 m-3">Bestseller</span>
+                                }
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title fw-semibold mb-1">
+                                    <a asp-controller="Laptops" asp-action="Details" asp-route-id="@product.ProductID" class="text-decoration-none text-dark">
+                                        @product.Name
+                                    </a>
+                                </h5>
+                                <div class="small text-muted mb-2">@product.Brand?.Name</div>
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <span class="text-warning me-2">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                        </span>
+                                        <span class="text-muted small">(4.5)</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="fw-bold text-primary">@string.Format("{0:N2} EGP", product.Price)</div>
+                                    <a asp-controller="Laptops" asp-action="Details" asp-route-id="@product.ProductID" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center py-5">
+                    <p class="lead text-muted">No related products found</p>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
 @section Scripts {
     <script>
-        $(document).ready(function() {
-            // Product image zoom effect
-            $(".product-image-wrapper").hover(
-                function() {
-                    $(this).find("img").css("transform", "scale(1.05)");
-                },
-                function() {
-                    $(this).find("img").css("transform", "scale(1)");
-                }
-            );
-            
-            // Quantity increment/decrement
-            $("#btnMinus").click(function() {
-                var quantity = parseInt($("#quantity").val());
+        $(document).ready(function () {
+            // Quantity control
+            $('#btnMinus').click(function () {
+                var quantity = parseInt($('#quantity').val());
                 if (quantity > 1) {
-                    $("#quantity").val(quantity - 1);
+                    $('#quantity').val(quantity - 1);
+                    $('#hiddenQuantity').val(quantity - 1);
                 }
             });
-            
-            $("#btnPlus").click(function() {
-                var quantity = parseInt($("#quantity").val());
-                var max = parseInt($("#quantity").attr("max"));
-                if (quantity < max) {
-                    $("#quantity").val(quantity + 1);
+
+            $('#btnPlus').click(function () {
+                var quantity = parseInt($('#quantity').val());
+                var maxStock = @Model.StockQuantity;
+                if (quantity < maxStock) {
+                    $('#quantity').val(quantity + 1);
+                    $('#hiddenQuantity').val(quantity + 1);
+                }
+            });
+
+            $('#quantity').change(function () {
+                var value = parseInt($(this).val());
+                var maxStock = @Model.StockQuantity;
+                
+                if (isNaN(value) || value < 1) {
+                    $(this).val(1);
+                    $('#hiddenQuantity').val(1);
+                } else if (value > maxStock) {
+                    $(this).val(maxStock);
+                    $('#hiddenQuantity').val(maxStock);
+                } else {
+                    $('#hiddenQuantity').val(value);
                 }
             });
         });
