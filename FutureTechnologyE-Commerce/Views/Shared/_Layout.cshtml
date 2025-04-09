@@ -110,7 +110,7 @@
                     padding: 1rem 0;
                     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
                     position: relative;
-                    z-index: 10;
+                    z-index: 1050;
                 }
 
                 .navbar-brand {
@@ -203,7 +203,7 @@
                     border-image-slice: 1;
                     position: sticky;
                     top: 0;
-                    z-index: 1000;
+                    z-index: 1040;
                 }
 
                 .nav-link {
@@ -489,6 +489,14 @@
                     max-height: 500px;
                     overflow-y: auto;
                     padding: 0;
+                    z-index: 1060 !important;
+                    position: absolute;
+                    top: 100%;
+                    margin-top: 5px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+                    border: none;
+                    right: 0;
+                    left: auto;
                 }
 
                 .notification-item {
@@ -528,6 +536,7 @@
                     transform: translate(25%, -25%);
                     box-shadow: 0 3px 8px rgba(231, 76, 60, 0.4);
                     border: 2px solid white;
+                    z-index: 5;
                 }
 
                 /* Cart icon animation */
@@ -594,6 +603,58 @@
                     ::-webkit-scrollbar-thumb:hover {
                         background: linear-gradient(to bottom, var(--tech-purple), var(--tech-blue));
                     }
+
+                /* Special position for notification dropdown */
+                .notification-dropdown-parent {
+                    position: static;
+                }
+
+                .notification-dropdown-parent .notifications-dropdown {
+                    position: absolute;
+                    top: calc(100% + 5px) !important;
+                    right: 0;
+                    left: auto !important;
+                    transform-origin: top right;
+                    animation: notificationDropdown 0.3s ease;
+                    margin-top: 0 !important;
+                    max-height: 80vh;
+                }
+
+                /* Fix notification dropdown positioning */
+                .top-brand .notification-dropdown-parent .notifications-dropdown {
+                    position: absolute !important;
+                    top: 100% !important;
+                    right: 0 !important;
+                    left: auto !important;
+                    margin-top: 5px !important;
+                    transform-origin: top center;
+                    transform: translateX(0) !important;
+                }
+
+                .notification-dropdown-parent {
+                    position: relative !important;
+                }
+
+                @@keyframes notificationDropdown {
+                    from {
+                        opacity: 0;
+                        transform: scale(0.9) translateY(-10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: scale(1) translateY(0);
+                    }
+                }
+
+                @@media (max-width: 767.98px) {
+                    .notification-dropdown-parent .notifications-dropdown {
+                        width: 300px;
+                        right: -10px !important;
+                        max-height: 450px !important;
+                        position: fixed !important;
+                        top: auto !important;
+                    }
+                }
     </style>
     
     @await RenderSectionAsync("Styles", required: false)
@@ -663,19 +724,15 @@
                 </div>
             </form>
 
-            <div class="d-flex align-items-center gap-3">
-                @* <a class="nav-link text-light icon-text-link" asp-controller="Wishlist" asp-action="Index">
-                    <i class="bi bi-heart fs-4"></i>
-                    <span class="text-light small mb-0">Wishlist</span>
-                </a> *@
+            <div class="d-flex align-items-center gap-3 position-relative">
                 @if (SignInManager.IsSignedIn(User))
                 {
-                    <li class="nav-item dropdown mx-2 position-relative">
-                        <a class="nav-link" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-bell fs-5"></i>
+                    <div class="dropdown position-relative mx-2">
+                        <button type="button" class="btn btn-link border-0 p-0 position-relative" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                            <i class="bi bi-bell fs-5" style="color: var(--text-color);"></i>
                             <span id="notification-count" class="notification-badge" style="display: none;">0</span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end shadow-sm notifications-dropdown" aria-labelledby="notificationsDropdown">
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end shadow notifications-dropdown" aria-labelledby="notificationsDropdown">
                             <div class="dropdown-header d-flex justify-content-between align-items-center py-2 bg-light">
                                 <h6 class="mb-0">Notifications</h6>
                                 <a href="@Url.Action("Index", "Notifications")" class="text-decoration-none small">View All</a>
@@ -690,7 +747,7 @@
                                 </div>
                             </div>
                         </div>
-                    </li>
+                    </div>
                 }
                 <a class="nav-link icon-text-link" asp-controller="Cart" asp-action="Index"
                     style="color: var(--text-color);">
@@ -978,6 +1035,17 @@
     <script>
         // Category dropdown functionality
         $(document).ready(function () {
+            // Close notification dropdown when scrolling to navbar
+            $(window).on('scroll', function() {
+                var notificationDropdown = $('.notification-dropdown-parent').find('.dropdown-menu');
+                var isOpen = notificationDropdown.hasClass('show');
+                var navbarTop = $('.navbar').offset().top;
+                
+                if (isOpen && $(window).scrollTop() > navbarTop - 150) {
+                    $('#notificationsDropdown').dropdown('hide');
+                }
+            });
+            
             // Handle dropdown item selection for search - target only the search dropdown items
             $('.search-category-dropdown .dropdown-item').click(function (e) {
                 e.preventDefault();
@@ -986,6 +1054,31 @@
                 
                 $('#searchCategoryDropdown').text(selectedText);
                 $('#selectedCategory').val(selectedValue);
+            });
+
+            // Fix notification dropdown position
+            $('#notificationsDropdown').parent().on('show.bs.dropdown', function() {
+                setTimeout(function() {
+                    var dropdown = $(this).find('.dropdown-menu');
+                    var navbarHeight = $('.navbar').outerHeight();
+                    var topOffset = $(this).offset().top + $(this).height() + 8;
+                    
+                    // If the dropdown would overlap the navbar
+                    if (topOffset + 300 > $(window).scrollTop() + navbarHeight) {
+                        // End the dropdown early and restore when scrolling
+                        $(window).on('scroll.notificationDropdown', function() {
+                            if ($(window).scrollTop() > topOffset + 150) {
+                                $('.dropdown-menu.notifications-dropdown').css('display', 'none');
+                                $('#notificationsDropdown').dropdown('hide');
+                                $(window).off('scroll.notificationDropdown');
+                            }
+                        });
+                    }
+                    
+                    dropdown.css({
+                        'z-index': '1060'
+                    });
+                }.bind(this), 0);
             });
 
             // Fix the Content Management dropdown positioning
@@ -1028,6 +1121,43 @@
     {
         <script>
             $(document).ready(function() {
+                // Position notification dropdown properly
+                function positionNotificationDropdown() {
+                    var notificationButton = $('#notificationsDropdown');
+                    var notificationDropdown = notificationButton.next('.dropdown-menu');
+                    var buttonPosition = notificationButton.offset();
+                    
+                    if ($(window).width() < 768) {
+                        // Mobile positioning
+                        notificationDropdown.css({
+                            'position': 'fixed',
+                            'top': buttonPosition.top + notificationButton.outerHeight(),
+                            'right': '10px',
+                            'width': '300px',
+                            'max-height': '450px'
+                        });
+                    } else {
+                        // Desktop positioning - let Bootstrap handle it
+                        notificationDropdown.css({
+                            'position': 'absolute',
+                            'right': '0',
+                            'left': 'auto'
+                        });
+                    }
+                }
+                
+                // Adjust position when dropdown is shown
+                $('#notificationsDropdown').on('shown.bs.dropdown', function() {
+                    positionNotificationDropdown();
+                });
+                
+                // Handle window resize
+                $(window).on('resize', function() {
+                    if ($('.notifications-dropdown').is(':visible')) {
+                        positionNotificationDropdown();
+                    }
+                });
+                
                 // Load notifications on page load
                 loadNotifications();
                 
