@@ -11,6 +11,15 @@ namespace FutureTechnologyE_Commerce.Services
         private readonly IDistributedCache _distributedCache;
         private readonly IConnectionMultiplexer _redis;
         private readonly ILogger<RedisCacheService> _logger;
+        
+        // JSON serializer options to handle circular references
+        private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        {
+            ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles,
+            WriteIndented = false,
+            PropertyNamingPolicy = null,
+            MaxDepth = 64 // Prevent deep object graphs
+        };
 
         public RedisCacheService(
             IDistributedCache distributedCache, 
@@ -31,7 +40,7 @@ namespace FutureTechnologyE_Commerce.Services
                 if (string.IsNullOrEmpty(cachedData))
                     return null;
 
-                return JsonSerializer.Deserialize<T>(cachedData);
+                return JsonSerializer.Deserialize<T>(cachedData, _jsonOptions);
             }
             catch (Exception ex)
             {
@@ -44,7 +53,7 @@ namespace FutureTechnologyE_Commerce.Services
         {
             try
             {
-                var serializedData = JsonSerializer.Serialize(value);
+                var serializedData = JsonSerializer.Serialize(value, _jsonOptions);
                 
                 var options = new DistributedCacheEntryOptions
                 {

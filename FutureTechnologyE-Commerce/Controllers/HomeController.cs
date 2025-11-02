@@ -1,5 +1,6 @@
 using FutureTechnologyE_Commerce.Models;
 using FutureTechnologyE_Commerce.Models.ViewModels;
+using FutureTechnologyE_Commerce.Models.DTOs;
 using FutureTechnologyE_Commerce.Repository.IRepository;
 using FutureTechnologyE_Commerce.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -63,14 +64,16 @@ namespace FutureTechnologyE_Commerce.Controllers
 				return View(viewModel);
 			}
 
-			// Try to get from cache
+			// Try to get from cache using DTO
 			var cacheKey = "home_index_data";
-			var cachedViewModel = await _cacheService.GetAsync<HomeIndexViewModel>(cacheKey);
+			var cachedDTO = await _cacheService.GetAsync<HomeIndexCacheDTO>(cacheKey);
 
-			if (cachedViewModel != null)
+			if (cachedDTO != null)
 			{
 				_logger.LogInformation("Returning cached home page data");
-				return View(cachedViewModel);
+				// Convert DTO back to ViewModel
+				var viewModel = ConvertFromCacheDTO(cachedDTO);
+				return View(viewModel);
 			}
 
 			// Cache miss - fetch from database
@@ -108,10 +111,126 @@ namespace FutureTechnologyE_Commerce.Controllers
 				Promotions = promotions
 			};
 
+			// Convert to DTO for caching
+			var cacheDTO = ConvertToCacheDTO(homeViewModel);
+			
 			// Cache for 10 minutes
-			await _cacheService.SetAsync(cacheKey, homeViewModel, TimeSpan.FromMinutes(10));
+			await _cacheService.SetAsync(cacheKey, cacheDTO, TimeSpan.FromMinutes(10));
 
 			return View(homeViewModel);
+		}
+
+		/// <summary>
+		/// Convert ViewModel to DTO for caching (avoids circular references)
+		/// </summary>
+		private HomeIndexCacheDTO ConvertToCacheDTO(HomeIndexViewModel viewModel)
+		{
+			return new HomeIndexCacheDTO
+			{
+				Products = viewModel.Products?.Select(p => new ProductCacheDTO
+				{
+					ProductID = p.ProductID,
+					Name = p.Name,
+					Description = p.Description,
+					Price = p.Price,
+					ImageUrl = p.ImageUrl,
+					StockQuantity = p.StockQuantity,
+					IsBestseller = p.IsBestseller,
+					CategoryName = p.Category?.Name ?? "",
+					BrandName = p.Brand?.Name ?? "",
+					Discriminator = "Product"
+				}).ToList() ?? new List<ProductCacheDTO>(),
+
+				Accessories = viewModel.Accessories?.Select(p => new ProductCacheDTO
+				{
+					ProductID = p.ProductID,
+					Name = p.Name,
+					Description = p.Description,
+					Price = p.Price,
+					ImageUrl = p.ImageUrl,
+					StockQuantity = p.StockQuantity,
+					IsBestseller = p.IsBestseller,
+					CategoryName = p.Category?.Name ?? "",
+					BrandName = p.Brand?.Name ?? "",
+					Discriminator = "Product"
+				}).ToList() ?? new List<ProductCacheDTO>(),
+
+				Laptops = viewModel.Laptops?.Select(l => new ProductCacheDTO
+				{
+					ProductID = l.ProductID,
+					Name = l.Name,
+					Description = l.Description,
+					Price = l.Price,
+					ImageUrl = l.ImageUrl,
+					StockQuantity = l.StockQuantity,
+					IsBestseller = l.IsBestseller,
+					CategoryName = l.Category?.Name ?? "",
+					BrandName = l.Brand?.Name ?? "",
+					Processor = l.Processor ?? "",
+					RAM = l.RAM ?? "",
+					Storage = l.Storage ?? "",
+					GraphicsCard = l.GraphicsCard ?? "",
+					ScreenSize = l.ScreenSize.ToString("F1") + "\"",
+					Discriminator = "Laptop"
+				}).ToList() ?? new List<ProductCacheDTO>(),
+
+				TopReviews = viewModel.TopReviews?.Select(r => new ReviewCacheDTO
+				{
+					ReviewId = r.ReviewID,
+					ProductId = r.ProductID,
+					ProductName = r.Product?.Name ?? "",
+					UserName = r.User?.UserName ?? "",
+					Rating = r.Rating,
+					Comment = r.Comment ?? "",
+					ReviewDate = r.ReviewDate
+				}).ToList() ?? new List<ReviewCacheDTO>(),
+
+				Promotions = viewModel.Promotions?.Select(p => new PromotionCacheDTO
+				{
+					PromotionId = p.PromotionId,
+					Title = p.Title,
+					Description = p.Description,
+					ImageUrl = p.ImageUrl,
+					StartDate = p.StartDate,
+					EndDate = p.EndDate,
+					IsActive = p.IsActive,
+					DisplayOrder = p.DisplayOrder,
+					Product = p.Product != null ? new ProductCacheDTO
+					{
+						ProductID = p.Product.ProductID,
+						Name = p.Product.Name,
+						Price = p.Product.Price,
+						ImageUrl = p.Product.ImageUrl,
+						Discriminator = "Product"
+					} : null
+				}).ToList() ?? new List<PromotionCacheDTO>(),
+
+				SearchString = viewModel.SearchString ?? ""
+			};
+		}
+
+		/// <summary>
+		/// Convert DTO back to ViewModel (simplified version for display)
+		/// </summary>
+		private HomeIndexViewModel ConvertFromCacheDTO(HomeIndexCacheDTO dto)
+		{
+			// Note: This is a simplified conversion for display purposes
+			// In a real scenario, you might want to fetch full entities from DB if needed
+			return new HomeIndexViewModel
+			{
+				SearchString = dto.SearchString,
+				Promotions = dto.Promotions?.Select(p => new Promotion
+				{
+					PromotionId = p.PromotionId,
+					Title = p.Title,
+					Description = p.Description,
+					ImageUrl = p.ImageUrl,
+					StartDate = p.StartDate,
+					EndDate = p.EndDate,
+					IsActive = p.IsActive,
+					DisplayOrder = p.DisplayOrder
+				}).ToList() ?? new List<Promotion>()
+			};
 		}
 
 		public async Task<IActionResult> Details(int id)

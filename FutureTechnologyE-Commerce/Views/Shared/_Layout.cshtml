@@ -170,6 +170,37 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Profile</a></li>
+                                
+                                @if (User.IsInRole(SD.Role_Admin))
+                                {
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h6 class="dropdown-header text-primary">
+                                        <i class="bi bi-shield-check me-1"></i> Admin
+                                    </h6></li>
+                                    <li><a class="dropdown-item text-primary" asp-controller="Admin" asp-action="Dashboard">
+                                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                                    </a></li>
+                                    <li><a class="dropdown-item" asp-controller="Admin" asp-action="UserManagement">
+                                        <i class="bi bi-people me-2"></i> User Management
+                                    </a></li>
+                                    <li><a class="dropdown-item" asp-controller="Product" asp-action="Index">
+                                        <i class="bi bi-box me-2"></i> Products
+                                    </a></li>
+                                    <li><a class="dropdown-item" asp-controller="Category" asp-action="Index">
+                                        <i class="bi bi-tags me-2"></i> Categories
+                                    </a></li>
+                                    <li><a class="dropdown-item" asp-controller="Order" asp-action="Index">
+                                        <i class="bi bi-receipt me-2"></i> Orders
+                                    </a></li>
+                                    <li><a class="dropdown-item" asp-controller="Promotions" asp-action="Index">
+                                        <i class="bi bi-percent me-2"></i> Promotions
+                                    </a></li>
+                                    <li><a class="dropdown-item" asp-controller="Inventory" asp-action="Index">
+                                        <i class="bi bi-clipboard-data me-2"></i> Inventory
+                                    </a></li>
+                                }
+                                
+                                <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Logout">Logout</a></li>
                             </ul>
                         </li>

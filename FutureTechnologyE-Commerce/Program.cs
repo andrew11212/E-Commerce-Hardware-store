@@ -20,9 +20,9 @@ using System.IO.Compression;
 
 namespace FutureTechnologyE_Commerce
 {
-	public class Program
+	public static class Program
 	{
-		public static void Main(string[] args)
+		public static async Task Main(string[] args)
 		{
 			// Configure Serilog
 			Log.Logger = new LoggerConfiguration()
@@ -235,6 +235,9 @@ namespace FutureTechnologyE_Commerce
 					name: "default",
 					pattern: "{controller=Home}/{action=Index}/{id?}");
 
+				// Seed database with admin account
+				await SeedDatabaseAsync(app.Services);
+
 				app.Run();
 			}
 			catch (Exception ex)
@@ -244,6 +247,120 @@ namespace FutureTechnologyE_Commerce
 			finally
 			{
 				Log.CloseAndFlush();
+			}
+		}
+
+		private static async Task SeedDatabaseAsync(IServiceProvider services)
+		{
+			using (var scope = services.CreateScope())
+			{
+				var scopedServices = scope.ServiceProvider;
+				var context = scopedServices.GetRequiredService<ApplicationDbContext>();
+				var userManager = scopedServices.GetRequiredService<UserManager<ApplicationUser>>();
+				var roleManager = scopedServices.GetRequiredService<RoleManager<IdentityRole>>();
+
+				try
+				{
+					// Apply pending migrations
+					await context.Database.MigrateAsync();
+					Log.Information("Database migrations applied successfully");
+
+					// Seed roles
+					await SeedRolesAsync(roleManager);
+
+					// Seed admin user
+					await SeedAdminUserAsync(userManager, roleManager);
+
+					Log.Information("Database seeding completed successfully");
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, "An error occurred while seeding the database");
+				}
+			}
+		}
+
+		private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+		{
+			var roles = new[]
+			{
+				SD.Role_Admin,
+				SD.Role_Employee,
+				SD.Role_Cust,
+				SD.Role_Comp
+			};
+
+			foreach (var role in roles)
+			{
+				if (!await roleManager.RoleExistsAsync(role))
+				{
+					var result = await roleManager.CreateAsync(new IdentityRole(role));
+					if (result.Succeeded)
+					{
+						Log.Information($"Role '{role}' created successfully");
+					}
+					else
+					{
+						Log.Error($"Failed to create role '{role}': {string.Join(", ", result.Errors.Select(e => e.Description))}");
+					}
+				}
+			}
+		}
+
+		private static async Task SeedAdminUserAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+		{
+			// Check if admin user already exists
+			var adminEmail = "admin@futuretech.com";
+			var existingAdmin = await userManager.FindByEmailAsync(adminEmail);
+
+			if (existingAdmin == null)
+			{
+				// Create new admin user
+				var adminUser = new ApplicationUser
+				{
+					UserName = adminEmail,
+					Email = adminEmail,
+					EmailConfirmed = true,
+					first_name = "Admin",
+					last_name = "User",
+					PhoneNumber = "01234567890",
+					PhoneNumberConfirmed = true,
+					street = "Admin Street",
+					building = "Building 1",
+					state = "Cairo",
+					country = "EG",
+					apartment = "A101",
+					floor = "1"
+				};
+
+				// Default admin password - should be changed after first login
+				const string adminPassword = "Admin@123456";
+
+				var result = await userManager.CreateAsync(adminUser, adminPassword);
+
+				if (result.Succeeded)
+				{
+					Log.Information($"Admin user '{adminEmail}' created successfully");
+
+					// Assign admin role
+					if (await roleManager.RoleExistsAsync(SD.Role_Admin))
+					{
+						await userManager.AddToRoleAsync(adminUser, SD.Role_Admin);
+						Log.Information($"Admin role assigned to user '{adminEmail}'");
+					}
+					else
+					{
+						Log.Error($"Admin role '{SD.Role_Admin}' does not exist");
+					}
+				}
+				else
+				{
+					Log.Error($"Failed to create admin user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+				}
+			}
+			else
+			{
+				Log.Information($"Admin user '{adminEmail}' already exists");
 			}
 		}
 	}
