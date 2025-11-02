@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 @using Microsoft.AspNetCore.Identity
@@ -12,755 +12,125 @@
     <title>@ViewData["Title"] - Future Technology E-Commerce</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/product-cards.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-                :root {
-                    --primary-color: #3498db;
-                    --primary-hover: #2980b9;
-                    --secondary-color: #2c3e50;
-                    --accent-color: #e74c3c;
-                    --tech-blue: #0984e3;
-                    --tech-purple: #6c5ce7;
-                    --tech-green: #00b894;
-                    --tech-orange: #e67e22;
-                    --tech-red: #d63031;
-                    --tech-yellow: #fdcb6e;
-                    --tech-cyan: #00cec9;
-                    --tech-black: #2d3436;
-                    --tech-gray: #636e72;
-                    --gradient-primary: linear-gradient(135deg, var(--tech-blue), var(--tech-purple));
-                    --gradient-secondary: linear-gradient(135deg, var(--tech-black), var(--secondary-color));
-                    --gradient-accent: linear-gradient(135deg, var(--tech-orange), var(--accent-color));
-                    --light-bg: #f8f9fa;
-                    --white: #ffffff;
-                    --card-shadow: 0 10px 20px rgba(0,0,0,0.1);
-                    --hover-shadow: 0 15px 30px rgba(0,0,0,0.15);
-                    --text-color: #2d3436;
-                    --text-muted: #636e72;
-                    --border-radius: 12px;
-                    --border-color: #e9ecef;
-                }
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #1e293b;
+            --light-bg: #f8fafc;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+            --border-radius: 8px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+        }
 
-                body {
-                    font-family: 'Inter', sans-serif;
-                    color: var(--text-color);
-                    background-color: var(--light-bg);
-                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23000000' fill-opacity='0.03' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
-                }
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+        }
 
-                /* Contact Bar Styles */
-                .contact-bar {
-                    background: var(--gradient-secondary);
-                    color: #fffbfb;
-                    padding: 8px 0;
-                    font-size: 0.875rem;
-                }
+        .navbar {
+            background-color: white;
+            box-shadow: var(--shadow-sm);
+            padding: 0.5rem 0;
+        }
 
-                    .contact-bar .container {
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                        flex-wrap: wrap;
-                        gap: 1rem;
-                    }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
 
-                .contact-info {
-                    display: flex;
-                    align-items: center;
-                    gap: 1.5rem;
-                }
+        .nav-link {
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+        }
 
-                    .contact-info span {
-                        display: flex;
-                        align-items: center;
-                        opacity: 0.9;
-                        transition: all 0.3s ease;
-                    }
+            .nav-link:hover {
+                color: var(--primary-color);
+            }
 
-                        .contact-info span:hover {
-                            opacity: 1;
-                            transform: translateY(-2px);
-                        }
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+        }
 
-                .social-icons a {
+            .btn-primary:hover {
+                background: var(--primary-hover);
+            }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+        }
+
+            .btn-outline-primary:hover {
+                background: var(--primary-color);
+                color: white;
+            }
+
+        .card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+            .card:hover {
+                box-shadow: var(--shadow-md);
+            }
+
+        .section-title {
+            color: var(--text-color);
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .footer {
+            background: var(--secondary-color);
+            color: white;
+            padding: 3rem 0 2rem;
+        }
+
+            .footer h5 {
+                color: white;
+                font-weight: 600;
+                margin-bottom: 1rem;
+            }
+
+            .footer a {
+                color: rgba(255,255,255,0.7);
+                text-decoration: none;
+            }
+
+                .footer a:hover {
                     color: white;
-                    opacity: 0.9;
-                    transition: all 0.3s ease;
-                    padding: 0.5rem;
-                }
-
-                    .social-icons a:hover {
-                        opacity: 1;
-                        transform: translateY(-2px);
-                        color: var(--tech-cyan);
-                    }
-
-                /* Top Brand Section */
-                .top-brand {
-                    background-color: white;
-                    padding: 1rem 0;
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-                    position: relative;
-                    z-index: 1050;
-                }
-
-                .navbar-brand {
-                    font-weight: 700;
-                    font-size: 1.6rem;
-                    background: var(--gradient-primary);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    transition: transform 0.3s ease;
-                }
-
-                    .navbar-brand:hover {
-                        transform: scale(1.05);
-                    }
-
-                .search-container {
-                    position: relative;
-                    max-width: 500px;
-                    width: 100%;
-                }
-
-                    .search-container .input-group {
-                        border-radius: var(--border-radius);
-                        overflow: hidden;
-                        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-                    }
-
-                    .search-container .btn-light {
-                        background-color: #f8f9fa;
-                        border: 1px solid #dee2e6;
-                        border-right: none;
-                        color: var(--tech-blue);
-                        border-top-right-radius: 0;
-                        border-bottom-right-radius: 0;
-                        font-size: 0.9rem;
-                        transition: all 0.3s ease;
-                    }
-
-                        .search-container .btn-light:hover {
-                            background-color: #e9ecef;
-                            color: var(--tech-purple);
-                        }
-
-                    .search-container .dropdown-menu {
-                        border: none;
-                        border-radius: var(--border-radius);
-                        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-                        margin-top: 5px;
-                        padding: 0.75rem 0;
-                        overflow: hidden;
-                    }
-
-                    .search-container .form-control {
-                        border: 1px solid #dee2e6;
-                        border-left: none;
-                        border-right: none;
-                        box-shadow: none;
-                        padding: 0.75rem 1rem;
-                        font-size: 0.95rem;
-                    }
-
-                        .search-container .form-control:focus {
-                            box-shadow: none;
-                            border-color: var(--tech-blue);
-                        }
-
-                    .search-container .btn-primary {
-                        border-top-left-radius: 0;
-                        border-bottom-left-radius: 0;
-                        background: var(--gradient-primary);
-                        border: none;
-                        padding: 0.75rem 1.5rem;
-                        transition: all 0.3s ease;
-                    }
-
-                        .search-container .btn-primary:hover {
-                            transform: translateX(2px);
-                            box-shadow: 0 4px 10px rgba(9, 132, 227, 0.3);
-                        }
-
-                /* Main Navigation */
-                .navbar {
-                    background-color: rgba(255, 255, 255, 0.98);
-                    backdrop-filter: blur(10px);
-                    -webkit-backdrop-filter: blur(10px);
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-                    padding: 0.75rem 0;
-                    border-bottom: 3px solid transparent;
-                    border-image: var(--gradient-primary);
-                    border-image-slice: 1;
-                    position: sticky;
-                    top: 0;
-                    z-index: 1040;
-                }
-
-                .nav-link {
-                    color: var(--tech-black);
-                    font-weight: 600;
-                    transition: all 0.3s ease;
-                    padding: 0.75rem 1.25rem;
-                    position: relative;
-                    font-size: 0.95rem;
-                    letter-spacing: 0.02em;
-                    text-transform: uppercase;
-                }
-
-                    .nav-link::after {
-                        content: '';
-                        position: absolute;
-                        bottom: 0;
-                        left: 50%;
-                        width: 0;
-                        height: 3px;
-                        background: var(--gradient-primary);
-                        transition: all 0.3s ease;
-                        transform: translateX(-50%);
-                        opacity: 0;
-                    }
-
-                    .nav-link:hover {
-                        color: var(--tech-blue);
-                        transform: translateY(-2px);
-                    }
-
-                        .nav-link:hover::after {
-                            width: 80%;
-                            opacity: 1;
-                        }
-
-                    .nav-link.active::after {
-                        width: 80%;
-                        opacity: 1;
-                    }
-
-                /* Footer */
-                .footer {
-                    background: var(--gradient-secondary);
-                    padding: 4rem 0 2rem;
-                    color: white;
-                    position: relative;
-                    overflow: hidden;
-                }
-
-                    .footer::before {
-                        content: '';
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        right: 0;
-                        height: 4px;
-                        background: var(--gradient-primary);
-                    }
-
-                    .footer h5 {
-                        color: white;
-                        font-weight: 700;
-                        margin-bottom: 1.5rem;
-                        position: relative;
-                        display: inline-block;
-                        padding-bottom: 0.75rem;
-                    }
-
-                        .footer h5::after {
-                            content: '';
-                            position: absolute;
-                            bottom: 0;
-                            left: 0;
-                            width: 40px;
-                            height: 3px;
-                            background: var(--gradient-primary);
-                            border-radius: 2px;
-                        }
-
-                    .footer a {
-                        color: rgba(255,255,255,0.7);
-                        text-decoration: none;
-                        transition: all 0.3s ease;
-                        display: block;
-                        margin-bottom: 0.75rem;
-                        padding-left: 0;
-                    }
-
-                        .footer a:hover {
-                            color: white;
-                            transform: translateX(5px);
-                        }
-
-                    .footer .input-group input {
-                        border-radius: var(--border-radius) 0 0 var(--border-radius);
-                        border: none;
-                        padding: 0.75rem 1rem;
-                        background: rgba(255,255,255,0.1);
-                        color: white;
-                        backdrop-filter: blur(10px);
-                    }
-
-                        .footer .input-group input::placeholder {
-                            color: rgba(255,255,255,0.6);
-                        }
-
-                        .footer .input-group input:focus {
-                            background: rgba(255,255,255,0.15);
-                            box-shadow: 0 0 0 3px rgba(9, 132, 227, 0.3);
-                        }
-
-                    .footer .input-group .btn {
-                        background: var(--gradient-primary);
-                        border: none;
-                        color: white;
-                        border-radius: 0 var(--border-radius) var(--border-radius) 0;
-                        padding: 0.75rem 1.5rem;
-                        font-weight: 600;
-                        transition: all 0.3s ease;
-                    }
-
-                        .footer .input-group .btn:hover {
-                            transform: translateX(2px);
-                            box-shadow: 0 0 10px rgba(108, 92, 231, 0.5);
-                        }
-
-                /* Buttons */
-                .btn-primary {
-                    background: var(--gradient-primary);
-                    border: none;
-                    box-shadow: 0 4px 10px rgba(9, 132, 227, 0.3);
-                    transition: all 0.3s ease;
-                    font-weight: 600;
-                    padding: 0.75rem 1.5rem;
-                    border-radius: var(--border-radius);
-                }
-
-                    .btn-primary:hover {
-                        transform: translateY(-3px);
-                        box-shadow: 0 6px 15px rgba(9, 132, 227, 0.4);
-                    }
-
-                .btn-outline-primary {
-                    color: var(--tech-blue);
-                    background: transparent;
-                    border: 2px solid var(--tech-blue);
-                    font-weight: 600;
-                    transition: all 0.3s ease;
-                    border-radius: var(--border-radius);
-                    padding: 0.7rem 1.5rem;
-                }
-
-                    .btn-outline-primary:hover {
-                        background: var(--gradient-primary);
-                        color: white;
-                        border-color: transparent;
-                        transform: translateY(-3px);
-                        box-shadow: 0 6px 15px rgba(9, 132, 227, 0.4);
-                    }
-
-                /* Cards */
-                .card {
-                    border: none;
-                    border-radius: var(--border-radius);
-                    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-                    transition: all 0.3s ease;
-                    overflow: hidden;
-                    background: white;
-                }
-
-                    .card:hover {
-                        transform: translateY(-8px);
-                        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-                    }
-
-                /* Sections */
-                .section-title {
-                    color: var(--tech-black);
-                    font-weight: 700;
-                    position: relative;
-                    padding-bottom: 0.75rem;
-                    margin-bottom: 2rem;
-                    font-size: 2rem;
-                }
-
-                    .section-title::after {
-                        content: '';
-                        position: absolute;
-                        bottom: 0;
-                        left: 0;
-                        width: 60px;
-                        height: 4px;
-                        background: var(--gradient-primary);
-                        border-radius: 2px;
-                    }
-
-                /* Animation */
-                .fade-in {
-                    opacity: 0;
-                    transform: translateY(30px);
-                    transition: all 0.8s ease;
-                }
-
-                    .fade-in.visible {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-
-                /* Dropdowns */
-                .dropdown-menu {
-                    border: none;
-                    border-radius: var(--border-radius);
-                    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-                    padding: 0.75rem 0;
-                    margin-top: 0.5rem;
-                    overflow: hidden;
-                    animation: dropdownAnimation 0.3s ease;
-                }
-        @@keyframes
-                dropdownAnimation {
-                    from
-
-                {
-                    opacity: 0;
-                    transform: translateY(10px);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-
-                }
-
-                .dropdown-item {
-                    padding: 0.75rem 1.5rem;
-                    font-weight: 500;
-                    color: var(--tech-black);
-                    transition: all 0.3s ease;
-                    position: relative;
-                }
-
-                    .dropdown-item::before {
-                        content: '';
-                        position: absolute;
-                        left: 0.75rem;
-                        top: 50%;
-                        width: 0;
-                        height: 2px;
-                        background: var(--gradient-primary);
-                        transition: all 0.3s ease;
-                        transform: translateY(-50%);
-                        opacity: 0;
-                    }
-
-                    .dropdown-item:hover {
-                        background-color: rgba(9, 132, 227, 0.05);
-                        color: var(--tech-blue);
-                        padding-left: 2rem;
-                    }
-
-                        .dropdown-item:hover::before {
-                            width: 10px;
-                            opacity: 1;
-                        }
-
-                .dropdown-divider {
-                    margin: 0.5rem 1rem;
-                    border-color: rgba(0,0,0,0.05);
-                }
-
-                /* Navbar position */
-                .navbar {
-                    position: sticky;
-                    top: 0;
-                    z-index: 1000;
-                }
-
-                /* Notification styles */
-                .notifications-dropdown {
-                    width: 350px;
-                    max-height: 500px;
-                    overflow-y: auto;
-                    padding: 0;
-                    z-index: 1060 !important;
-                    position: absolute;
-                    top: 100%;
-                    margin-top: 5px;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-                    border: none;
-                    right: 0;
-                    left: auto;
-                }
-
-                .notification-item {
-                    transition: all 0.3s ease;
-                    border-left: 3px solid transparent;
-                    cursor: pointer;
-                    padding: 1rem;
-                }
-
-                    .notification-item:hover {
-                        background-color: rgba(9, 132, 227, 0.05);
-                        border-left-color: var(--tech-blue);
-                    }
-
-                .notification-icon {
-                    width: 40px;
-                    height: 40px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    border-radius: 50%;
-                    background: var(--gradient-primary);
-                    color: white;
-                    font-size: 1.1rem;
-                    margin-right: 1rem;
-                }
-
-                .notification-badge {
-                    position: absolute;
-                    top: 0;
-                    right: 0;
-                    font-size: 0.7rem;
-                    padding: 0.25rem 0.45rem;
-                    border-radius: 50%;
-                    background: var(--gradient-accent);
-                    color: white;
-                    transform: translate(25%, -25%);
-                    box-shadow: 0 3px 8px rgba(231, 76, 60, 0.4);
-                    border: 2px solid white;
-                    z-index: 5;
-                }
-
-                /* Cart icon animation */
-                .nav-link .bi-cart {
-                    transition: all 0.3s ease;
-                }
-
-                .nav-link:hover .bi-cart {
-                    transform: translateY(-2px) rotate(10deg);
-                }
-
-                /* Special tech styling for active elements */
-                .active {
-                    position: relative;
-                    overflow: hidden;
-                }
-
-                    .active::before {
-                        content: '';
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        right: 0;
-                        bottom: 0;
-                        background: var(--gradient-primary);
-                        opacity: 0.1;
-                        z-index: -1;
-                        border-radius: var(--border-radius);
-                    }
-
-                /* Animation for the logo */
-                @@keyframes logoGlow {
-                    0% {
-                        filter: drop-shadow(0 0 2px rgba(9, 132, 227, 0.3));
-                    }
-
-                    50% {
-                        filter: drop-shadow(0 0 5px rgba(9, 132, 227, 0.6));
-                    }
-
-                    100% {
-                        filter: drop-shadow(0 0 2px rgba(9, 132, 227, 0.3));
-                    }
-                }
-
-                .navbar-brand img {
-                    animation: logoGlow 3s infinite;
-                }
-
-                /* Tech-specific scrollbar */
-                ::-webkit-scrollbar {
-                    width: 10px;
-                }
-
-                ::-webkit-scrollbar-track {
-                    background: var(--light-bg);
-                }
-
-                ::-webkit-scrollbar-thumb {
-                    background: linear-gradient(to bottom, var(--tech-blue), var(--tech-purple));
-                    border-radius: 5px;
-                }
-
-                    ::-webkit-scrollbar-thumb:hover {
-                        background: linear-gradient(to bottom, var(--tech-purple), var(--tech-blue));
-                    }
-
-                /* Special position for notification dropdown */
-                .notification-dropdown-parent {
-                    position: static;
-                }
-
-                .notification-dropdown-parent .notifications-dropdown {
-                    position: absolute;
-                    top: calc(100% + 5px) !important;
-                    right: 0;
-                    left: auto !important;
-                    transform-origin: top right;
-                    animation: notificationDropdown 0.3s ease;
-                    margin-top: 0 !important;
-                    max-height: 80vh;
-                }
-
-                /* Fix notification dropdown positioning */
-                .top-brand .notification-dropdown-parent .notifications-dropdown {
-                    position: absolute !important;
-                    top: 100% !important;
-                    right: 0 !important;
-                    left: auto !important;
-                    margin-top: 5px !important;
-                    transform-origin: top center;
-                    transform: translateX(0) !important;
-                }
-
-                .notification-dropdown-parent {
-                    position: relative !important;
-                }
-
-                @@keyframes notificationDropdown {
-                    from {
-                        opacity: 0;
-                        transform: scale(0.9) translateY(-10px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: scale(1) translateY(0);
-                    }
-                }
-
-                @@media (max-width: 767.98px) {
-                    .notification-dropdown-parent .notifications-dropdown {
-                        width: 300px;
-                        right: -10px !important;
-                        max-height: 450px !important;
-                        position: fixed !important;
-                        top: auto !important;
-                    }
                 }
     </style>
-    
-    @await RenderSectionAsync("Styles", required: false)
 
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 
 <body>
-
-    <div class="contact-bar">
-        <div class="container d-flex justify-content-between align-items-center flex-wrap gap-3">
-            <!-- Contact Information -->
-            <div class="contact-info">
-                <span><i class="bi bi-telephone me-2"></i>01001976931</span>
-                <span><i class="bi bi-envelope me-2"></i>Yasser_elg_Sh2010@yahoo.com</span>
-            </div>
-
-            <!-- Right-aligned elements -->
-            <div class="d-flex gap-3 align-items-center">
-                <!-- Social Icons -->
-                <div class="d-flex gap-3 social-icons">
-                    <a href="#" class="text-decoration-none" target="_blank" style="color: #181cf2;">
-                        <i class="bi bi-facebook fs-3"></i>
-                    </a>
-                    <a href="#" class="text-decoration-none" target="_blank" style="background: linear-gradient(45deg,
-                        #E1306C, #F56040, #FCAF45, #FFDC80); -webkit-background-clip: text; color: transparent;">
-                        <i class="bi bi-instagram fs-3"></i>
-                    </a>
-                    <a href="https://youtube.com/@@user-yasser1?si=Vzyksk7wFrVUyIdX" target="_blank"
-                        class="text-decoration-none" style="color: #FF0000;">
-                        <i class="bi bi-youtube fs-3"></i>
-                    </a>
-                    <a href="@@yasser elgendy" target="_blank" class="text-decoration-none" style="color: #000000;">
-                        <i class="bi bi-twitter-x fs-3"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Top Brand Section -->
-    <div class="top-brand">
-        <div class="container d-flex flex-wrap justify-content-between align-items-center">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
             <a class="navbar-brand" asp-controller="Home" asp-action="Index">
                 <b>Future Technology Store</b>
             </a>
-            <form asp-controller="Home" asp-action="GetFilteredProducts" method="get" class="search-container">
-                <div class="input-group">
-                    <select name="categoryFilter" class="form-select" style="max-width: 150px; border-top-right-radius: 0; border-bottom-right-radius: 0;">
-                        <option value="">All Products</option>
-                        <option value="Mouse">Mice</option>
-                        <option value="Keyboard">Keyboards</option>
-                        <option value="Mousepad">Mousepads</option>
-                        <option value="Printer">Printers</option>
-                        <option value="Storage">Storage</option>
-                        <option value="Headphones">Headphones</option>
-                        <option value="Webcam">Webcams</option>
-                        <option value="Laptop">Laptops</option>
-                        <option value="Accessories">All Accessories</option>
-                        <option value="Bestseller">Bestsellers</option>
-                    </select>
-                    <input name="searchString" class="form-control" type="search" placeholder="Search products...">
-                    <div class="input-group-append">
-                        <button class="btn btn-primary" type="submit">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </div>
-                </div>
-            </form>
 
-            <div class="d-flex align-items-center gap-3 position-relative">
-                @if (SignInManager.IsSignedIn(User))
-                {
-                    <div class="dropdown position-relative mx-2">
-                        <button type="button" class="btn btn-link border-0 p-0 position-relative" id="notificationsDropdown" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
-                            <i class="bi bi-bell fs-5" style="color: var(--text-color);"></i>
-                            <span id="notification-count" class="notification-badge" style="display: none;">0</span>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-end shadow notifications-dropdown" aria-labelledby="notificationsDropdown">
-                            <div class="dropdown-header d-flex justify-content-between align-items-center py-2 bg-light">
-                                <h6 class="mb-0">Notifications</h6>
-                                <a href="@Url.Action("Index", "Notifications")" class="text-decoration-none small">View All</a>
-                            </div>
-                            <div class="dropdown-divider my-0"></div>
-                            <div id="notifications-container">
-                                <div class="text-center p-3">
-                                    <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                    <p class="text-muted mb-0 mt-2">Loading notifications...</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-                <a class="nav-link icon-text-link" asp-controller="Cart" asp-action="Index"
-                    style="color: var(--text-color);">
-                    <i class="bi bi-cart fs-4" style="color: var(--primary);"></i>
-                    <span class="small mb-0" style="color: var(--text-color);">Cart</span>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-        <div class="container">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -770,463 +140,89 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-grid-3x3-gap-fill me-1"></i> Categories
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark py-2">
-                            <li class="px-3 py-2 text-light small fw-bold text-uppercase border-bottom mb-1">Browse Products</li>
-                            <li><a class="dropdown-item d-flex align-items-center" asp-controller="Home" asp-action="GetAllProducts">
-                                <i class="bi bi-collection me-2"></i><span>All Products</span></a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Laptop">
-                                <i class="bi bi-laptop me-2"></i><span>Laptops</span></a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Bestseller">
-                                <i class="bi bi-star me-2"></i><span>Bestsellers</span></a></li>
-                            
-                            <li class="px-3 py-2 text-light small fw-bold text-uppercase border-bottom mb-1 mt-2">Accessories</li>
-                            <li><a class="dropdown-item d-flex align-items-center" asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Mouse">
-                                <i class="bi bi-mouse me-2"></i><span>Mice</span></a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Keyboard">
-                                <i class="bi bi-keyboard me-2"></i><span>Keyboards</span></a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Mousepad">
-                                <i class="bi bi-square me-2"></i><span>Mousepads</span></a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Storage">
-                                <i class="bi bi-device-hdd me-2"></i><span>Storage</span></a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Headphones">
-                                <i class="bi bi-headphones me-2"></i><span>Headphones</span></a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Webcam">
-                                <i class="bi bi-camera-video me-2"></i><span>Webcams</span></a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Printer">
-                                <i class="bi bi-printer me-2"></i><span>Printers</span></a></li>
-                            <li><a class="dropdown-item d-flex align-items-center" asp-controller="Home" asp-action="GetFilteredProducts" asp-route-categoryFilter="Accessories">
-                                <i class="bi bi-tools me-2"></i><span>All Accessories</span></a></li>
-                        </ul>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="GetAllProducts">All Products</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Order" asp-action="Index">
-                            <i class="bi bi-box me-1"></i>My Orders
+                        <a class="nav-link" asp-controller="Home" asp-action="GetAllLaptops">Laptops</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <form asp-controller="Home" asp-action="GetFilteredProducts" method="get" class="d-flex">
+                            <input name="searchString" class="form-control me-2" type="search" placeholder="Search products...">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Cart" asp-action="Index">
+                            <i class="bi bi-cart"></i> Cart
                         </a>
                     </li>
                     @if (SignInManager.IsSignedIn(User))
                     {
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle fw-semibold d-flex align-items-center" href="#" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-person-circle me-2"></i>
-                                User Management
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person"></i> Account
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-dark py-2">
-                                <li class="px-3 py-2 text-light small fw-bold text-uppercase">My Account</li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" asp-area="Identity"
-                                       asp-page="/Account/Manage/Index">
-                                        <i class="bi bi-person-gear me-2"></i>
-                                        <span>Profile</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" asp-area="Identity"
-                                       asp-page="/Account/Manage/Email">
-                                        <i class="bi bi-envelope me-2"></i>
-                                        <span>Email</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" asp-area="Identity"
-                                       asp-page="/Account/Manage/ChangePassword">
-                                        <i class="bi bi-key me-2"></i>
-                                        <span>Password</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider my-2">
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Order"
-                                       asp-action="Index">
-                                        <i class="bi bi-box2 me-2"></i>
-                                        <span>My Orders</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Cart"
-                                       asp-action="Index">
-                                        <i class="bi bi-cart me-2"></i>
-                                        <span>My Cart</span>
-                                    </a>
-                                </li>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Profile</a></li>
+                                <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Logout">Logout</a></li>
                             </ul>
                         </li>
                     }
-                    @if (User.IsInRole(SD.Role_Admin))
-            {
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle fw-semibold d-flex align-items-center" href="#" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-gear-fill me-2"></i>
-                                Content Management
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-dark py-2">
-                                <li class="px-3 py-2 text-light small fw-bold text-uppercase">Manage Products</li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Product"
-                                       asp-action="Index">
-                                        <i class="bi bi-box-seam me-2"></i>
-                                        <span>Add Products</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Promotions"
-                                       asp-action="Index">
-                                        <i class="bi bi-megaphone me-2"></i>
-                                        <span>Add Promotions</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Laptops"
-                                       asp-action="Index">
-                                        <i class="bi bi-laptop me-2"></i>
-                                        <span>Add Laptops</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider my-2">
-                                </li>
-                                <li class="px-3 py-2 text-light small fw-bold text-uppercase">Manage Inventory</li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Inventory"
-                                       asp-action="Index">
-                                        <i class="bi bi-box2-fill me-2"></i>
-                                        <span>Stock Management</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Inventory"
-                                       asp-action="LowStock">
-                                        <i class="bi bi-exclamation-triangle me-2"></i>
-                                        <span>Low Stock Alerts</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Inventory"
-                                       asp-action="BulkUpdate">
-                                        <i class="bi bi-arrow-repeat me-2"></i>
-                                        <span>Bulk Update</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider my-2">
-                                </li>
-                                <li class="px-3 py-2 text-light small fw-bold text-uppercase">Manage Categories</li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Category"
-                                       asp-action="Index">
-                                        <i class="bi bi-tags me-2"></i>
-                                        <span>Add Categories</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Brands"
-                                       asp-action="Index">
-                                        <i class="bi bi-award me-2"></i>
-                                        <span>Add Brands</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-
-            }
-                </ul>
-
-                <div class="d-flex align-items-center ms-3">
-                    @if (User.IsInRole(SD.Role_Admin))
+                    else
                     {
-                        <li class="nav-item dropdown ms-3 me-3 list-unstyled">
-                            <a class="nav-link dropdown-toggle fw-semibold d-flex align-items-center" href="#" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-speedometer2 me-2"></i>
-                                <span>Admin Panel</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-dark py-2">
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Admin" asp-action="Dashboard">
-                                        <i class="bi bi-graph-up me-2"></i>
-                                        <span>Dashboard</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Admin" asp-action="UserManagement">
-                                        <i class="bi bi-people me-2"></i>
-                                        <span>User Management</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Admin" asp-action="OrderManagement">
-                                        <i class="bi bi-list-check me-2"></i>
-                                        <span>Order Management</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" asp-controller="Admin" asp-action="SalesAnalytics">
-                                        <i class="bi bi-bar-chart me-2"></i>
-                                        <span>Sales Analytics</span>
-                                    </a>
-                                </li>
-                            </ul>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
                         </li>
                     }
-                    <partial name="_LoginPartial" />
-                </div>
+                </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container my-5">
-        <main role="main">
-            <partial name="_Notification" />
-            @RenderBody()
-        </main>
-    </div>
+    <!-- Main Content -->
+    <main class="py-3">
+        @RenderBody()
+    </main>
 
-    <footer class="footer">
+    <!-- Footer -->
+    <footer class="footer mt-5">
         <div class="container">
-            <div class="row gy-4">
-                <div class="col-md-3">
-                    <h5 class="fw-bold">About Us</h5>
-                    <p class="small text-muted">Your trusted source for quality electronics and tech products.</p>
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Future Technology Store</h5>
+                    <p>Your trusted source for the latest technology and electronics.</p>
                 </div>
-                <div class="col-md-3">
-                    <h5 class="fw-bold">Customer Service</h5>
-                    <ul class="list-unstyled small">
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Shipping & Returns</a></li>
-                        <li><a href="#">Contact Us</a></li>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li><a asp-controller="Home" asp-action="GetAllProducts">All Products</a></li>
+                        <li><a asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li>
                     </ul>
                 </div>
-                <div class="col-md-3">
-                    <h5 class="fw-bold">Policies</h5>
-                    <ul class="list-unstyled small">
-                        <li><a href="#">Privacy Policy</a></li>a
-                        <li><a href="#">Terms of Service</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3">
-                    <h5 class="fw-bold">Our Email</h5>
-                    <div class="input-group mb-3">
-                        <input type="email" class="form-control" placeholder="Yasser_elg_Sh2010@yahoo.com">
-                    </div>
-
+                <div class="col-md-4">
+                    <h5>Contact Us</h5>
+                    <p><i class="bi bi-telephone"></i> 012456789</p>
+                    <p><i class="bi bi-envelope"></i> andrew.atef299@gmail.com</p>
                 </div>
             </div>
             <hr class="my-4">
-            <p class="text-center text-muted mb-0">&copy; 2025 FutureTechnology Store</p>
+            <div class="text-center">
+                <p>&copy; 2024 Future Technology E-Commerce. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="text/javascript" charset="utf8"
-        src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-
-    <script>
-        // Category dropdown functionality
-        $(document).ready(function () {
-            // Close notification dropdown when scrolling to navbar
-            $(window).on('scroll', function() {
-                var notificationDropdown = $('.notification-dropdown-parent').find('.dropdown-menu');
-                var isOpen = notificationDropdown.hasClass('show');
-                var navbarTop = $('.navbar').offset().top;
-                
-                if (isOpen && $(window).scrollTop() > navbarTop - 150) {
-                    $('#notificationsDropdown').dropdown('hide');
-                }
-            });
-            
-            // Handle dropdown item selection for search - target only the search dropdown items
-            $('.search-category-dropdown .dropdown-item').click(function (e) {
-                e.preventDefault();
-                var selectedValue = $(this).data('value');
-                var selectedText = $(this).text().trim();
-                
-                $('#searchCategoryDropdown').text(selectedText);
-                $('#selectedCategory').val(selectedValue);
-            });
-
-            // Fix notification dropdown position
-            $('#notificationsDropdown').parent().on('show.bs.dropdown', function() {
-                setTimeout(function() {
-                    var dropdown = $(this).find('.dropdown-menu');
-                    var navbarHeight = $('.navbar').outerHeight();
-                    var topOffset = $(this).offset().top + $(this).height() + 8;
-                    
-                    // If the dropdown would overlap the navbar
-                    if (topOffset + 300 > $(window).scrollTop() + navbarHeight) {
-                        // End the dropdown early and restore when scrolling
-                        $(window).on('scroll.notificationDropdown', function() {
-                            if ($(window).scrollTop() > topOffset + 150) {
-                                $('.dropdown-menu.notifications-dropdown').css('display', 'none');
-                                $('#notificationsDropdown').dropdown('hide');
-                                $(window).off('scroll.notificationDropdown');
-                            }
-                        });
-                    }
-                    
-                    dropdown.css({
-                        'z-index': '1060'
-                    });
-                }.bind(this), 0);
-            });
-
-            // Fix the Content Management dropdown positioning
-            $('.navbar-nav .dropdown').on('show.bs.dropdown', function () {
-                $(this).find('.dropdown-menu').css({
-                    'display': 'block',
-                    'opacity': 0
-                }).animate({
-                    'opacity': 1,
-                    'margin-top': '0.25rem'
-                }, 200);
-            });
-
-            // Smooth hide animation
-            $('.navbar-nav .dropdown').on('hide.bs.dropdown', function () {
-                $(this).find('.dropdown-menu').animate({
-                    'opacity': 0,
-                    'margin-top': '0'
-                }, 200, function () {
-                    $(this).css('display', 'none');
-                });
-                return false; // This prevents the immediate hide, allowing our animation to complete
-            });
-
-            // Auto-close when clicking outside
-            $(document).on('click', function (e) {
-                if (!$(e.target).closest('.dropdown').length) {
-                    // Only close navbar dropdowns, not all dropdowns
-                    $('.navbar-nav .dropdown .dropdown-menu').css({
-                        'display': 'none',
-                        'opacity': 0,
-                        'margin-top': '0'
-                    });
-                }
-            });
-        });
-    </script>
-
-    @if (SignInManager.IsSignedIn(User))
-    {
-        <script>
-            $(document).ready(function() {
-                // Position notification dropdown properly
-                function positionNotificationDropdown() {
-                    var notificationButton = $('#notificationsDropdown');
-                    var notificationDropdown = notificationButton.next('.dropdown-menu');
-                    var buttonPosition = notificationButton.offset();
-                    
-                    if ($(window).width() < 768) {
-                        // Mobile positioning
-                        notificationDropdown.css({
-                            'position': 'fixed',
-                            'top': buttonPosition.top + notificationButton.outerHeight(),
-                            'right': '10px',
-                            'width': '300px',
-                            'max-height': '450px'
-                        });
-                    } else {
-                        // Desktop positioning - let Bootstrap handle it
-                        notificationDropdown.css({
-                            'position': 'absolute',
-                            'right': '0',
-                            'left': 'auto'
-                        });
-                    }
-                }
-                
-                // Adjust position when dropdown is shown
-                $('#notificationsDropdown').on('shown.bs.dropdown', function() {
-                    positionNotificationDropdown();
-                });
-                
-                // Handle window resize
-                $(window).on('resize', function() {
-                    if ($('.notifications-dropdown').is(':visible')) {
-                        positionNotificationDropdown();
-                    }
-                });
-                
-                // Load notifications on page load
-                loadNotifications();
-                
-                // Load notifications when dropdown is opened
-                $('#notificationsDropdown').on('show.bs.dropdown', function() {
-                    loadNotifications();
-                });
-                
-                // Mark notification as read when clicked
-                $(document).on('click', '.notification-item', function(e) {
-                    // Don't trigger if clicking buttons or links
-                    if ($(e.target).closest('button, a').length === 0) {
-                        const notificationId = $(this).data('notification-id');
-                        const actionUrl = $(this).data('action-url');
-                        
-                        // Mark as read via AJAX
-                        $.post('@Url.Action("MarkAsRead", "Notifications")', {
-                            id: notificationId,
-                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                        });
-                        
-                        // Navigate if action URL is available
-                        if (actionUrl && actionUrl !== '#') {
-                            window.location.href = actionUrl;
-                        }
-                    }
-                });
-                
-                // Mark all as read
-                $(document).on('click', '#markAllAsReadBtn', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    $.post('@Url.Action("MarkAllAsRead", "Notifications")', {
-                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                    }, function() {
-                        loadNotifications();
-                    });
-                });
-                
-                // Check for new notifications every minute
-                setInterval(updateNotificationCount, 60000);
-                
-                // Initial count check
-                updateNotificationCount();
-                
-                function loadNotifications() {
-                    $('#notifications-container').load('@Url.Action("GetNotificationsPartial", "Notifications")', function() {
-                        updateNotificationCount();
-                    });
-                }
-                
-                function updateNotificationCount() {
-                    $.get('@Url.Action("GetUnreadCount", "Notifications")', function(data) {
-                        const count = data.count;
-                        const countElement = $('#notification-count');
-                        
-                        if (count > 0) {
-                            countElement.text(count).show();
-                        } else {
-                            countElement.text('0').hide();
-                        }
-                    });
-                }
-            });
-        </script>
-    }
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
-
 </html>

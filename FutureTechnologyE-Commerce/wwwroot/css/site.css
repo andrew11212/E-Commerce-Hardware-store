@@ -28,16 +28,14 @@ body {
 }
 
 .card {
-  border: none;
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
   background: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 .card-img-top {
@@ -86,12 +84,7 @@ body {
 .product-image {
   aspect-ratio: 4/3;
   object-fit: cover;
-  border-radius: 8px;
-  transition: transform 0.3s ease;
-}
-
-.product-image:hover {
-  transform: scale(1.05);
+  border-radius: var(--border-radius);
 }
 
 .add-to-cart-form button {
@@ -176,7 +169,6 @@ body {
 
 .icon-text-link:hover {
   color: var(--primary);
-  transform: translateY(-2px);
 }
 
 .icon-text-link .small {
@@ -202,7 +194,7 @@ body {
 }
 
 .btn-group .btn:hover {
-  transform: scale(1.05);
+  transform: none;
 }
 
 @media (max-width: 768px) {
@@ -231,10 +223,9 @@ body {
 }
 
 .btn {
-  border-radius: 8px;
-  padding: 0.75rem 1.5rem;
+  border-radius: var(--border-radius);
+  padding: 0.5rem 1rem;
   font-weight: 500;
-  transition: all 0.3s ease;
 }
 
 .btn-primary {
@@ -244,7 +235,6 @@ body {
 
 .btn-primary:hover {
   background: var(--secondary);
-  transform: translateY(-2px);
 }
 
 .btn-outline-primary {
@@ -255,21 +245,20 @@ body {
 .btn-outline-primary:hover {
   background: var(--primary);
   color: white;
-  transform: translateY(-2px);
+  transform: none;
+  box-shadow: none;
 }
 
 .form-control {
-  border-radius: 8px;
-  border: 2px solid var(--light);
-  padding: 0.75rem 1rem;
-  transition: all 0.3s ease;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  padding: 0.5rem 1rem;
 }
 
 .form-select {
-  border-radius: 8px;
-  border: 2px solid var(--light);
-  padding: 0.75rem 1rem;
-  transition: all 0.3s ease;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  padding: 0.5rem 1rem;
 }
 
 .table {
@@ -292,19 +281,7 @@ body {
 }
 
 .fade-in {
-  animation: fadeIn 0.5s ease-in;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  opacity: 1;
 }
 
 .toast {
@@ -484,27 +461,20 @@ body {
 
 /* Enhanced Card Styles */
 .card {
-  border: none;
+  border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  transition: var(--transition);
   background: white;
   box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
 }
 
 .card-img-top {
   height: 200px;
   object-fit: cover;
-  transition: var(--transition);
-}
-
-.card:hover .card-img-top {
-  transform: scale(1.05);
 }
 
 /* Product Card Enhancements */
@@ -612,8 +582,7 @@ body {
 
 .btn-primary:hover {
   background: var(--secondary);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: none;
 }
 
 .btn-outline-primary {

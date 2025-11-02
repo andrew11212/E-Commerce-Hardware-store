@@ -14,6 +14,9 @@ using Serilog;
 using System.Threading.RateLimiting;
 using System.Globalization;
 using FutureTechnologyE_Commerce.Services;
+using StackExchange.Redis;
+using Microsoft.AspNetCore.ResponseCompression;
+using System.IO.Compression;
 
 namespace FutureTechnologyE_Commerce
 {
@@ -43,9 +46,38 @@ namespace FutureTechnologyE_Commerce
 				builder.Logging.AddDebug();
 				builder.Logging.SetMinimumLevel(LogLevel.Information);
 
+				// Add Response Compression
+				builder.Services.AddResponseCompression(options =>
+				{
+					options.EnableForHttps = true;
+					options.Providers.Add<BrotliCompressionProvider>();
+					options.Providers.Add<GzipCompressionProvider>();
+					options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
+					{
+						"application/json",
+						"application/javascript",
+						"text/css",
+						"text/html",
+						"text/plain",
+						"image/svg+xml"
+					});
+				});
+
+				builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+				{
+					options.Level = CompressionLevel.Fastest;
+				});
+
+				builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+				{
+					options.Level = CompressionLevel.Optimal;
+				});
+
 				builder.Services.AddControllersWithViews();
 				builder.Services.AddDbContext<ApplicationDbContext>(options => options
-					.UseSqlServer(builder.Configuration.GetConnectionString("DefualtConnection")));
+					.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+					.EnableSensitiveDataLogging(false)
+					.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 				builder.Services.Configure<Paymob>(builder.Configuration.GetSection("PayMob"));
 				builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 				{
@@ -72,7 +104,35 @@ namespace FutureTechnologyE_Commerce
 				builder.Services.AddScoped<INotificationService, NotificationService>();
 				builder.Services.AddScoped<PaymentHealthMonitor>();
 				builder.Services.AddScoped<FutureTechnologyE_Commerce.Services.PaymentService>();
-				builder.Services.AddDistributedMemoryCache();
+				
+				// Configure Redis Cache
+				var redisConnection = builder.Configuration.GetConnectionString("Redis");
+				if (!string.IsNullOrEmpty(redisConnection))
+				{
+					builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+					{
+						var configuration = ConfigurationOptions.Parse(redisConnection, true);
+						configuration.AbortOnConnectFail = false;
+						configuration.ConnectTimeout = 5000;
+						configuration.SyncTimeout = 5000;
+						return ConnectionMultiplexer.Connect(configuration);
+					});
+					
+					builder.Services.AddStackExchangeRedisCache(options =>
+					{
+						options.Configuration = redisConnection;
+						options.InstanceName = "FutureTech_";
+					});
+					
+					builder.Services.AddScoped<ICacheService, RedisCacheService>();
+				}
+				else
+				{
+					// Fallback to in-memory cache if Redis is not configured
+					builder.Services.AddDistributedMemoryCache();
+					builder.Services.AddScoped<ICacheService, RedisCacheService>();
+				}
+				
 				builder.Services.AddSession(options =>
 				{
 					options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -142,6 +202,10 @@ namespace FutureTechnologyE_Commerce
 				}));
 
 				app.UseRequestLocalization(localizationOptions);
+				
+				// Enable response compression
+				app.UseResponseCompression();
+				
 				// Configure the HTTP request pipeline.
 				if (!app.Environment.IsDevelopment())
 				{
@@ -150,7 +214,17 @@ namespace FutureTechnologyE_Commerce
 				}
 
 				//app.UseHttpsRedirection();
-				app.UseStaticFiles();
+				
+				// Configure static files with caching
+				app.UseStaticFiles(new StaticFileOptions
+				{
+					OnPrepareResponse = ctx =>
+					{
+						const int durationInSeconds = 60 * 60 * 24 * 365; // 1 year
+						ctx.Context.Response.Headers.Append("Cache-Control", $"public,max-age={durationInSeconds}");
+						ctx.Context.Response.Headers.Append("Expires", DateTime.UtcNow.AddYears(1).ToString("R"));
+					}
+				});
 				app.UseRouting();
 				app.UseAuthentication();
 				app.UseAuthorization();

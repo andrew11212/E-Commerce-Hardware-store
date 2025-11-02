@@ -1,4 +1,4 @@
-﻿using FutureTechnologyE_Commerce.Models;
+using FutureTechnologyE_Commerce.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -41,6 +41,109 @@ namespace FutureTechnologyE_Commerce.Data
 			modelBuilder.Entity<Review>()
 				.HasIndex(r => new { r.ProductID, r.UserID })
 				.IsUnique();
+
+			// Performance Indexes
+			// Product indexes
+			modelBuilder.Entity<Product>()
+				.HasIndex(p => p.CategoryID)
+				.HasDatabaseName("IX_Products_CategoryID");
+
+			modelBuilder.Entity<Product>()
+				.HasIndex(p => p.BrandID)
+				.HasDatabaseName("IX_Products_BrandID");
+
+			modelBuilder.Entity<Product>()
+				.HasIndex(p => p.IsBestseller)
+				.HasDatabaseName("IX_Products_IsBestseller");
+
+			modelBuilder.Entity<Product>()
+				.HasIndex(p => p.Name)
+				.HasDatabaseName("IX_Products_Name");
+
+			// Review indexes
+			modelBuilder.Entity<Review>()
+				.HasIndex(r => r.ProductID)
+				.HasDatabaseName("IX_Reviews_ProductID");
+
+			modelBuilder.Entity<Review>()
+				.HasIndex(r => r.UserID)
+				.HasDatabaseName("IX_Reviews_UserID");
+
+			modelBuilder.Entity<Review>()
+				.HasIndex(r => r.Rating)
+				.HasDatabaseName("IX_Reviews_Rating");
+
+			// OrderHeader indexes
+			modelBuilder.Entity<OrderHeader>()
+				.HasIndex(o => o.ApplicationUserId)
+				.HasDatabaseName("IX_OrderHeaders_ApplicationUserId");
+
+			modelBuilder.Entity<OrderHeader>()
+				.HasIndex(o => o.OrderStatus)
+				.HasDatabaseName("IX_OrderHeaders_OrderStatus");
+
+			modelBuilder.Entity<OrderHeader>()
+				.HasIndex(o => o.OrderDate)
+				.HasDatabaseName("IX_OrderHeaders_OrderDate");
+
+			// OrderDetail indexes
+			modelBuilder.Entity<OrderDetail>()
+				.HasIndex(od => od.OrderId)
+				.HasDatabaseName("IX_OrderDetails_OrderHeaderId");
+
+			modelBuilder.Entity<OrderDetail>()
+				.HasIndex(od => od.ProductId)
+				.HasDatabaseName("IX_OrderDetails_ProductId");
+
+			// ShoppingCart indexes
+			modelBuilder.Entity<ShopingCart>()
+				.HasIndex(sc => sc.ApplicationUserId)
+				.HasDatabaseName("IX_ShoppingCarts_ApplicationUserId");
+
+			modelBuilder.Entity<ShopingCart>()
+				.HasIndex(sc => sc.ProductId)
+				.HasDatabaseName("IX_ShoppingCarts_ProductId");
+
+			// Inventory indexes
+			modelBuilder.Entity<Inventory>()
+				.HasIndex(i => i.ProductId)
+				.HasDatabaseName("IX_Inventories_ProductId");
+
+			modelBuilder.Entity<Inventory>()
+				.HasIndex(i => i.CurrentStock)
+				.HasDatabaseName("IX_Inventories_Quantity");
+
+			// Promotion indexes
+			modelBuilder.Entity<Promotion>()
+				.HasIndex(p => p.IsActive)
+				.HasDatabaseName("IX_Promotions_IsActive");
+
+			modelBuilder.Entity<Promotion>()
+				.HasIndex(p => new { p.StartDate, p.EndDate })
+				.HasDatabaseName("IX_Promotions_StartDate_EndDate");
+
+			// Notification indexes
+			modelBuilder.Entity<Notification>()
+				.HasIndex(n => n.UserId)
+				.HasDatabaseName("IX_Notifications_UserId");
+
+			modelBuilder.Entity<Notification>()
+				.HasIndex(n => n.IsRead)
+				.HasDatabaseName("IX_Notifications_IsRead");
+
+			modelBuilder.Entity<Notification>()
+				.HasIndex(n => n.CreatedDate)
+				.HasDatabaseName("IX_Notifications_CreatedAt");
+
+			// Category indexes
+			modelBuilder.Entity<Category>()
+				.HasIndex(c => c.Name)
+				.HasDatabaseName("IX_Categories_Name");
+
+			// Brand indexes
+			modelBuilder.Entity<Brand>()
+				.HasIndex(b => b.Name)
+				.HasDatabaseName("IX_Brands_Name");
 
             modelBuilder.Entity<Category>().HasData(
                new Category { CategoryID = 1, Name = "mouse" },

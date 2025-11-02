@@ -1,6 +1,7 @@
 using FutureTechnologyE_Commerce.Models;
 using FutureTechnologyE_Commerce.Models.ViewModels;
 using FutureTechnologyE_Commerce.Repository.IRepository;
+using FutureTechnologyE_Commerce.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -16,54 +17,101 @@ namespace FutureTechnologyE_Commerce.Controllers
 	{
 		private readonly ILogger<HomeController> _logger;
 		private readonly IUnitOfWork _unitOfWork;
+		private readonly ICacheService _cacheService;
 
-		public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork)
+		public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork, ICacheService cacheService)
 		{
 			_logger = logger;
 			_unitOfWork = unitOfWork;
+			_cacheService = cacheService;
 		}
 
 		public async Task<IActionResult> Index(string searchString = "")
 		{
-			var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand");
-
+			// If search is provided, skip cache
 			if (!string.IsNullOrEmpty(searchString))
 			{
+				var query = _unitOfWork.ProductRepository.GetQueryable(includeProperties: "Category,Brand");
 				searchString = searchString.Trim().ToLower();
 				query = query.Where(p => p.Name.ToLower().Contains(searchString) ||
 										 (p.Brand != null && p.Brand.Name.ToLower().Contains(searchString)));
+
+				var topReviews = await _unitOfWork.ReviewRepository
+					.GetAllAsync(r => r.Rating >= 4, includeProperties: "User,Product");
+
+				var activePromotions = _unitOfWork.PromotionRepository.GetActivePromotions();
+
+				var viewModel = new HomeIndexViewModel
+				{
+					Products = (await _unitOfWork.ProductRepository.GetAllAsync(c => c.IsBestseller, includeProperties: "Category,Brand")),
+					SearchString = searchString,
+					Accessories = (await _unitOfWork.ProductRepository.GetAllAsync(c => 
+						c.Category.Name.ToLower() == "mouse" || 
+						c.Category.Name.ToLower() == "keyboard" || 
+						c.Category.Name.ToLower() == "mousepad" || 
+						c.Category.Name.ToLower() == "storage" ||
+						c.Category.Name.ToLower() == "notebook" ||
+						c.Category.Name.ToLower() == "accessories", 
+						includeProperties: "Category,Brand")),
+					Laptops = (await _unitOfWork.LaptopRepository.GetAllAsync(null, includeProperties: "Category,Brand"))
+						.Take(5)
+						.ToList(),
+					TopReviews = topReviews.OrderByDescending(r => r.Rating).ThenByDescending(r => r.ReviewDate).Take(3).ToList(),
+					Promotions = activePromotions
+				};
+
+				return View(viewModel);
 			}
 
-			// Get top reviews (with high ratings)
-			var topReviews = await _unitOfWork.ReviewRepository
-				.GetAllAsync(
-					r => r.Rating >= 4, 
-					includeProperties: "User,Product"
-				);
+			// Try to get from cache
+			var cacheKey = "home_index_data";
+			var cachedViewModel = await _cacheService.GetAsync<HomeIndexViewModel>(cacheKey);
 
-			// Get active promotions
-			var activePromotions = _unitOfWork.PromotionRepository.GetActivePromotions();
-
-			var viewModel = new HomeIndexViewModel
+			if (cachedViewModel != null)
 			{
-				Products = (await _unitOfWork.ProductRepository.GetAllAsync(c => c.IsBestseller, includeProperties: "Category,Brand")), // Use the paginated list
+				_logger.LogInformation("Returning cached home page data");
+				return View(cachedViewModel);
+			}
+
+			// Cache miss - fetch from database
+			_logger.LogInformation("Cache miss - fetching home page data from database");
+
+			var bestsellers = await _unitOfWork.ProductRepository.GetAllAsync(
+				c => c.IsBestseller, 
+				includeProperties: "Category,Brand");
+
+			var accessories = await _unitOfWork.ProductRepository.GetAllAsync(c => 
+				c.Category.Name.ToLower() == "mouse" || 
+				c.Category.Name.ToLower() == "keyboard" || 
+				c.Category.Name.ToLower() == "mousepad" || 
+				c.Category.Name.ToLower() == "storage" ||
+				c.Category.Name.ToLower() == "notebook" ||
+				c.Category.Name.ToLower() == "accessories", 
+				includeProperties: "Category,Brand");
+
+			var laptops = (await _unitOfWork.LaptopRepository.GetAllAsync(null, includeProperties: "Category,Brand"))
+				.Take(5)
+				.ToList();
+
+			var topReviewsData = await _unitOfWork.ReviewRepository
+				.GetAllAsync(r => r.Rating >= 4, includeProperties: "User,Product");
+
+			var promotions = _unitOfWork.PromotionRepository.GetActivePromotions();
+
+			var homeViewModel = new HomeIndexViewModel
+			{
+				Products = bestsellers,
 				SearchString = searchString,
-				Accessories = (await _unitOfWork.ProductRepository.GetAllAsync(c => 
-					c.Category.Name.ToLower() == "mouse" || 
-					c.Category.Name.ToLower() == "keyboard" || 
-					c.Category.Name.ToLower() == "mousepad" || 
-					c.Category.Name.ToLower() == "storage" ||
-					c.Category.Name.ToLower() == "notebook" ||
-					c.Category.Name.ToLower() == "accessories", 
-					includeProperties: "Category,Brand")),
-				Laptops = (await _unitOfWork.LaptopRepository.GetAllAsync(null, includeProperties: "Category,Brand"))
-					.Take(5)
-					.ToList(),
-				TopReviews = topReviews.OrderByDescending(r => r.Rating).ThenByDescending(r => r.ReviewDate).Take(3).ToList(),
-				Promotions = activePromotions
+				Accessories = accessories,
+				Laptops = laptops,
+				TopReviews = topReviewsData.OrderByDescending(r => r.Rating).ThenByDescending(r => r.ReviewDate).Take(3).ToList(),
+				Promotions = promotions
 			};
 
-			return View(viewModel);
+			// Cache for 10 minutes
+			await _cacheService.SetAsync(cacheKey, homeViewModel, TimeSpan.FromMinutes(10));
+
+			return View(homeViewModel);
 		}
 
 		public async Task<IActionResult> Details(int id)

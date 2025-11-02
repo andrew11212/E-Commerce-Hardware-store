@@ -14,7 +14,7 @@
 
 	/////////////////////////////////////////
 
-	// Products Slick
+	// Products Slick - Performance Optimized
 	$('.products-slick').each(function () {
 		var $this = $(this),
 			$nav = $this.attr('data-nav');
@@ -22,9 +22,9 @@
 		$this.slick({
 			slidesToShow: 4,
 			slidesToScroll: 1,
-			autoplay: true,
-			infinite: true,
-			speed: 300,
+			autoplay: false, // Disabled for performance
+			infinite: false, // Disabled for performance
+			speed: 200, // Reduced from 300
 			dots: false,
 			arrows: true,
 			appendArrows: $nav ? $nav : false,
@@ -46,15 +46,15 @@
 		});
 	});
 
-	// Products Widget Slick
+	// Products Widget Slick - Performance Optimized
 	$('.products-widget-slick').each(function () {
 		var $this = $(this),
 			$nav = $this.attr('data-nav');
 
 		$this.slick({
-			infinite: true,
-			autoplay: true,
-			speed: 300,
+			infinite: false, // Disabled for performance
+			autoplay: false, // Disabled for performance
+			speed: 200, // Reduced from 300
 			dots: false,
 			arrows: true,
 			appendArrows: $nav ? $nav : false,
@@ -63,22 +63,22 @@
 
 	/////////////////////////////////////////
 
-	// Product Main img Slick
+	// Product Main img Slick - Performance Optimized
 	$('#product-main-img').slick({
-		infinite: true,
-		speed: 300,
+		infinite: false, // Disabled for performance
+		speed: 200, // Reduced from 300
 		dots: false,
 		arrows: true,
 		fade: true,
 		asNavFor: '#product-imgs',
 	});
 
-	// Product imgs Slick
+	// Product imgs Slick - Performance Optimized
 	$('#product-imgs').slick({
 		slidesToShow: 3,
 		slidesToScroll: 1,
 		arrows: true,
-		centerMode: true,
+		centerMode: false, // Disabled for performance
 		focusOnSelect: true,
 		centerPadding: 0,
 		vertical: true,
